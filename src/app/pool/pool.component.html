@@ -46,58 +46,48 @@
         </div>
 
         <div class="swap-details" *ngIf="poolType !== 'notMember'">
-          <div class="flex justify-between">
+          <div *ngIf="pooledRune"  class="flex justify-between" style="color: var(--primary-default);">
             <span class="tx-detail-label">Pooled RUNE:</span>
-            <span *ngIf="pooledRune">{{ pooledRune | number: "0.0-6" }}</span>
-            <span *ngIf="!pooledRune">...</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="tx-detail-label"
-              >Pooled
-              <span *ngIf="pooledAssetChain && pooledAssetTicker"
-                >{{ pooledAssetChain }}.{{ pooledAssetTicker }}</span
-              ><span *ngIf="!pooledAssetTicker || !pooledAssetChain">Asset</span
-              >:</span
-            >
-            <span *ngIf="pooledAsset">{{ pooledAsset | number: "0.0-6" }}</span>
-            <span *ngIf="!pooledAsset">...</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="tx-detail-label">Pool Share:</span>
-            <span *ngIf="pooledShare"
-              >{{ pooledShare * 100 | number: "0.0-6" }}%</span
-            >
-            <span *ngIf="!pooledShare">...</span>
-          </div>
-          <!-- <div class="flex justify-between">
-            <span class="tx-detail-label">Feeling Adventurous:</span>
-            <span class="pool"
-              *ngIf="createablePools && createablePools.length > 0 && !depositsDisabled, else noPool"
-              [routerLink]="['/', 'create-pool']"
-              [queryParams]="{pool: createablePools[0]}">
-              Create a new pool
+            <span>
+              {{ pooledRune | number: "0.0-6" }}
+              <span *ngIf="runePrice && currency"> ({{runePrice * pooledRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
             </span>
-            <ng-template #noPool>
-              <span>...</span>
-            </ng-template>
-          </div> -->
+          </div>
+          <div *ngIf="pooledAsset" class="flex justify-between" style="color: var(--primary-default);">
+            <span class="tx-detail-label">
+              Pooled
+              <span *ngIf="pooledAssetChain && pooledAssetTicker">
+                {{ pooledAssetChain }}.{{ pooledAssetTicker }}
+              </span>
+              <span *ngIf="!pooledAssetTicker || !pooledAssetChain">
+                Asset
+            </span>:</span>
+            <span> 
+              {{ pooledAsset | number: "0.0-6" }}
+              <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </span>
+          </div>
+          <div *ngIf="pooledShare" class="flex justify-between">
+            <span class="tx-detail-label">Pool Share:</span>
+            <span *ngIf="pooledShare">
+              {{ pooledShare * 100 | number: "0.0-6" }}%
+            </span>
+          </div>
         </div>
       </div>
 
       <div class="swap-details" *ngIf="poolType === 'notMember'">
-        <div class="flex justify-between">
+        <div *ngIf="pooledRune !== undefined && pooledRune !== null" class="flex justify-between">
           <span class="tx-detail-label">Average 24H Volume:</span>
-          <span *ngIf="pooledRune !== undefined && pooledRune !== null"
-            >{{ pooledRune | number: "0.0-2" }} {{ currency.code }}</span
-          >
-          <span *ngIf="pooledRune === undefined || pooledRune === null">...</span>
+          <span>
+            {{ pooledRune | number: "0.0-2" }} {{ currency.code }}
+          </span>
         </div>
-        <div class="flex justify-between">
+        <div *ngIf="pooledAsset" class="flex justify-between">
           <span class="tx-detail-label">Depth:</span>
-          <span *ngIf="pooledAsset"
-            >{{ pooledAsset | number: "0.0-2" }} {{ currency.code }}</span
-          >
-          <span *ngIf="!pooledAsset">...</span>
+          <span>
+            {{ pooledAsset | number: "0.0-2" }} {{ currency.code }}
+          </span>
         </div>
       </div>
 

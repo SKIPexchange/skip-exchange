@@ -14,9 +14,9 @@
         [ticker]="asset.ticker"
       ></app-icon-ticker>
       <span class="extra-info" *ngIf="poolData && !activate">
-        / {{ +poolData.poolAPY * 100 | number: "0.0-2" }}% APY /
-        {{ assetDepth | shortNumber }} {{ currency.code }} D</span
-      >
+        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% APY /
+        {{ assetDepth | shortNumber }} {{ currency.code }} DEPTH)
+      </span>
     </div>
 
     <span class="pending" *ngIf="isPending"

@@ -48,6 +48,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   depositsDisabled: boolean;
   txStreamInitSuccess: boolean;
   mode: PoolViews;
+  assetPriceUSD: number;
 
   constructor(
     private userService: UserService,
@@ -97,6 +98,11 @@ export class PoolComponent implements OnInit, OnDestroy {
         this.pooledShare = poolDetails.pooledShare;
         this.pooledAssetTicker = poolDetails.pooledAssetTicker;
         this.pooledAssetChain = poolDetails.pooledAssetChain;
+        this.assetPriceUSD = +this.pools?.find((pool) =>
+          `${this.pooledAssetChain}.${this.pooledAssetTicker}`.includes(
+            pool.asset
+          )
+        )?.assetPriceUSD;
       }
     );
 
