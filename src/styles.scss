@@ -84,6 +84,15 @@ $uniswap-secondary: (
   ),
 );
 
+.small-1 {
+  font-size: 12px !important;
+  font-weight: 500;
+}
+
+.small-2 {
+  font-size: 16px !important;
+  font-weight: 600;
+}
 // $font-family: 'Inter var, sans-serif',
 $custom-typography: mat-typography-config(
   $font-family: "Roboto, sans-serif",
@@ -738,7 +747,6 @@ button {
 
     svg {
       display: inline-block;
-      fill: #414856;
       margin-bottom: 3px;
     }
 
