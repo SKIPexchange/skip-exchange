@@ -112,6 +112,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   isHalted: boolean;
   isMaxError: boolean;
 
+  loadingBalances: boolean;
   view: DepositViews;
   // saving data of confirm in variable to pass it to the confirm
   depositData: ConfirmDepositData;
@@ -254,10 +255,11 @@ export class DepositComponent implements OnInit, OnDestroy {
           this.asset
         );
 
-        if (pendingBalances) {
-          this.assetBalance = undefined;
+        if (pendingBalances && (!this.assetBalance || !this.runeBalance)) {
+          this.loadingBalances = true;
+        } else {
+          this.loadingBalances = false;
         }
-
         this.setSourceChainBalance();
 
         // Metamask - restrict to ASYM deposits
@@ -610,6 +612,16 @@ export class DepositComponent implements OnInit, OnDestroy {
         message: 'Pool Halted',
         isValid: false,
         isError: true,
+      };
+      return;
+    }
+
+    /** Wait for the balance loading */
+    if (this.loadingBalances) {
+      this.formValidation = {
+        message: 'Loading Balances',
+        isValid: false,
+        isError: false,
       };
       return;
     }

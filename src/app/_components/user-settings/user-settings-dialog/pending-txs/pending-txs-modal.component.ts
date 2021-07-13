@@ -120,6 +120,7 @@ export class PendingTxsModalComponent implements OnDestroy {
   }
 
   // TODO: need check all the deposit txs for asyms
+  // ALSO, need a great cleanup (see example when the tx is pending)
   transactionToTx(transactions: TransactionDTO): Tx[] {
     let txs: Tx[] = [];
 
@@ -134,7 +135,7 @@ export class PendingTxsModalComponent implements OnDestroy {
         const outboundAsset = new Asset(transaction.out[0].coins[0].asset);
 
         outbound = {
-          hash: transaction.out[0].txID,
+          hash: transaction?.out[0]?.txID,
           asset: outboundAsset,
         };
       }
@@ -146,6 +147,13 @@ export class PendingTxsModalComponent implements OnDestroy {
           hash: transaction?.in[1]?.txID,
           asset: outboundAsset,
         };
+      }
+
+      if (
+        (transaction.type == 'addLiquidity' || transaction.type == 'swap') &&
+        transaction.status == 'pending'
+      ) {
+        this.txStatusService.getOutboundHash(transaction.in[0].txID);
       }
 
       // ignore upgarde txs because of midgard bug (temp)
