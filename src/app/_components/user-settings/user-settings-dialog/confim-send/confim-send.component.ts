@@ -78,7 +78,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
   set mode(val) {
     this._mode = val;
     if (this._mode == 'CONFIRM_SEND') this.messageChange.emit('Confirm');
-    else if (this._mode == 'ERROR') this.messageChange.emit(this.error);
+    else if (this._mode == 'ERROR') this.messageChange.emit(this.message);
     else if (this._mode == 'PROCESSING')
       this.messageChange.emit('TRANSACTION PROCESSING');
     else if (this._mode == 'SUCCESS') this.messageChange.emit('Success');
@@ -89,15 +89,8 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
   subs: Subscription[];
   txState: TransactionConfirmationState;
   hash: string;
-  error: string;
   address: string;
-  get message(): string {
-    if (this.insufficientChainBalance) {
-      this.mode = 'ERROR';
-      return `insufficient ${this.asset.asset.chain} to cover fees`;
-    } else return 'confirm';
-  }
-  insufficientChainBalance: boolean;
+  message: string;
   balances: Balances;
 
   constructor(
@@ -111,10 +104,9 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
   ) {
     this.back = new EventEmitter<null>();
     this.close = new EventEmitter<null>();
-    this.error = '';
+    this.message = 'Confirm';
     this.transactionSuccessful = new EventEmitter<null>();
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
-    this.insufficientChainBalance = false;
     this.hash = 'No Txid !';
 
     const user$ = this.userService.user$.subscribe(
@@ -253,7 +245,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
           console.error('error making transfer: ', error);
-          this.error = error.message;
+          this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;
           this.mode = 'ERROR';
           this.modeChange.emit(this.mode);
@@ -275,7 +267,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
           console.error('error making transfer: ', error);
-          this.error = error.message;
+          this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;
           this.mode = 'ERROR';
           this.modeChange.emit(this.mode);
@@ -307,7 +299,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
             : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
 
           if (amount.isLessThan(0)) {
-            this.error = 'Insufficient funds. Try sending a smaller amount';
+            this.message = 'Insufficient funds. Try sending a smaller amount';
             this.txState = TransactionConfirmationState.ERROR;
             return;
           }
@@ -325,7 +317,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
           console.error('error making transfer: ', error);
-          this.error = error.message;
+          this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;
           this.mode = 'ERROR';
           this.modeChange.emit(this.mode);
@@ -357,7 +349,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
             : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
 
           if (amount.isLessThan(0)) {
-            this.error = 'Insufficient funds. Try sending a smaller amount';
+            this.message = 'Insufficient funds. Try sending a smaller amount';
             this.txState = TransactionConfirmationState.ERROR;
             return;
           }
@@ -375,7 +367,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
           console.error('error making transfer: ', error);
-          this.error = error.message;
+          this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;
           this.mode = 'ERROR';
           this.modeChange.emit(this.mode);
@@ -428,7 +420,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
           console.error('error making transfer: ', error);
-          this.error = error.message;
+          this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;
           this.mode = 'ERROR';
           this.modeChange.emit(this.mode);
@@ -460,7 +452,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
             : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
 
           if (amount.isLessThan(0)) {
-            this.error = 'Insufficient funds. Try sending a smaller amount';
+            this.message = 'Insufficient funds. Try sending a smaller amount';
             this.txState = TransactionConfirmationState.ERROR;
             return;
           }
@@ -478,7 +470,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
           console.error('error making transfer: ', error);
-          this.error = error.message;
+          this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;
           this.mode = 'ERROR';
           this.modeChange.emit(this.mode);

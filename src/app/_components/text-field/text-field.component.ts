@@ -28,9 +28,11 @@ export class TextFieldComponent implements OnInit {
   @Input() disableTwo: boolean = false;
 
   @Input() placeHolder: string[] = [' ', ' '];
+  @Input() processing: boolean;
 
   constructor() {}
 
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {}
 
   updateFieldText(val) {

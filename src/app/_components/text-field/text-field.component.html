@@ -21,6 +21,7 @@
     <label>{{ label }}</label>
     <input
       class="field focus:outline-none focus:ring-0"
+      [ngClass]="{ processing: processing }"
       [ngModel]="textOfField"
       (ngModelChange)="updateFieldText($event)"
       [name]="name"
@@ -37,6 +38,7 @@
     <label>{{ labelTwo }}</label>
     <input
       class="field focus:outline-none focus:ring-0"
+      [ngClass]="{ processing: processing }"
       [ngModel]="textOfFieldTwo"
       (ngModelChange)="updateFieldTextTwo($event)"
       [name]="nameTwo"

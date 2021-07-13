@@ -30,6 +30,7 @@
           mode="Single"
           label="Recipient Address"
           [(textOfField)]="recipientAddress"
+          [processing]="true"
           [disable]="true"
         ></app-text-field>
         <app-text-field
@@ -42,6 +43,7 @@
           [(textOfField)]="recipientAddress"
           [(textOfFieldTwo)]="memo"
           [disable]="true"
+          [processing]="true"
           [disableTwo]="true"
         ></app-text-field>
       </div>
@@ -52,6 +54,8 @@
         *ngIf="!poolType || poolType === 'SYM' || poolType === 'ASYM_ASSET'"
         [label]="label[0]"
         [(selectedAsset)]="asset[0].asset"
+        [balance]="asset[0].balance.amount().toNumber() || undefined"
+        [priceInput]="asset[0].assetPriceUSD || undefined"
         [(assetUnit)]="amount[0]"
         [disabledAssetSymbol]="asset[0]?.asset?.symbol"
         [disabledMarketSelect]="true"
@@ -67,6 +71,8 @@
         *ngIf="!poolType || poolType === 'SYM' || poolType === 'ASYM_RUNE'"
         [label]="label[1]"
         [(selectedAsset)]="asset[1].asset"
+        [balance]="asset[1].balance.amount().toNumber() || undefined"
+        [priceInput]="asset[1].assetPriceUSD || undefined"
         [(assetUnit)]="amount[1]"
         [disabledAssetSymbol]="asset[1]?.asset?.symbol"
         [targetAddress]="targetAddress"
