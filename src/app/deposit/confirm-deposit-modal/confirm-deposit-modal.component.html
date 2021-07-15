@@ -50,35 +50,38 @@
       >
       </app-asset-input>
       <div class="swap-details">
-        <div class="flex justify-between">
-          <span class="tx-detail-label">Rates:</span>
-          <span
-            >1 {{ data.rune.asset.ticker }} =
-            {{ data.assetBasePrice | number: "1.2-4" }}
-            {{ data.asset.asset.ticker }}</span
-          >
+        <!-- <div class="flex justify-between">
+          <span class="tx-detail-label">Prices:</span>
+          <span>
+            1 {{ data.rune.asset.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.asset.ticker }}
+            <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
+          </span>
         </div>
         <div class="flex justify-between">
           <span class="tx-detail-label"></span>
-          <span
-            >1 {{ data.asset.asset.ticker }} =
-            {{ data.runeBasePrice | number: "1.2-4" }}
-            {{ data.rune.asset.ticker }}</span
-          >
-        </div>
-        <div class="flex justify-between">
-          <span class="tx-detail-label">Fees:</span>
           <span>
-            <span *ngIf="data.poolTypeOption === 'ASYM_ASSET' || data.poolTypeOption === 'SYM'">
-              {{ data.estimatedFee | number: "0.0-8" }} {{ data.asset.asset.ticker }}
-            </span>
-            <span *ngIf="data.estimatedFee && data.runeFee && data.poolTypeOption === 'SYM'"> + </span
-            ><span *ngIf="data.runeFee && (data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_RUNE')"
-              >{{ data.runeFee | number: "0.0-4" }} RUNE</span
-            ></span
-          >
+            1 {{ data.asset.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.asset.ticker }}
+            <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+          </span>
+        </div> -->
+        <div *ngIf="data.depositValue" class="flex justify-between primary-text">
+          <span class="tx-detail-label">Total Deposit:</span>
+          <span>{{ data.depositValue | number: '0.2-2' }} {{currency.code}}</span>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between white-text">
+          <span class="tx-detail-label">Netowrk Fees:</span><div>
+            <span *ngIf="data.estimatedFee && data.poolTypeOption != 'ASYM_RUNE'"> 
+              {{ data.estimatedFee| number: "1.0-8" }} {{ data.asset.asset.ticker }} 
+              <span *ngIf="currency && data.assetPrice">({{this.currency.value * data.estimatedFee * data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+            <span *ngIf="data.poolTypeOption === 'SYM' && data.runeFee && data.estimatedFee" > + </span>
+            <span *ngIf="data.runeFee && data.poolTypeOption != 'ASYM_ASSET'">
+              {{ data.runeFee | number: "1.0-4" }} RUNE 
+              <span *ngIf="currency && data.runePrice">({{this.currency.value * data.runePrice * data.runeFee | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+          </div>
+        </div>
+        <div class="flex justify-between primary-text">
           <div class="tx-detail-label">
             Estimated Transaction Time:
             <!-- <mat-icon style="transform: scale(.6)" matTooltip="Estimated Confirmation Time is the time it will take for THORChain to process your transaction.">info</mat-icon> -->
@@ -90,6 +93,7 @@
           <span>Output is estimated</span>
         </div>
       </div>
+
       <!-- close dialog -->
       <div class="bottom-actions two-btn">
         <div class="left-btn">

@@ -119,6 +119,9 @@ export class DepositComponent implements OnInit, OnDestroy {
   //adding rune price for the input
   runePrice: number;
   currency: Currency;
+  //prices
+  runeBasePrice: number;
+  assetBasePrice: number;
 
   bchLegacyPooled: boolean;
   loading: boolean;
@@ -520,6 +523,21 @@ export class DepositComponent implements OnInit, OnDestroy {
             runeBalance: baseAmount(res.runeDepth),
           };
 
+          this.runeBasePrice = getValueOfAssetInRune(
+            assetToBase(assetAmount(1)),
+            this.assetPoolData
+          )
+            .amount()
+            .div(10 ** 8)
+            .toNumber();
+          this.assetBasePrice = getValueOfRuneInAsset(
+            assetToBase(assetAmount(1)),
+            this.assetPoolData
+          )
+            .amount()
+            .div(10 ** 8)
+            .toNumber();
+
           this.networkFee = this.txUtilsService.calculateNetworkFee(
             this.asset,
             this.inboundAddresses,
@@ -799,20 +817,6 @@ export class DepositComponent implements OnInit, OnDestroy {
   }
 
   openConfirmationDialog() {
-    const runeBasePrice = getValueOfAssetInRune(
-      assetToBase(assetAmount(1)),
-      this.assetPoolData
-    )
-      .amount()
-      .div(10 ** 8)
-      .toNumber();
-    const assetBasePrice = getValueOfRuneInAsset(
-      assetToBase(assetAmount(1)),
-      this.assetPoolData
-    )
-      .amount()
-      .div(10 ** 8)
-      .toNumber();
     const assetPrice = this.selectableMarkets.find(
       (asset) => this.asset.symbol === asset.asset.symbol
     ).assetPriceUSD;
@@ -826,6 +830,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       balance: assetAmount(this.runeBalance, 8),
       assetPriceUSD: this.runePrice,
     };
+    const depositValue = this.totalDeposit();
 
     this.depositData = {
       asset: assetData,
@@ -833,14 +838,15 @@ export class DepositComponent implements OnInit, OnDestroy {
       assetAmount: this.assetAmount,
       runeAmount: this.runeAmount,
       user: this.user,
-      runeBasePrice,
-      assetBasePrice,
+      runeBasePrice: this.runeBasePrice,
+      assetBasePrice: this.assetBasePrice,
       assetBalance: this.assetBalance,
       runeBalance: this.runeBalance,
       runePrice: this.runePrice,
       runeFee: this.runeFee,
       estimatedFee: this.networkFee,
       poolTypeOption: this.poolType,
+      depositValue,
       assetPrice,
     };
 
@@ -943,6 +949,23 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.analytics.event(label, 'breadcrumb_deposit');
       this.overlaysService.setCurrentDepositView('Deposit');
     }
+  }
+
+  totalDeposit(): number {
+    if (
+      this.poolType !== 'ASYM_RUNE' &&
+      (!this.assetAmount || !this.assetPrice)
+    )
+      return 0;
+    if (this.poolType === 'ASYM_ASSET' && (!this.runeAmount || !this.runePrice))
+      return 0;
+    // eslint-disable-next-line prettier/prettier
+    const depositAsset = (this.poolType === 'ASYM_RUNE' ? 0 : Math.max(0, this.assetAmount - this.networkFee)) * this.assetPrice;
+    // eslint-disable-next-line prettier/prettier
+    const depositRune = (this.poolType === 'ASYM_ASSET' ? 0 : Math.max(0, this.runeAmount - this.runeFee)) * this.runePrice;
+    console.log(depositAsset, depositRune);
+    const depositValue = (depositAsset || 0) + (depositRune || 0);
+    return depositValue > 0 ? depositValue : 0;
   }
 
   lunchMarket() {

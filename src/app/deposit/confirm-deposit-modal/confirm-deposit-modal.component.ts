@@ -37,6 +37,8 @@ import { Client } from '@xchainjs/xchain-thorchain';
 import { MetamaskService } from 'src/app/_services/metamask.service';
 import { ethers } from 'ethers';
 import { Transaction } from 'src/app/_classes/transaction';
+import { CurrencyService } from 'src/app/_services/currency.service';
+import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
 
 // assets should be added for asset-input as designed.
 export interface ConfirmDepositData {
@@ -54,6 +56,7 @@ export interface ConfirmDepositData {
   estimatedFee: number;
   runeFee: number;
   poolTypeOption: PoolTypeOption;
+  depositValue: number;
 }
 
 @Component({
@@ -73,6 +76,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   metaMaskProvider?: ethers.providers.Web3Provider;
   depositSuccess: boolean;
   outboundHash: string;
+  currency: Currency;
 
   //foe this interface it should be imported from despoit page
   @Input() data: ConfirmDepositData;
@@ -87,7 +91,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     private router: Router,
     private analyticsService: AnalyticsService,
     private keystoreDepositService: KeystoreDepositService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    private curService: CurrencyService
   ) {
     this.depositSuccess = false;
     this.loading = true;
@@ -105,6 +110,10 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     const balances$ = this.userService.userBalances$.subscribe(
       (balances) => (this.balances = balances)
     );
+
+    const cur$ = this.curService.cur$.subscribe((cur) => {
+      this.currency = cur;
+    });
 
     this.subs = [user$, balances$, metaMaskProvider$];
   }

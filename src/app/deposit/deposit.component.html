@@ -61,21 +61,38 @@
       >
       </app-asset-input>
 
-      <div class="swap-details">
-        <div class="flex justify-between">
-          <span class="tx-detail-label">Fees:</span>
-          <span *ngIf="networkFee && (poolType === 'SYM' || poolType === 'ASYM_ASSET')"
-            >{{ networkFee | number: "1.0-8" }} {{ asset.ticker }}.{{
-              asset.chain
-            }} 
-            <span *ngIf="currency && assetPrice">({{this.currency.value * networkFee * assetPrice | number: '0.0-2'}} {{currency.code}})</span>
+      <div *ngIf="assetAmount || runeAmount" class="swap-details">
+        <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between">
+          <span class="tx-detail-label">Prices:</span>
+          <span>
+            1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
+            <span *ngIf="runePrice">({{ runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
           </span>
-          <span *ngIf="!networkFee || !(poolType === 'SYM' || poolType === 'ASYM_ASSET')">...</span>
         </div>
         <div class="flex justify-between">
           <span class="tx-detail-label"></span>
-          <span *ngIf="runeFee && (poolType === 'SYM' || poolType === 'ASYM_RUNE')">{{ runeFee | number: "1.0-4" }} RUNE <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.0-2'}} {{currency.code}})</span></span>
-          <span *ngIf="!runeFee || !(poolType === 'SYM' || poolType === 'ASYM_RUNE')">...</span>
+          <span>
+            1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
+            <span *ngIf="assetPrice">({{ assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+          </span>
+        </div>
+        <div *ngIf="totalDeposit()" class="flex justify-between primary-text">
+          <span class="tx-detail-label">Total Deposit: (est)</span>
+          <span>{{ totalDeposit() | number: '0.2-2' }} {{currency.code}}</span>
+        </div>
+        <div class="flex justify-between white-text">
+          <span class="tx-detail-label">Network Fees:</span>
+          <div>
+            <span *ngIf="networkFee && poolType != 'ASYM_RUNE'"> 
+              {{ networkFee | number: "1.0-8" }} {{ asset.ticker }} 
+              <span *ngIf="currency && assetPrice">({{this.currency.value * networkFee * assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+            <span *ngIf="poolType === 'SYM' && runeFee && networkFee" > + </span>
+            <span *ngIf="runeFee && poolType != 'ASYM_ASSET'">
+              {{ runeFee | number: "1.0-4" }} RUNE 
+              <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+          </div>
         </div>
       </div>
 
