@@ -4,7 +4,7 @@
       <label class="label-title" for="{{ label }}Input">
         {{ label }} <span style="color: var(--primary-grey-color)"> {{ extraLabel }} </span>
       </label>
-      <div class="flex target-address" *ngIf="hasAddress || targetAddress" (click)="openTargetAddress()">
+      <div class="flex target-address" *ngIf="(hasAddress || targetAddress) && (!disableUser && selectedAsset)" (click)="openTargetAddress()">
         <span>{{targetLabel ? targetLabel: 'Receive at'}}</span>
         <div class=" flex clickable-span items-center" [ngClass]="{'disabled': disabledMarketSelect}">
           <span *ngIf="targetAddress" class="address mono">{{targetAddress.substring(0,7)}}...{{targetAddress.substring(targetAddress.length - 7, targetAddress.length)}}</span>
@@ -166,7 +166,7 @@
     >
       {{ balance }} BALANCE  
     </span>
-    <span class="usd-est" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice"> / </span>
+    <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice"> / </span>
     <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue">
       {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}
     </span>
