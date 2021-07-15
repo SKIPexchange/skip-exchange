@@ -90,7 +90,7 @@ export class HeaderComponent implements OnDestroy {
   walletConnectUpgrade() {
     return (
       this.user.type === 'walletconnect' &&
-      this.userService.walletConnectAvailableClients().includes('THOR')
+      this.userService.clientAvailableChains().includes('THOR')
     );
   }
 

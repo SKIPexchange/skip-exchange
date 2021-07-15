@@ -709,8 +709,7 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.selectableTargetMarkets.unshift(runeMarket);
 
       if (
-        this.user?.type === 'XDEFI' ||
-        this.user?.type === 'keystore' ||
+        this.userService.clientAvailableChains()?.includes('THOR') ||
         !this.user
       ) {
         // Keeping RUNE at top by default
@@ -1090,7 +1089,7 @@ export class SwapComponent implements OnInit, OnDestroy {
         (pool) =>
           `${pool.asset.chain}.${pool.asset.ticker}` ===
           `${this._selectedSourceAsset.chain}.${this._selectedSourceAsset.ticker}`
-      ).assetPriceUSD;
+      )?.assetPriceUSD;
     }
 
     // Getting the target asset price from selected pools
@@ -1103,7 +1102,7 @@ export class SwapComponent implements OnInit, OnDestroy {
         (pool) =>
           `${pool.asset.chain}.${pool.asset.ticker}` ===
           `${this._selectedTargetAsset.chain}.${this._selectedTargetAsset.ticker}`
-      ).assetPriceUSD;
+      )?.assetPriceUSD;
     }
 
     if (
@@ -1113,7 +1112,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     ) {
       this.runePrice = this.selectableTargetMarkets.find(
         (asset) => `${asset.asset.chain}.${asset.asset.ticker}` === `THOR.RUNE`
-      ).assetPriceUSD;
+      )?.assetPriceUSD;
     }
   }
 
@@ -1197,7 +1196,7 @@ export class SwapComponent implements OnInit, OnDestroy {
         this.selectedTargetAsset?.chain !== 'ETH') ||
       (this.user?.type === 'walletconnect' &&
         !this.userService
-          .walletConnectAvailableClients()
+          .clientAvailableChains()
           .includes(this.selectedTargetAsset?.chain))
     );
   }

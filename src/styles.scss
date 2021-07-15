@@ -93,6 +93,14 @@ $uniswap-secondary: (
   font-size: 16px !important;
   font-weight: 600;
 }
+
+.white-text {
+  color: #fff !important;
+}
+
+.primary-text {
+  color: var(--primary-default) !important;
+}
 // $font-family: 'Inter var, sans-serif',
 $custom-typography: mat-typography-config(
   $font-family: "Roboto, sans-serif",
@@ -1303,6 +1311,7 @@ main {
 .mat-slider-disabled {
   .mat-slider-thumb {
     transform: initial !important;
+  background-color: var(--primary-grey-color) !important;
   }
 
   .mat-slider-thumb-container,
