@@ -54,28 +54,26 @@
         [priceInputs]="[assetPrice, runePrice]"
       ></app-double-asset-field>
 
-      <div class="swap-details">
-        <div class="flex justify-between items-center">
+      <div *ngIf="asset" class="swap-details">
+        <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span class="tx-detail-label">Prices:</span>
-          <span *ngIf="asset && assetBasePrice"
-            >1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }}
-            {{ asset.ticker }}</span
-          >
-          <span *ngIf="!asset || !assetBasePrice">...</span>
+          <span *ngIf="asset && assetBasePrice" >
+            1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
+            <span *ngIf="runePrice"> ({{ runePrice * currency.value | number: '0.2-2' }} {{currency.code}})</span>
+          </span >
         </div>
-        <div class="flex justify-between items-center">
+        <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span></span>
-          <span *ngIf="asset && runeBasePrice"
-            >1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }}
-            {{ rune.ticker }}</span
-          >
-          <span *ngIf="!asset || !runeBasePrice">...</span>
+          <span *ngIf="asset && runeBasePrice" >
+            1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
+            <span *ngIf="assetPrice"> ({{ assetPrice * currency.value | number: '0.2-2'}} {{currency.code}})</span>
+          </span>
         </div>
         <div
           *ngIf="withdrawType !== 'ASYM_ASSET'"
           class="flex justify-between items-center"
         >
-          <span class="tx-detail-label">Fees:</span>
+          <span class="tx-detail-label">Network Fees:</span>
           <span *ngIf="runeFee">{{ runeFee }} RUNE <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.0-2'}} {{currency.code}})</span></span>
           <span *ngIf="!runeFee && !networkFee">...</span>
         </div>
