@@ -7,50 +7,29 @@
       </nav>
 
       <div *ngIf="poolTypeOptions" class="lists" style="height: 167px;">
-        <button *ngIf="poolTypeOptions.sym && asset" [ngClass]="{'active': _poolType === 'SYM'}" (click)="choosenPoolType('SYM')" class="w-address" >
+        <button *ngIf="poolTypeOptions.sym && assets" [ngClass]="{'active': _poolType === 'SYM'}" (click)="choosenPoolType('SYM')" class="w-address" >
           <div class="icon-addr flex-grow flex-shrink-0">
             <div class="asset-icon-container two-icons">
-              <img class="asset-icon" [src]="asset.iconPath" appImgFallback/>
-              <img class="asset-icon" [src]="rune.iconPath" appImgFallback/>
+              <img class="asset-icon" [src]="assets[0].asset.iconPath" appImgFallback/>
+              <img class="asset-icon" [src]="assets[1].asset.iconPath" appImgFallback/>
             </div>
-            <label>{{asset.ticker}} + RUNE</label>
+            <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}} + <span class="small-1">THOR</span>.RUNE</label>
           </div>
-          <div class="right-sec"></div>
+          <div style="margin-left: 0;" class="addr">
+            <span *ngIf="assets[0].assetPriceUSD && assets[1].assetPriceUSD">{{ (assets[0].assetPriceUSD * (assets[0].balance || 0) * currency.value) + (assets[1].assetPriceUSD * (assets[1].balance || 0) * currency.value) | number: '0.0-2' }} {{ currency.code }}</span>
+          </div>
         </button>
       
-        <button *ngIf="poolTypeOptions.asymAsset && asset" [ngClass]="{'active': _poolType === 'ASYM_ASSET'}" (click)="choosenPoolType('ASYM_ASSET')" class="w-address" >
+        <button *ngIf="poolTypeOptions.asymAsset && assets" [ngClass]="{'active': _poolType === 'ASYM_ASSET'}" (click)="choosenPoolType('ASYM_ASSET')" class="w-address" >
           <div class="icon-addr flex-grow flex-shrink-0">
             <div class="asset-icon-container">
-              <img class="asset-icon" [src]="asset.iconPath" appImgFallback/>
+              <img class="asset-icon" [src]="assets[0].asset.iconPath" appImgFallback/>
             </div>
-            <label>{{asset.ticker}}
-              <span class="grey-text">(50% {{asset.chain}}.{{asset.ticker}} SWAP <svg
-                width="18px"
-                height="10px"
-                viewBox="0 0 18 10"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                fill="#414856"
-              >
-                <g transform="translate(-641.000000, -269.000000)">
-                  <g transform="translate(52.000000, -34.000000)">
-                    <g transform="translate(301.000000, 140.000000)">
-                      <g transform="translate(51.000000, 130.000000)">
-                        <g transform="translate(20.000000, 22.000000)">
-                          <polygon
-                            id="Path"
-                            points="229.921875 20.6914062 234.5625 16.0507812 229.921875 11.4101562 229.921875 15.2558594 217.332031 15.2558594 217.332031 16.8457031 229.921875 16.8457031"
-                          ></polygon>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg> THOR.RUNE)</span>
-            </label>
+            <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}}</label>
           </div>
-          <div class="right-sec"></div>
+          <div style="margin-left: 0;" class="addr">
+            <span *ngIf="assets[0].assetPriceUSD">{{ assets[0].assetPriceUSD * (assets[0].balance || 0) * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+          </div>
         </button>
       
         <button *ngIf="poolTypeOptions.asymRune" [ngClass]="{'active': _poolType === 'ASYM_RUNE'}" (click)="choosenPoolType('ASYM_RUNE')" class="w-address" >
@@ -58,34 +37,11 @@
             <div class="asset-icon-container">
               <img class="asset-icon" [src]="rune.iconPath" appImgFallback/>
             </div>
-            <label>RUNE
-              <span class="grey-text">(50% THOR.RUNE SWAP <svg
-                width="18px"
-                height="10px"
-                viewBox="0 0 18 10"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                fill="#414856"
-              >
-                <g transform="translate(-641.000000, -269.000000)">
-                  <g transform="translate(52.000000, -34.000000)">
-                    <g transform="translate(301.000000, 140.000000)">
-                      <g transform="translate(51.000000, 130.000000)">
-                        <g transform="translate(20.000000, 22.000000)">
-                          <polygon
-                            id="Path"
-                            points="229.921875 20.6914062 234.5625 16.0507812 229.921875 11.4101562 229.921875 15.2558594 217.332031 15.2558594 217.332031 16.8457031 229.921875 16.8457031"
-                          ></polygon>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg> {{asset.chain}}.{{asset.ticker}})</span>
-            </label>
+            <label><span class="small-1">THOR</span>.RUNE</label>
           </div>
-          <div class="right-sec"></div>
+          <div style="margin-left: 0;" class="addr">
+            <span *ngIf="assets[1].assetPriceUSD">{{ assets[1].assetPriceUSD * assets[1].balance * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+          </div>
         </button>
       </div>
 
@@ -95,19 +51,10 @@
 
     </div>
     <!-- close dialog -->
-    <div class="bottom-actions two-btn">
+    <div class="bottom-actions">
       <div class="left-btn">
         <button class="close-btn" (click)="back()">
           <span>Cancel</span>
-        </button>
-      </div>
-      <div class="divider"></div>
-      <div class="right-btn">
-        <button
-          class="next-btn"
-          (click)="submitPoolType()"
-        >
-          <span>Continue</span>
         </button>
       </div>
     </div>

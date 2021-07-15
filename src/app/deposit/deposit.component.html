@@ -10,7 +10,7 @@
             { name: 'skip', call: 'swap' },
             { name: 'Pools', call: 'pool' },
             { name: 'Deposit', disable: true },
-            { name: asset?.chain + '.' + asset?.ticker , disable: true },
+            { name: asset?.chain + '.' + asset?.ticker, disable: true },
             { name: poolType === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
           ]"
           [message]="{text: formValidation.message, isError: formValidation.isError}"
@@ -24,7 +24,7 @@
 
       <app-asset-input
         *ngIf="poolType === 'SYM' || poolType === 'ASYM_ASSET'"
-        label="Input"
+        label="Deposit"
         [(selectedAsset)]="asset"
         [assetUnit]="assetAmount"
         (assetUnitChange)="updateValues('ASSET', $event)"
@@ -179,7 +179,7 @@
 
 <app-pool-type-options 
   *ngIf="view === 'PoolType'"
-  [asset]="asset" 
+  [assets]="[{asset: asset, balance: assetBalance, assetPriceUSD: assetPrice}, {asset: rune, balance: runeBalance, assetPriceUSD: runePrice}]" 
   [selectedPoolType]="poolType" 
   [poolTypeOptions]="poolTypeOptions" 
   (selectPoolType)="setPoolTypeOptionFromEvent($event)"
@@ -193,7 +193,7 @@
       { name: asset?.chain + '.' + asset?.ticker , disable: true },
       { name: 'type', disable: true }
     ]"
-    message="select"
+    message="select deposit type"
     (funcCaller)="breadCrumbNav($event, 'deposit')"
   ></app-breadcrumb>
 </ng-container>

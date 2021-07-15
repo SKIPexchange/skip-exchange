@@ -541,6 +541,8 @@ export class DepositComponent implements OnInit, OnDestroy {
             res
           );
 
+          this.assetPrice = +res.assetPriceUSD;
+
           this.loading = false;
         }
       },
