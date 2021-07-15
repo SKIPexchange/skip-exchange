@@ -18,6 +18,7 @@ import { CurrencyService } from '../_services/currency.service';
 import { Currency } from '../_components/account-settings/currency-converter/currency-converter.component';
 import { OverlaysService, PoolViews } from '../_services/overlays.service';
 import { AnalyticsService } from '../_services/analytics.service';
+import { assetToString } from '@xchainjs/xchain-util';
 
 @Component({
   selector: 'app-pool',
@@ -99,8 +100,8 @@ export class PoolComponent implements OnInit, OnDestroy {
         this.pooledAssetTicker = poolDetails.pooledAssetTicker;
         this.pooledAssetChain = poolDetails.pooledAssetChain;
         this.assetPriceUSD = +this.pools?.find((pool) =>
-          `${this.pooledAssetChain}.${this.pooledAssetTicker}`.includes(
-            pool.asset
+          pool.asset.includes(
+            `${this.pooledAssetChain}.${this.pooledAssetTicker}`
           )
         )?.assetPriceUSD;
       }
@@ -253,7 +254,7 @@ export class PoolComponent implements OnInit, OnDestroy {
     if (this.user && this.user.type === 'metamask') {
       return [this.user.wallet.toLowerCase()];
     } else if (this.user && this.user.type === 'walletconnect') {
-      const clientsChain = this.userService.walletConnectAvailableClients();
+      const clientsChain = this.userService.clientAvailableChains();
 
       let addresses = [];
       clientsChain.forEach(async (chain) => {

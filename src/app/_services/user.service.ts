@@ -627,8 +627,11 @@ export class UserService {
     return localStorage.getItem('lastLoginType');
   }
 
-  walletConnectAvailableClients() {
-    let availableChains = [];
+  clientAvailableChains() {
+    if (!this._user) {
+      return undefined;
+    }
+    let availableChains: Chain[] = [];
     for (const [key, _value] of Object.entries(this._user.clients)) {
       if (key === 'binance') {
         availableChains.push('BNB');
@@ -636,6 +639,12 @@ export class UserService {
         availableChains.push('ETH');
       } else if (key === 'thorchain') {
         availableChains.push('THOR');
+      } else if (key === 'bitcoin') {
+        availableChains.push('BTC');
+      } else if (key === 'bitcoinCash') {
+        availableChains.push('BCH');
+      } else if (key === 'litecoin') {
+        availableChains.push('LTC');
       }
     }
     return availableChains;
@@ -653,7 +662,7 @@ export class UserService {
         return assets.filter((pool) => pool.asset.chain === 'ETH');
       case 'walletconnect':
         return assets.filter((pool) =>
-          this.walletConnectAvailableClients().includes(pool.asset.chain)
+          this.clientAvailableChains().includes(pool.asset.chain)
         );
       case 'XDEFI':
       case 'keystore':
