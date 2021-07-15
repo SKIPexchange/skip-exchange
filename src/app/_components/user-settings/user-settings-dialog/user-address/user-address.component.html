@@ -50,6 +50,7 @@
           [loading]="loading"
           [displayAddTokenButton]="chain === 'ETH'"
           (selectAsset)="selectAsset($event)"
+          [showPrice]="true"
           (addToken)="navigateToAddToken.emit()"
           expandable="semi"
         >
