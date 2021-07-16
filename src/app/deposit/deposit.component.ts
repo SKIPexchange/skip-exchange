@@ -34,6 +34,7 @@ import { AnalyticsService, assetString } from '../_services/analytics.service';
 import { NetworkQueueService } from '../_services/network-queue.service';
 import { NetworkSummary } from "../_classes/network";
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-deposit',
@@ -131,6 +132,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   bchLegacyPooled: boolean;
   loading: boolean;
   queue: ThorchainQueue;
+  appLocked: boolean;
 
   constructor(
     private userService: UserService,
@@ -144,6 +146,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private networkQueueService: NetworkQueueService
   ) {
+    this.appLocked = environment.appLocked;
     this.poolNotFoundErr = false;
     this.ethContractApprovalRequired = false;
     this.rune = new Asset('THOR.RUNE');
@@ -485,6 +488,10 @@ export class DepositComponent implements OnInit, OnDestroy {
   }
 
   mainButtonText() {
+    if (this.appLocked) {
+      return { text: 'MAINTENANCE ENABLED', isError: false };
+    }
+
     /** Wallet not connected */
     if (!this.balances) {
       return { text: 'connect wallet', isError: false };

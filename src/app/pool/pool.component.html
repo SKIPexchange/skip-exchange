@@ -132,12 +132,18 @@
         </div> -->
       </div>
 
-      <div class="bottom-actions" *ngIf="!user">
+      <div class="bottom-actions" *ngIf="!user && !appLocked">
         <button class="next-btn" (click)="connectWallet()">
           <span>CONNECT WALLET</span>
         </button>
       </div>
       
+      <div class="bottom-actions" *ngIf="appLocked">
+        <button class="next-btn bug-btn" [disabled]="true">
+          <span>UNDER MAINTENANCE</span>
+        </button>
+      </div>
+
     </ng-container>
 
     <div

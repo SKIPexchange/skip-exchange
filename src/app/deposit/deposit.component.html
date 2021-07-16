@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div *ngIf="!user" class="bottom-actions two-btn">
+      <div *ngIf="!user && !appLocked" class="bottom-actions two-btn">
         <div class="left-btn">
           <button class="close-btn" (click)="cancelButton()">
             <span>Cancel</span>
@@ -113,6 +113,12 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <div class="bottom-actions" *ngIf="!user && appLocked">
+      <button class="next-btn bug-btn" [disabled]="true">
+        <span>UNDER MAINTENANCE</span>
+      </button>
     </div>
 
     <div 

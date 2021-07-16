@@ -170,7 +170,7 @@
 
         <!-- please connect button -->
         <div class="bottom-actions">
-          <button *ngIf="!user" class="next-btn wallet-connect" (click)="connectWallet()">
+          <button *ngIf="!user && !appLocked" class="next-btn wallet-connect" (click)="connectWallet()">
             <span>Connect Wallet</span>
           </button>
 
@@ -194,7 +194,7 @@
           </button>
 
           <button *ngIf="appLocked" class="next-btn bug-btn" [disabled]="true">
-            <span>FIXING BUGS. WE'LL BE BACK SOON.</span>
+            <span>UNDER MAINTENANCE</span>
           </button>
 
           <div

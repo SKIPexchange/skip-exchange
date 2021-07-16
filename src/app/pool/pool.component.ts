@@ -20,6 +20,7 @@ import { OverlaysService, PoolViews } from "../_services/overlays.service";
 import { AnalyticsService } from "../_services/analytics.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { NetworkSummary } from "../_classes/network";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-pool",
@@ -50,6 +51,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   depositsDisabled: boolean;
   txStreamInitSuccess: boolean;
   mode: PoolViews;
+  appLocked: boolean;
 
   constructor(
     private userService: UserService,
@@ -62,6 +64,7 @@ export class PoolComponent implements OnInit, OnDestroy {
     public ovrService: OverlaysService,
     private analytics: AnalyticsService
   ) {
+    this.appLocked = environment.appLocked;
     this.subs = [];
     this.memberPools = [];
     this.depositsDisabled = false;
@@ -140,6 +143,10 @@ export class PoolComponent implements OnInit, OnDestroy {
   }
 
   getBreadcrumbText() {
+    if (this.appLocked) {
+      return { text: 'MAINTENANCE ENABLED', isError: false };
+    }
+
     if (this.userPoolError) {
       return { text: "Cannot fetch user Pools", isError: true };
     }
