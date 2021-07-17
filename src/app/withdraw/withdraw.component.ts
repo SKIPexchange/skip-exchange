@@ -507,7 +507,7 @@ export class WithdrawComponent implements OnInit {
 
     if (this.isHalted) {
       this.isError = true;
-      return 'Pool Halted';
+      return `${this.asset.chain} chain is Halted`;
     }
 
     /** THORChain is backed up */

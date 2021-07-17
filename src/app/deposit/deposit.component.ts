@@ -506,7 +506,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     }
 
     if (this.isHalted) {
-      return { text: 'Pool Halted', isError: true };
+      return { text: `${this.asset.chain} chain is Halted`, isError: true };
     }
 
     /** THORChain is backed up */

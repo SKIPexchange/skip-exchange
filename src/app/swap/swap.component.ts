@@ -781,7 +781,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     }
 
     if (this.availablePools && this.availablePools.length === 0) {
-      return 'All Pools are halted';
+      return 'All chains are halted';
     }
 
     /** User Not connected */
