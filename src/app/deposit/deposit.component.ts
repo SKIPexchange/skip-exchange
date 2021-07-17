@@ -682,7 +682,8 @@ export class DepositComponent implements OnInit, OnDestroy {
     /** Checks sufficient chain balance for fee */
     if (
       this.sourceChainBalance <= this.chainNetworkFee &&
-      this.poolType !== 'ASYM_RUNE'
+      this.poolType !== 'ASYM_RUNE' &&
+      this.sourceChainBalance
     ) {
       this.formValidation = {
         message: `Insufficient ${this.asset.chain} for fees`,
@@ -960,9 +961,9 @@ export class DepositComponent implements OnInit, OnDestroy {
     if (this.poolType === 'ASYM_ASSET' && (!this.runeAmount || !this.runePrice))
       return 0;
     // eslint-disable-next-line prettier/prettier
-    const depositAsset = (this.poolType === 'ASYM_RUNE' ? 0 : Math.max(0, this.assetAmount - this.networkFee)) * this.assetPrice;
+    const depositAsset = (this.poolType === 'ASYM_RUNE' ? 0 : Math.max(0, this.assetAmount - this.networkFee)) * this.assetPrice * this.currency.value;
     // eslint-disable-next-line prettier/prettier
-    const depositRune = (this.poolType === 'ASYM_ASSET' ? 0 : Math.max(0, this.runeAmount - this.runeFee)) * this.runePrice;
+    const depositRune = (this.poolType === 'ASYM_ASSET' ? 0 : Math.max(0, this.runeAmount - this.runeFee)) * this.runePrice * this.currency.value;
     console.log(depositAsset, depositRune);
     const depositValue = (depositAsset || 0) + (depositRune || 0);
     return depositValue > 0 ? depositValue : 0;

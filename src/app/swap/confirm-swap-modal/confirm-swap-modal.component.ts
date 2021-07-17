@@ -344,7 +344,10 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
       this.userService.getChainClient(
         this.swapData.user,
         this.swapData.targetAsset.asset.chain
-      ) ?? this.mockClientService.getMockClientByChain('THOR');
+      ) ??
+      this.mockClientService.getMockClientByChain(
+        this.swapData.targetAsset.asset.chain
+      );
     if (!client) {
       return false;
     }

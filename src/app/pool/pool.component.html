@@ -46,14 +46,14 @@
         </div>
 
         <div class="swap-details" *ngIf="poolType !== 'notMember'">
-          <div *ngIf="pooledRune"  class="flex justify-between" style="color: var(--primary-default);">
+          <div *ngIf="pooledRune != undefined" class="flex justify-between" style="color: var(--primary-default);">
             <span class="tx-detail-label">Pooled RUNE:</span>
             <span>
               {{ pooledRune | number: "0.0-6" }}
               <span *ngIf="runePrice && currency"> ({{runePrice * pooledRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
             </span>
           </div>
-          <div *ngIf="pooledAsset" class="flex justify-between" style="color: var(--primary-default);">
+          <div *ngIf="pooledAsset != undefined" class="flex justify-between" style="color: var(--primary-default);">
             <span class="tx-detail-label">
               Pooled
               <span *ngIf="pooledAssetChain && pooledAssetTicker">

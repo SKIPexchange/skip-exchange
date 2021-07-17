@@ -35,8 +35,10 @@ import { TransactionUtilsService } from 'src/app/_services/transaction-utils.ser
 import { MidgardService } from 'src/app/_services/midgard.service';
 import { MetamaskService } from 'src/app/_services/metamask.service';
 import { ethers } from 'ethers';
-import { retry } from 'rxjs/operators';
+import { retry, take } from 'rxjs/operators';
 import { Transaction } from 'src/app/_classes/transaction';
+import { CurrencyService } from 'src/app/_services/currency.service';
+import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
 
 // TODO: this is the same as ConfirmStakeData in confirm stake modal
 export interface ConfirmWithdrawData {
@@ -53,6 +55,7 @@ export interface ConfirmWithdrawData {
   runeFee: number;
   networkFee: number;
   withdrawType: PoolTypeOption;
+  withdrawalValue: number;
 }
 
 @Component({
@@ -77,6 +80,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   metaMaskProvider?: ethers.providers.Web3Provider;
   hashSuccess: boolean;
   outboundHash: string;
+  currency: Currency;
 
   constructor(
     private txStatusService: TransactionStatusService,
@@ -87,7 +91,8 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
     private ethUtilsService: EthUtilsService,
     private midgardService: MidgardService,
     private analytics: AnalyticsService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    private currencyService: CurrencyService
   ) {
     this.hashSuccess = false;
     this.closeEvent = new EventEmitter<boolean>();
@@ -102,7 +107,11 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
       (provider) => (this.metaMaskProvider = provider)
     );
 
-    this.subs = [user$, metaMaskProvider$];
+    const cur$ = this.currencyService.cur$.subscribe((cur) => {
+      this.currency = cur;
+    });
+
+    this.subs = [user$, metaMaskProvider$, cur$];
   }
 
   ngOnInit(): void {

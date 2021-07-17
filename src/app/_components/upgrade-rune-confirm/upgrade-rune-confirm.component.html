@@ -81,12 +81,11 @@
             label="Receive"
             [(selectedAsset)]="nativeRune.asset"
             [(assetUnit)]="amount"
-            [balance]="asset.balance.amount().toNumber()"
+            [balance]="nativeRune.balance.amount().toNumber()"
             [disabledAssetSymbol]="nativeRune.asset.symbol"
             [selectableMarkets]="[nativeRune]"
             [disableInput]="true"
             [hideMax]="true"
-            [showBalance]="false"
             [disabledMarketSelect]="true"
           >
           </app-asset-input>

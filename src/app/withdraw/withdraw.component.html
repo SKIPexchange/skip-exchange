@@ -54,7 +54,7 @@
         [priceInputs]="[assetPrice, runePrice]"
       ></app-double-asset-field>
 
-      <div *ngIf="asset" class="swap-details">
+      <div *ngIf="asset && withdrawPercent" class="swap-details">
         <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span class="tx-detail-label">Prices:</span>
           <span *ngIf="asset && assetBasePrice" >
@@ -69,9 +69,13 @@
             <span *ngIf="assetPrice"> ({{ assetPrice * currency.value | number: '0.2-2'}} {{currency.code}})</span>
           </span>
         </div>
+        <div *ngIf="totalWithdrawal()" class="flex justify-between primary-text">
+          <span class="tx-detail-label">Total Withdrawal: (est)</span>
+          <span>{{ totalWithdrawal() | number: '0.2-2' }} {{currency.code}}</span>
+        </div>
         <div
           *ngIf="withdrawType !== 'ASYM_ASSET'"
-          class="flex justify-between items-center"
+          class="flex justify-between items-center text-white"
         >
           <span class="tx-detail-label">Network Fees:</span>
           <span *ngIf="runeFee">{{ runeFee }} RUNE <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.0-2'}} {{currency.code}})</span></span>
@@ -79,7 +83,7 @@
         </div>
         <div
           *ngIf="withdrawType === 'ASYM_ASSET'"
-          class="flex justify-between items-center"
+          class="flex justify-between items-center text-white"
         >
           <span class="tx-detail-label"></span>
           <span *ngIf="networkFee"

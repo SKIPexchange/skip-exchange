@@ -614,6 +614,8 @@ export class WithdrawComponent implements OnInit {
       .div(10 ** 8)
       .toNumber();
 
+    const withdrawalValue = this.totalWithdrawal();
+
     this.data = {
       asset: this.asset,
       rune: this.rune,
@@ -628,6 +630,7 @@ export class WithdrawComponent implements OnInit {
       runePrice: this.runePrice,
       networkFee: this.networkFee,
       withdrawType: this.withdrawType,
+      withdrawalValue,
     };
 
     let usdValue =
@@ -710,6 +713,26 @@ export class WithdrawComponent implements OnInit {
     }
 
     this.router.navigate(['/', 'pool']);
+  }
+
+  totalWithdrawal() {
+    if (
+      this.withdrawType !== 'ASYM_RUNE' &&
+      (!this.removeAssetAmount || !this.assetPrice)
+    )
+      return 0;
+    if (
+      this.withdrawType === 'ASYM_ASSET' &&
+      (!this.removeRuneAmount || !this.runePrice)
+    )
+      return 0;
+    // eslint-disable-next-line prettier/prettier
+    const depositAsset = (this.withdrawType === 'ASYM_RUNE' ? 0 : Math.max(0, this.removeAssetAmount - this.networkFee)) * this.assetPrice * this.currency.value;
+    // eslint-disable-next-line prettier/prettier
+    const depositRune = (this.withdrawType === 'ASYM_ASSET' ? 0 : Math.max(0, this.removeRuneAmount - this.runeFee)) * this.runePrice * this.currency.value;
+    console.log(depositAsset, depositRune);
+    const depositValue = (depositAsset || 0) + (depositRune || 0);
+    return depositValue > 0 ? depositValue : 0;
   }
 
   async getPoolDetail(asset: string) {
