@@ -492,6 +492,10 @@ export class DepositComponent implements OnInit, OnDestroy {
       return { text: 'MAINTENANCE ENABLED', isError: false };
     }
 
+    if (this.isHalted) {
+      return { text: `${this.asset.chain} chain is Halted`, isError: true };
+    }
+
     /** Wallet not connected */
     if (!this.balances) {
       return { text: 'connect wallet', isError: false };
@@ -503,10 +507,6 @@ export class DepositComponent implements OnInit, OnDestroy {
 
     if (this.assetBalance == undefined) {
       return { text: 'Loading the Balance', isError: false };
-    }
-
-    if (this.isHalted) {
-      return { text: `${this.asset.chain} chain is Halted`, isError: true };
     }
 
     /** THORChain is backed up */
