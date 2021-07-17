@@ -653,7 +653,7 @@ export class SwapComponent implements OnInit, OnDestroy {
   }
 
   setSelectableMarkets() {
-    if (!this.availablePools) {
+    if (!this.availablePools || this.availablePools.length == 0) {
       this.selectableMarkets = [];
     } else {
       this.selectableMarkets = this.availablePools
@@ -778,6 +778,10 @@ export class SwapComponent implements OnInit, OnDestroy {
     /** App Lock situation */
     if (this.appLocked) {
       return "Maintenance Enabled";
+    }
+
+    if (this.availablePools && this.availablePools.length === 0) {
+      return 'All Pools are halted';
     }
 
     /** User Not connected */

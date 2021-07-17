@@ -99,6 +99,7 @@ export class WithdrawComponent implements OnInit {
   balances: Balances;
   currency: Currency;
   sliderDisabled: boolean;
+  isHalted: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -137,6 +138,7 @@ export class WithdrawComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isHalted = true;
     this.getConstants();
     this.getThorchainQueue();
 
@@ -165,6 +167,7 @@ export class WithdrawComponent implements OnInit {
       if (asset) {
         this.asset = new Asset(asset);
 
+        this.isChainHalted();
         this.getPoolDetail(asset);
         this.getAccountStaked();
 
@@ -435,6 +438,11 @@ export class WithdrawComponent implements OnInit {
       return true;
     }
 
+    /** Chain is halted */
+    if (this.isHalted) {
+      return true;
+    }
+
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
       return true;
@@ -495,6 +503,11 @@ export class WithdrawComponent implements OnInit {
     if (this.sliderDisabled) {
       this.isError = false;
       return 'Loading';
+    }
+
+    if (this.isHalted) {
+      this.isError = true;
+      return 'Pool Halted';
     }
 
     /** THORChain is backed up */
@@ -661,6 +674,18 @@ export class WithdrawComponent implements OnInit {
     }
 
     this.router.navigate(['/', 'pool']);
+  }
+
+  async isChainHalted() {
+    const inboundAddresses = await this.midgardService
+      .getInboundAddresses()
+      .toPromise();
+
+    const matchChain = inboundAddresses.find(
+      (address) => address.chain === this.asset.chain
+    );
+
+    this.isHalted = matchChain.halted;
   }
 
   async getPoolDetail(asset: string) {

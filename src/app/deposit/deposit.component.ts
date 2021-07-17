@@ -505,6 +505,10 @@ export class DepositComponent implements OnInit, OnDestroy {
       return { text: 'Loading the Balance', isError: false };
     }
 
+    if (this.isHalted) {
+      return { text: 'Pool Halted', isError: true };
+    }
+
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
       return { text: 'THORChain TX QUEUE FILLED.', isError: true };
@@ -524,10 +528,6 @@ export class DepositComponent implements OnInit, OnDestroy {
 
     if (!this.asset) {
       return { text: 'There is no asset here!', isError: true };
-    }
-
-    if (this.isHalted) {
-      return { text: 'Pool Halted', isError: true };
     }
 
     /** User either lacks asset balance or RUNE balance */
