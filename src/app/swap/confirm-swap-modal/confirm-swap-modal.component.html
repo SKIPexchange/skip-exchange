@@ -12,7 +12,7 @@
       { name: 'skip', call: 'skip' },
       { name: 'Swap', call: 'swap' }
     ]"
-    message="TRANSACTION PROCESSING"
+    message="PROCESSING"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>
@@ -101,6 +101,7 @@
         label="Receive"
         [(selectedAsset)]="swapData.targetAsset.asset"
         [(assetUnit)]="swapData.outputValue"
+        [balance]="swapData.targetAsset?.balance?.amount().toNumber()"
         [disableInput]="true"
         [disabledAssetSymbol]="swapData.targetAsset.asset.symbol"
         [priceInput]="swapData.targetAsset.assetPriceUSD"
@@ -108,7 +109,6 @@
         [targetAddress]="swapData.targetAddress"
         [hideMax]="true"
         extraLabel="(estimated)"
-        [showBalance]="false"
       ></app-asset-input>
 
       <div>
@@ -133,8 +133,8 @@
             >
           </div>
 
-          <div *ngIf="swapData.networkFeeInSource" class="flex justify-between">
-            <span class="tx-detail-label">Total Fee:</span>
+          <div *ngIf="swapData.networkFeeInSource" class="flex justify-between text-white">
+            <span class="tx-detail-label">Network Fee:</span>
             <span
               >{{ swapData.networkFeeInSource | number: "1.0-8" }}
               {{ swapData.sourceAsset.asset.chain }}.{{

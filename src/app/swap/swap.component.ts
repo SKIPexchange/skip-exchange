@@ -1016,6 +1016,9 @@ export class SwapComponent implements OnInit, OnDestroy {
         `${this.selectedTargetAsset.chain}.${this.selectedTargetAsset.ticker}`
     );
 
+    sourceAsset = { ...sourceAsset, balance: assetAmount(this.sourceBalance) };
+    targetAsset = { ...targetAsset, balance: assetAmount(this.targetBalance) };
+
     this.swapData = {
       sourceAsset: sourceAsset,
       targetAsset: targetAsset,

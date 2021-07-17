@@ -66,7 +66,6 @@
           [hideMax]="true"
           [error]="poolDetailTargetError || poolDetailSourceError"
           [selectableMarkets]="selectableTargetMarkets"
-          [showBalance]="false"
           [hasAddress]="user ? true : false"
         >
         </app-asset-input>
@@ -107,7 +106,7 @@
               ></span
             >
           </div>
-          <div *ngIf="selectedSourceAsset && networkFeeInSource" class="flex justify-between" style="color: #fff;">
+          <div *ngIf="selectedSourceAsset && networkFeeInSource" class="flex justify-between text-white">
             <span class="tx-detail-label">Network Fee:</span>
             <span
               >{{ networkFeeInSource | number: "1.0-8" }}
@@ -146,7 +145,7 @@
               ></span
             >
           </div>
-          <div *ngIf="user" class="flex justify-between">
+          <div *ngIf="user && slip" class="flex justify-between">
             <span>Settings:</span>
             <span (click)="goToSettings()" class="hoverable-item">
               {{ slippageTolerance }}% slip tolerance

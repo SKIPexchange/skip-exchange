@@ -81,7 +81,7 @@
     </div>
     <!-- <div class="bottom-actions">
       <div style="width: 100%;">
-        <button [disabled]="true" class="next-btn" aria-label="TRANSACTION PROCESSING…">
+        <button [disabled]="true" class="next-btn" aria-label="PROCESSING…">
           <span>PLEASE WAIT…</span>
         </button>
       </div>
@@ -125,7 +125,7 @@
       { name: asset.asset.chain + '.' + asset.asset.ticker, call: 'asset' },
       { name: 'send', disable: true }
     ]"
-    message="TRANSACTION PROCESSING"
+    message="PROCESSING"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>

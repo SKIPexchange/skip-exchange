@@ -79,8 +79,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
     this._mode = val;
     if (this._mode == 'CONFIRM_SEND') this.messageChange.emit('Confirm');
     else if (this._mode == 'ERROR') this.messageChange.emit(this.message);
-    else if (this._mode == 'PROCESSING')
-      this.messageChange.emit('TRANSACTION PROCESSING');
+    else if (this._mode == 'PROCESSING') this.messageChange.emit('PROCESSING');
     else if (this._mode == 'SUCCESS') this.messageChange.emit('Success');
   }
   @Output() modeChange = new EventEmitter();
