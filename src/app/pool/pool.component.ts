@@ -12,7 +12,7 @@ import {
 } from '../_services/transaction-status.service';
 import { PoolDetailService } from '../_services/pool-detail.service';
 import { Router } from '@angular/router';
-import { isNonNativeRuneToken } from '../_classes/asset';
+import { Asset, isNonNativeRuneToken } from '../_classes/asset';
 import { ThorchainPricesService } from '../_services/thorchain-prices.service';
 import { CurrencyService } from '../_services/currency.service';
 import { Currency } from '../_components/account-settings/currency-converter/currency-converter.component';
@@ -37,11 +37,12 @@ export class PoolComponent implements OnInit, OnDestroy {
   poolType: 'member' | 'notMember';
   runePrice: number;
   currency: Currency;
-  pooledRune: number;
-  pooledAsset: number;
+  pooledAmountRune: number;
+  pooledAmountAsset: number;
+  pooledAsset: Asset;
+  pooledDepth: number;
+  pooledDayAverage: number;
   pooledShare: number;
-  pooledAssetTicker: String;
-  pooledAssetChain: String;
   pendingPoolTxs: Tx[];
   addresses: string[];
   maxLiquidityRune: number;
@@ -94,15 +95,14 @@ export class PoolComponent implements OnInit, OnDestroy {
     const poolDeatil$ = this.poolDetailService.pooledDetails$.subscribe(
       (poolDetails) => {
         this.poolType = poolDetails.poolType;
-        this.pooledRune = poolDetails.pooledRune;
+        this.pooledAmountRune = poolDetails.pooledAmountRune;
+        this.pooledAmountAsset = poolDetails.pooledAmountAsset;
         this.pooledAsset = poolDetails.pooledAsset;
+        this.pooledDepth = poolDetails.pooledDepth;
+        this.pooledDayAverage = poolDetails.pooledDayAverage;
         this.pooledShare = poolDetails.pooledShare;
-        this.pooledAssetTicker = poolDetails.pooledAssetTicker;
-        this.pooledAssetChain = poolDetails.pooledAssetChain;
         this.assetPriceUSD = +this.pools?.find((pool) =>
-          pool.asset.includes(
-            `${this.pooledAssetChain}.${this.pooledAssetTicker}`
-          )
+          pool.asset.includes(assetToString(this.pooledAsset))
         )?.assetPriceUSD;
       }
     );
@@ -155,11 +155,12 @@ export class PoolComponent implements OnInit, OnDestroy {
   }
 
   clearPoolDetail() {
-    this.pooledRune = null;
+    this.pooledAmountRune = null;
+    this.pooledAmountAsset = null;
     this.pooledAsset = null;
     this.pooledShare = null;
-    this.pooledAssetTicker = null;
-    this.pooledAssetChain = null;
+    this.pooledDepth = null;
+    this.pooledDayAverage = null;
   }
 
   ngOnInit(): void {

@@ -45,51 +45,53 @@
           >
         </div>
 
-        <div class="swap-details" *ngIf="poolType !== 'notMember'">
-          <div *ngIf="pooledRune != undefined" class="flex justify-between" style="color: var(--primary-default);">
-            <span class="tx-detail-label">Pooled RUNE:</span>
-            <span>
-              {{ pooledRune | number: "0.0-6" }}
-              <span *ngIf="runePrice && currency"> ({{runePrice * pooledRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
-            </span>
-          </div>
-          <div *ngIf="pooledAsset != undefined" class="flex justify-between" style="color: var(--primary-default);">
-            <span class="tx-detail-label">
-              Pooled
-              <span *ngIf="pooledAssetChain && pooledAssetTicker">
-                {{ pooledAssetChain }}.{{ pooledAssetTicker }}
+        <div class="swap-details">
+          <ng-container *ngIf="poolType !== 'notMember'">
+            <div *ngIf="pooledAmountRune != undefined" class="flex justify-between" style="color: var(--primary-default);">
+              <span class="tx-detail-label">Pooled RUNE:</span>
+              <span>
+                {{ pooledAmountRune | number: "0.0-6" }}
+                <span *ngIf="runePrice && currency"> ({{runePrice * pooledAmountRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
               </span>
-              <span *ngIf="!pooledAssetTicker || !pooledAssetChain">
-                Asset
-            </span>:</span>
-            <span> 
-              {{ pooledAsset | number: "0.0-6" }}
-              <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
-            </span>
-          </div>
-          <div *ngIf="pooledShare" class="flex justify-between">
-            <span class="tx-detail-label">Pool Share:</span>
-            <span *ngIf="pooledShare">
-              {{ pooledShare * 100 | number: "0.0-6" }}%
-            </span>
-          </div>
+            </div>
+            <div *ngIf="pooledAsset != undefined" class="flex justify-between" style="color: var(--primary-default);">
+              <span class="tx-detail-label">
+                Pooled
+                <span *ngIf="pooledAsset">
+                  {{ pooledAsset.chain }}.{{ pooledAsset.ticker }}
+                </span>
+                <span *ngIf="pooledAsset">
+                  Asset
+              </span>:</span>
+              <span> 
+                {{ pooledAmountAsset | number: "0.0-6" }}
+                <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAmountAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+              </span>
+            </div>
+            <div *ngIf="pooledShare" class="flex justify-between">
+              <span class="tx-detail-label">Pool Share:</span>
+              <span *ngIf="pooledShare">
+                {{ pooledShare * 100 | number: "0.0-6" }}%
+              </span>
+            </div>
+          </ng-container>
+          <ng-container>
+            <div *ngIf="pooledDayAverage !== undefined && pooledDayAverage !== null" class="flex justify-between">
+              <span class="tx-detail-label">Average 24H Volume:</span>
+              <span>
+                {{ pooledDayAverage | number: "0.0-2" }} {{ currency.code }}
+              </span>
+            </div>
+            <div *ngIf="pooledDepth" class="flex justify-between">
+              <span class="tx-detail-label">Depth:</span>
+              <span>
+                {{ pooledDepth | number: "0.0-2" }} {{ currency.code }}
+              </span>
+            </div>
+          </ng-container>
         </div>
       </div>
 
-      <div class="swap-details" *ngIf="poolType === 'notMember'">
-        <div *ngIf="pooledRune !== undefined && pooledRune !== null" class="flex justify-between">
-          <span class="tx-detail-label">Average 24H Volume:</span>
-          <span>
-            {{ pooledRune | number: "0.0-2" }} {{ currency.code }}
-          </span>
-        </div>
-        <div *ngIf="pooledAsset" class="flex justify-between">
-          <span class="tx-detail-label">Depth:</span>
-          <span>
-            {{ pooledAsset | number: "0.0-2" }} {{ currency.code }}
-          </span>
-        </div>
-      </div>
 
       <div class="bottom-actions" *ngIf="user">
         <div>

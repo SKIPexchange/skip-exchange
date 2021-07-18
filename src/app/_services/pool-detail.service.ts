@@ -4,11 +4,12 @@ import { Asset } from '../_classes/asset';
 
 type poolDetail = {
   poolType?: 'member' | 'notMember';
-  pooledRune?: number;
-  pooledAsset?: number;
+  pooledAmountRune?: number;
+  pooledAmountAsset?: number;
   pooledShare?: number;
-  pooledAssetTicker?: string;
-  pooledAssetChain?: string;
+  pooledAsset?: Asset;
+  pooledDayAverage?: number;
+  pooledDepth?: number;
 };
 
 @Injectable({
@@ -35,21 +36,7 @@ export class PoolDetailService {
     return this.pooledDetails;
   }
 
-  setPooledDetails(
-    poolType?: 'member' | 'notMember',
-    pooledRune?: number,
-    pooledAsset?: number,
-    pooledShare?: number,
-    pooledAssetTicker?: string,
-    pooledAssetChain?: string
-  ) {
-    this.pooledDetails.next({
-      poolType,
-      pooledRune,
-      pooledAsset,
-      pooledShare,
-      pooledAssetTicker,
-      pooledAssetChain,
-    });
+  setPooledDetails(val: poolDetail) {
+    this.pooledDetails.next(val);
   }
 }

@@ -41,7 +41,7 @@
       [selectedAssets]="[data.asset, data.rune]"
       [assetUnits]="[data.assetAmount, data.runeAmount]"
       [priceInputs]="[data.assetPrice, data.runePrice]"
-      [bottomLabel]="'Pool Share'"
+      [bottomLabel]="data.poolShareMessage"
     ></app-double-asset-field>
 
     <div class="swap-details">
@@ -117,7 +117,7 @@
 <app-transaction-processing-modal
   *ngIf="txState == 'SUBMITTING'"
   [isWithdraw]="true"
-  [label]="['Withdrawing']"
+  [label]="['Withdrawing', data.poolShareMessage]"
   [asset]="[
     { asset: data.asset, balance: 0, assetPriceUSD: 0 },
     { asset: data.rune, balance: 0, assetPriceUSD: 0 }
@@ -153,7 +153,7 @@
   ]"
   [amount]="[data.assetAmount, data.runeAmount]"
   [percentage]="data.unstakePercent"
-  [label]="['Withdrawn']"
+  [label]="['Withdrawn', data.poolShareMessage]"
   (closeDialog)="closeToPool()"
   [hashOutbound]="outboundHash"
   [hasOutbound]="data.withdrawType !== 'ASYM_RUNE'"

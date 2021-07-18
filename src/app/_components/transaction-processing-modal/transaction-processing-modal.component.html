@@ -88,7 +88,7 @@
     <div *ngIf="isWithdraw && !isSending">
       <div class="percent-container">
         <span class="percent-label">Percentage</span>
-        <span class="unstake-percent">{{ percentage }}%</span>
+        <span class="unstake-percent" style="color: var(--primary-grey-color)">{{ percentage }}%</span>
         <mat-slider
           class="slider"
           [disabled]="true"
@@ -107,7 +107,8 @@
         [label]="label[0]"
         [selectedAssets]="[asset[0].asset, asset[1].asset]"
         [assetUnits]="[amount[0], amount[1]]"
-        [showPrice]="false"
+        [bottomLabel]="label[1]"
+        [processing]="true"
       ></app-double-asset-field>
     </div>
 

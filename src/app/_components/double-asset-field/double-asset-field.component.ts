@@ -47,10 +47,12 @@ export class DoubleAssetFieldComponent {
   @Input() assetUnits: number[];
 
   @Input() label: string;
+  @Input() processing?: boolean;
   @Input() disableInput?: boolean;
   @Input() disableUser?: boolean;
   @Input() disabledAssetSymbol: string;
   @Input() isWallet: boolean = false;
+  @Input() bottomLabel: string;
 
   /**
    * Wallet balance

@@ -36,24 +36,15 @@
 
       <app-arrow></app-arrow>
 
-      <!-- <div *ngIf="asset" class="unstake-calc flex justify-between">
-        <span *ngIf="removeAssetAmount">{{removeAssetAmount | number:"0.0-6"}}</span>
-        <span *ngIf="!removeAssetAmount">0</span>
-        <app-icon-ticker [iconPath]="asset.iconPath" [ticker]="asset.ticker"></app-icon-ticker>
-      </div>
-
-      <div class="unstake-calc flex justify-between">
-        <span *ngIf="removeRuneAmount">{{removeRuneAmount | number:"0.0-6"}}</span>
-        <span *ngIf="!removeRuneAmount">0</span>
-        <app-icon-ticker [iconPath]="rune.iconPath" [ticker]="rune.ticker"></app-icon-ticker>
-      </div> -->
       <app-double-asset-field
         label="Withdrawal"
         [selectedAssets]="[asset, rune]"
         [assetUnits]="[removeAssetAmount, removeRuneAmount]"
         [priceInputs]="[assetPrice, runePrice]"
+        [bottomLabel]="poolShareMessage()"
       ></app-double-asset-field>
 
+      <!-- Swap details -->
       <div *ngIf="asset && withdrawPercent" class="swap-details">
         <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span class="tx-detail-label">Prices:</span>

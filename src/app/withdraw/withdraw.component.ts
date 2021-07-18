@@ -39,6 +39,7 @@ import {
   AvailablePoolTypeOptions,
   PoolTypeOption,
 } from '../_const/pool-type-options';
+import { formatNumber } from '@angular/common';
 
 @Component({
   selector: 'app-withdraw',
@@ -104,6 +105,8 @@ export class WithdrawComponent implements OnInit {
   currency: Currency;
   sliderDisabled: boolean;
   metaMaskNetwork?: 'testnet' | 'mainnet';
+
+  poolShare: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -360,6 +363,7 @@ export class WithdrawComponent implements OnInit {
       };
 
       const poolShare = getPoolShare(unitData, this.assetPoolData);
+      this.poolShare = +this.symMemberPool.liquidityUnits / this.poolUnits;
 
       const runeAmountAfterFee = poolShare.rune
         .amount()
@@ -386,6 +390,8 @@ export class WithdrawComponent implements OnInit {
         this.asymAssetMemberPool,
         this.assetPoolData.assetBalance
       );
+      this.poolShare =
+        +this.asymAssetMemberPool.liquidityUnits / +this.poolUnits;
 
       this.removeRuneAmount = 0;
 
@@ -406,6 +412,8 @@ export class WithdrawComponent implements OnInit {
         this.asymRuneMemberPool,
         this.assetPoolData.runeBalance
       );
+      this.poolShare = +this.asymRuneMemberPool.liquidityUnits / this.poolUnits;
+
       const runeAmountAfterFee = poolShare
         .div(10 ** 8)
         .multipliedBy(this.withdrawPercent / 100)
@@ -630,6 +638,7 @@ export class WithdrawComponent implements OnInit {
       runePrice: this.runePrice,
       networkFee: this.networkFee,
       withdrawType: this.withdrawType,
+      poolShareMessage: this.poolShareMessage(),
       withdrawalValue,
     };
 
@@ -730,7 +739,6 @@ export class WithdrawComponent implements OnInit {
     const depositAsset = (this.withdrawType === 'ASYM_RUNE' ? 0 : Math.max(0, this.removeAssetAmount - this.networkFee)) * this.assetPrice * this.currency.value;
     // eslint-disable-next-line prettier/prettier
     const depositRune = (this.withdrawType === 'ASYM_ASSET' ? 0 : Math.max(0, this.removeRuneAmount - this.runeFee)) * this.runePrice * this.currency.value;
-    console.log(depositAsset, depositRune);
     const depositValue = (depositAsset || 0) + (depositRune || 0);
     return depositValue > 0 ? depositValue : 0;
   }
@@ -778,6 +786,16 @@ export class WithdrawComponent implements OnInit {
       },
       (err) => console.error('error getting pool detail: ', err)
     );
+  }
+
+  poolShareMessage() {
+    const withdrawPoolShare = formatNumber(
+      this.withdrawPercent * this.poolShare,
+      'en-US',
+      '0.0-6'
+    );
+    const poolShared = formatNumber(this.poolShare * 100, 'en-US', '0.0-6');
+    return `${withdrawPoolShare} OF ${poolShared} POOL SHARE`;
   }
 
   ngOnDestroy() {

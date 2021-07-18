@@ -109,22 +109,18 @@ export class PoolListItemComponent implements OnChanges {
 
   getPoolShare(): void {
     if (this.poolData) {
-      this.pooledRune =
+      const pooledDayAverage =
         new BigNumber(+this.poolData.volume24h).div(10 ** 8).toNumber() *
         this.poolData?.runePrice *
         this.currency.value;
 
-      this.pooledAsset = this.assetDepth;
-
       if (this.activate) {
-        this.poolDetailService.setPooledDetails(
-          'notMember',
-          this.pooledRune,
-          this.pooledAsset,
-          0,
-          this.asset.ticker,
-          this.asset.chain
-        );
+        this.poolDetailService.setPooledDetails({
+          poolType: 'notMember',
+          pooledAsset: this.asset,
+          pooledDepth: this.assetDepth,
+          pooledDayAverage,
+        });
       }
     }
   }

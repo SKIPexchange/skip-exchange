@@ -54,6 +54,7 @@ export interface ConfirmWithdrawData {
   runePrice: number;
   runeFee: number;
   networkFee: number;
+  poolShareMessage: string;
   withdrawType: PoolTypeOption;
   withdrawalValue: number;
 }
