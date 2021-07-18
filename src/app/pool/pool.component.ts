@@ -261,7 +261,8 @@ export class PoolComponent implements OnInit, OnDestroy {
       clientsChain.forEach(async (chain) => {
         let address = await this.userService
           .getChainClient(this.user, chain)
-          .getAddress();
+          .getAddress()
+          .toLowerCase();
         if (address) addresses.push(address);
       });
 
@@ -283,7 +284,7 @@ export class PoolComponent implements OnInit, OnDestroy {
       const bnbAddress = await bnbClient.getAddress();
 
       const ethClient = this.user.clients.ethereum;
-      const ethAddress = await ethClient.getAddress();
+      const ethAddress = await ethClient.getAddress().toLowerCase();
 
       return [
         thorAddress,
