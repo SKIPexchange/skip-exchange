@@ -31,7 +31,9 @@ export class RuneYieldService {
   constructor(private http: HttpClient) {}
 
   // TODO: add other chain addresses
-  getCurrentValueOfPool(address: string): Observable<RuneYieldPoolResponse[]> {
+  getCurrentValueOfPool(
+    address: string[]
+  ): Observable<RuneYieldPoolResponse[]> {
     if (!address) return;
     if (environment.network === 'testnet') {
       return;
@@ -39,7 +41,7 @@ export class RuneYieldService {
     return this.http
       .get<RuneYieldPoolResponse[]>(
         'https://multichain-asgard-consumer-api.vercel.app/api/v2/member/poollist?address=' +
-          address
+          address.join(',')
       )
       .pipe(shareReplay());
   }
