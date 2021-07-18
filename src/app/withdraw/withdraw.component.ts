@@ -742,9 +742,9 @@ export class WithdrawComponent implements OnInit {
     )
       return 0;
     // eslint-disable-next-line prettier/prettier
-    const depositAsset = (this.withdrawType === 'ASYM_RUNE' ? 0 : Math.max(0, this.removeAssetAmount - this.networkFee)) * this.assetPrice * this.currency.value;
+    const depositAsset = (this.withdrawType === 'ASYM_RUNE' ? 0 : Math.max(0, this.removeAssetAmount)) * this.assetPrice * this.currency.value;
     // eslint-disable-next-line prettier/prettier
-    const depositRune = (this.withdrawType === 'ASYM_ASSET' ? 0 : Math.max(0, this.removeRuneAmount - this.runeFee)) * this.runePrice * this.currency.value;
+    const depositRune = (this.withdrawType === 'ASYM_ASSET' ? 0 : Math.max(0, this.removeRuneAmount)) * this.runePrice * this.currency.value;
     const depositValue = (depositAsset || 0) + (depositRune || 0);
     console.log(depositAsset, depositRune);
     return depositValue > 0 ? depositValue : 0;
