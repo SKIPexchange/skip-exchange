@@ -100,7 +100,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const metaMaskProvider$ = this.metaMaskService.provider$.subscribe(
       async (_metaMaskProvider) => {
-        if (_metaMaskProvider) {
+        if (_metaMaskProvider && this.user && this.user.type === 'metamask') {
           const accounts = await _metaMaskProvider.listAccounts();
           if (accounts.length > 0 && this.user) {
             const signer = _metaMaskProvider.getSigner();
