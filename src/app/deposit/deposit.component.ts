@@ -739,7 +739,10 @@ export class DepositComponent implements OnInit, OnDestroy {
      * Deposit amount should be more than outbound fee + inbound fee network fee costs
      * Ensures sufficient amount to withdraw
      */
-    if (this.assetAmount <= this.networkFee * 4) {
+    if (
+      this.assetAmount <= this.networkFee * 4 &&
+      this.poolType !== 'ASYM_RUNE'
+    ) {
       this.formValidation = {
         message: 'Amount too low',
         isValid: false,
