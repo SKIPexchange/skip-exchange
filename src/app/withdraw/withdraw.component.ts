@@ -212,11 +212,7 @@ export class WithdrawComponent implements OnInit {
       let chainAddress: string;
       let thorAddress: string;
 
-      if (
-        this.user.type === 'XDEFI' ||
-        this.user.type === 'keystore' ||
-        this.user.type === 'walletconnect'
-      ) {
+      if (this.user.type === 'XDEFI' || this.user.type === 'keystore') {
         const thorclient = this.user.clients.thorchain;
         const chainClient = this.userService.getChainClient(
           this.user,
@@ -227,9 +223,17 @@ export class WithdrawComponent implements OnInit {
           return;
         }
         thorAddress = thorclient.getAddress();
-        chainAddress = chainClient.getAddress();
+        chainAddress = chainClient.getAddress().toLowerCase();
       } else if (this.user.type === 'metamask') {
         chainAddress = this.user.wallet.toLowerCase();
+      } else if (this.user.type === 'walletconnect') {
+        const thorclient = this.user.clients.thorchain;
+        const chainClient = this.userService.getChainClient(
+          this.user,
+          this.asset.chain
+        );
+        thorAddress = thorclient ? thorclient.getAddress() : undefined;
+        chainAddress = chainClient.getAddress().toLowerCase();
       }
 
       /**
@@ -492,12 +496,13 @@ export class WithdrawComponent implements OnInit {
     /**
      * Amount to withdraw is less than gas fees
      */
-    if (
-      this.withdrawType === 'ASYM_ASSET' &&
-      this.removeAssetAmount <= this.networkFee
-    ) {
-      return true;
-    }
+    // TODO: This seems to be calulated earlier
+    // if (
+    //   this.withdrawType === 'ASYM_ASSET' &&
+    //   this.removeAssetAmount <= this.networkFee
+    // ) {
+    //   return true;
+    // }
 
     /**
      * Check ASYM ASSET asset balance for tx + network fee
@@ -567,12 +572,13 @@ export class WithdrawComponent implements OnInit {
     /**
      * Amount to withdraw is less than gas fees
      */
-    if (
-      this.withdrawType === 'ASYM_ASSET' &&
-      this.removeAssetAmount <= this.networkFee
-    ) {
-      return 'Amount less than gas fees';
-    }
+    // TODO: this check seems to be calculated earlier
+    // if (
+    //   this.withdrawType === 'ASYM_ASSET' &&
+    //   this.removeAssetAmount <= this.networkFee
+    // ) {
+    //   return 'Amount less than gas fees';
+    // }
 
     if (this.remainingTime) {
       this.isError = true;
@@ -584,7 +590,7 @@ export class WithdrawComponent implements OnInit {
       assetIsChainAsset(this.asset) &&
       this.assetBalance < this.networkFee
     ) {
-      return 'Insufficient Balance';
+      return 'Insufficient Balance for Fees';
     }
 
     if (
@@ -731,7 +737,7 @@ export class WithdrawComponent implements OnInit {
     )
       return 0;
     if (
-      this.withdrawType === 'ASYM_ASSET' &&
+      this.withdrawType !== 'ASYM_ASSET' &&
       (!this.removeRuneAmount || !this.runePrice)
     )
       return 0;
@@ -740,6 +746,7 @@ export class WithdrawComponent implements OnInit {
     // eslint-disable-next-line prettier/prettier
     const depositRune = (this.withdrawType === 'ASYM_ASSET' ? 0 : Math.max(0, this.removeRuneAmount - this.runeFee)) * this.runePrice * this.currency.value;
     const depositValue = (depositAsset || 0) + (depositRune || 0);
+    console.log(depositAsset, depositRune);
     return depositValue > 0 ? depositValue : 0;
   }
 

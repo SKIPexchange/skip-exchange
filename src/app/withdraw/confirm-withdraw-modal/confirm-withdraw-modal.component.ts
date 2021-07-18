@@ -434,16 +434,11 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
             res.out
               .find((outTx) =>
                 outTx.coins.find(
-                  (c) =>
-                    c.asset ===
-                    `${this.data.asset.chain}.${this.data.asset.ticker}`
+                  (c) => c.asset === assetToString(this.data.asset)
                 )
               )
-              ?.coins.find(
-                (c) =>
-                  c.asset ===
-                  `${this.data.asset.chain}.${this.data.asset.ticker}`
-              ).amount
+              ?.coins.find((c) => c.asset === assetString(this.data.asset))
+              .amount
           )
             .div(10 ** 8)
             .toNumber();
@@ -451,9 +446,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
           this.outboundHash =
             res.out.find((outTx) =>
               outTx.coins.find(
-                (c) =>
-                  c.asset ===
-                  `${this.data.asset.chain}.${this.data.asset.ticker}`
+                (c) => c.asset === assetToString(this.data.asset)
               )
             )?.txID || '';
         }
