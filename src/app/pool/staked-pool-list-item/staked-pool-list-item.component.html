@@ -25,12 +25,9 @@
 
     <div class="flex justify-between">
       <ng-container *ngIf="activate && !isPending">
-        <app-tag *ngIf="!isTestnet && runeAddress">
+        <app-tag *ngIf="!isTestnet">
           <a
-            [href]="
-              'https://app.runeyield.info/dashboard?thor=' +
-              runeAddress
-            "
+            [href]="runeyieldAddress()"
             target="_blank"
             >YIELD STATS</a
           >

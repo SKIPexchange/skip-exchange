@@ -33,7 +33,6 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
 
   @Input() activate: boolean;
   hover: boolean = false;
-  runeAddress: string;
 
   /**
    * Member Pool Data
@@ -77,8 +76,6 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
   constructor(
     private poolDetailService: PoolDetailService,
     private txStatusService: TransactionStatusService,
-    private analyticsService: AnalyticsService,
-    private userService: UserService,
     private analytics: AnalyticsService
   ) {
     this.expanded = false;
@@ -250,11 +247,6 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
       this.pooledAsset = 0;
       this.poolShare = 0;
 
-      // rune address
-      this.runeAddress = this.memberPoolData.find(
-        (pool) => pool.runeAddress
-      ).runeAddress;
-
       for (let memPoolData of this.memberPoolData) {
         const poolType = this.getPoolType(memPoolData);
 
@@ -286,6 +278,21 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
         });
       }
     }
+  }
+
+  runeyieldAddress() {
+    const runeAddress = this.memberPoolData.find(
+      (pool) => pool.runeAddress
+    ).runeAddress;
+    const assetAddress = this.memberPoolData.find(
+      (pool) => pool.assetAddress
+    ).assetAddress;
+
+    return (
+      'https://app.runeyield.info/dashboard?' +
+      (runeAddress ? `thor=${runeAddress}&` : '') +
+      (assetAddress ? `${this.asset.chain.toLowerCase()}=${assetAddress}` : '')
+    );
   }
 
   ngOnDestroy(): void {
