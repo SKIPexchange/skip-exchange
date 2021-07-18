@@ -19,7 +19,7 @@
     <app-pool-list-item
       *ngFor="let pool of notMamberPools"
       [poolData]="pool"
-      [depositsDisabled]="depositsDisabled"
+      [depositsDisabled]="depositsDisabled || !chainAvaiable(pool.asset)"
       [currency]="currency"
       (click)="activePool = pool"
     ></app-pool-list-item>

@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Asset } from 'src/app/_classes/asset';
 import { MemberPool } from 'src/app/_classes/member';
 import { PoolDTO } from 'src/app/_classes/pool';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
@@ -8,6 +9,7 @@ import {
   RuneYieldPoolResponse,
   RuneYieldService,
 } from 'src/app/_services/rune-yield.service';
+import { UserService } from 'src/app/_services/user.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -50,7 +52,8 @@ export class StakedPoolsListComponent implements OnDestroy {
 
   constructor(
     private currencyService: CurrencyService,
-    private runeYieldService: RuneYieldService
+    private runeYieldService: RuneYieldService,
+    private userService: UserService
   ) {
     const cur$ = this.currencyService.cur$.subscribe((cur) => {
       this.currency = cur;
@@ -100,12 +103,25 @@ export class StakedPoolsListComponent implements OnDestroy {
 
       if (environment.network !== 'testnet') {
         this.runeYieldService
-          .getCurrentValueOfPool(this.memberPools[0]?.runeAddress)
+          .getCurrentValueOfPool([
+            this.memberPools[0]?.runeAddress,
+            this.memberPools[0]?.assetAddress,
+          ])
           ?.subscribe((pools) => {
             this.runeYieldPools = pools;
           });
       }
     }
+  }
+
+  chainAvaiable(asset: string) {
+    const chain = new Asset(asset).chain;
+    const clients = this.userService.clientAvailableChains();
+
+    // no users because there is no available clients
+    if (!clients) return false;
+
+    return clients.includes(chain);
   }
 
   ngOnDestroy(): void {
