@@ -55,7 +55,7 @@
                 alt="add icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Create New </span>Keystore</span>
+            <span class="item-text"><span class="small-1">Create</span> New Keystore</span>
           </div>
         </button>
 
@@ -90,7 +90,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Connect To Existing </span>Keystore</span>
+            <span class="item-text"><span class="small-1">Connect To </span>Existing Keystore</span>
           </div>
         </button>
 
@@ -112,9 +112,9 @@
             <span class="item-text" *ngIf="isXDEFIConnected"
               ><span class="small-1">Connect with </span>XDEFI</span
             >
-            <span class="item-text" *ngIf="!isXDEFIConnected"
-              >Install XDEFI in Chrome/Brave</span
-            >
+            <span class="item-text" *ngIf="!isXDEFIConnected">
+              <span class="small-1">Install </span>XDEFI<span class="small-1"> in Chrome/Brave</span>
+            </span>
           </div>
         </button>
 
@@ -130,7 +130,8 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Connect with </span>MetaMask</span>
+            <span *ngIf="isMetamask" class="item-text"><span class="small-1">Connect with </span>MetaMask</span>
+            <span *ngIf="!isMetamask" class="item-text"><span class="small-1">Install </span>Metamask<span class="small-1"> in Chrome/Brave/Firefox</span></span>
           </div>
         </button>
 

@@ -98,6 +98,7 @@ export class ConnectModal {
   isTestnet: boolean;
   isXDEFIConnected: boolean;
   isXDEFI: boolean;
+  isMetamask: boolean;
   phrase: string;
   writePhraseCategory: string;
   message: string = 'select';
@@ -124,6 +125,11 @@ export class ConnectModal {
         .includes('XDEFI')
     ) {
       this.isXDEFI = true;
+    }
+
+    this.isMetamask = false;
+    if (typeof window.ethereum !== 'undefined') {
+      this.isMetamask = true;
     }
   }
 
@@ -158,11 +164,13 @@ export class ConnectModal {
     this.analytics.event('connect_select_wallet', 'option_connect_wallet');
   }
 
-  async connectMetaMask(): Promise<void> {
-    if (!this.isXDEFI) {
+  async connectMetaMask() {
+    if (!this.isXDEFI && this.isMetamask) {
       this.analytics.event('connect_select_wallet', 'option_connect_wallet');
       await this.metaMaskService.connect();
       this.closeEvent.emit();
+    } else if (!this.isMetamask) {
+      return window.open('https://metamask.io/download', '_blank');
     }
   }
 

@@ -25,7 +25,7 @@ export interface MetaMaskDepositParams {
   signer: ethers.providers.JsonRpcSigner;
 }
 
-window.ethereum = window.ethereum || {};
+window.ethereum = window.ethereum || undefined;
 
 @Injectable({
   providedIn: 'root',
