@@ -152,7 +152,6 @@ export class WithdrawComponent implements OnInit {
   ngOnInit(): void {
     //first they should pooltype
     this.asset = new Asset('BTC.BTC');
-    this.overlaysService.setCurrentWithdrawView('PoolType');
 
     this.getConstants();
     this.getThorchainQueue();
@@ -322,6 +321,11 @@ export class WithdrawComponent implements OnInit {
 
     if (this.asymRuneMemberPool) {
       this.withdrawOptions.asymRune = true;
+    }
+
+    // after finding the withdraw options then navigate to pool options
+    if (Object.values(this.withdrawOptions).filter(Boolean).length > 1) {
+      this.overlaysService.setCurrentWithdrawView('PoolType');
     }
   }
 

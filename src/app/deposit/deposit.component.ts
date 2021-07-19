@@ -172,7 +172,6 @@ export class DepositComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // should first choose the type
     this.asset = new Asset('BTC.BTC');
-    this.overlaysService.setCurrentDepositView('PoolType');
 
     const params$ = this.route.paramMap;
     const balances$ = this.userService.userBalances$;
@@ -291,6 +290,11 @@ export class DepositComponent implements OnInit, OnDestroy {
           this.asset.ticker !== 'ETH'
         ) {
           this.checkContractApproved(this.asset);
+        }
+
+        //After loading user, see the options
+        if (Object.values(this.poolTypeOptions).filter(Boolean).length > 1) {
+          this.overlaysService.setCurrentDepositView('PoolType');
         }
 
         this.validate();

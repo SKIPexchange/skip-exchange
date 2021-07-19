@@ -80,7 +80,7 @@
               [ticker]="item.asset.ticker"
               [iconPath]="item.asset.iconPath"
             ></app-icon-ticker>
-            <span *ngIf="showApy && hasAPY(item)" class="side-asset"> / {{+hasAPY(item).apy * 100 | number: '0.0-2'}}% APY</span>
+            <span *ngIf="showApy && hasAPY(item)" class="side-asset small-1">({{+hasAPY(item).apy * 100 | number: '0.0-2'}}% APY)</span>
           </div>
           <div
             *ngIf="item.balance"

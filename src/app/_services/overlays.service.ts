@@ -60,12 +60,12 @@ export class OverlaysService {
   currentView = this.currentViewSource.asObservable();
 
   private currentDepositViewSource = new BehaviorSubject<DepositViews>(
-    'PoolType'
+    'Deposit'
   );
   depositView = this.currentDepositViewSource.asObservable();
 
   private currentWithdrawViewSource = new BehaviorSubject<WithdrawViews>(
-    'PoolType'
+    'Withdraw'
   );
   withdrawView = this.currentWithdrawViewSource.asObservable();
 
