@@ -21,8 +21,15 @@ export class Asset {
     const trustWalletMatch = CoinIconsFromTrustWallet[this.ticker];
 
     if (ticker == 'RUNE') {
-      this.iconPath = '/assets/icons/logo-thor-rune.svg';
-      return;
+      switch (chain) {
+        case 'THOR':
+          this.iconPath = '/assets/icons/logo-thor-rune.svg';
+          return;
+
+        default:
+          this.iconPath = '/assets/icons/non-native-rune.svg';
+          return;
+      }
     }
 
     if (trustWalletMatch && chain !== 'THOR') {
