@@ -99,25 +99,22 @@ export class UpdateTargetAddressModalComponent {
       return { text: 'No User found', isError: true };
     }
 
-    const client = this.userService.getChainClient(this.user, this.chain);
+    const client =
+      this.userService.getChainClient(this.user, this.chain) ??
+      this.mockClientService.getMockClientByChain(this.chain);
     if (!client) {
       return { text: `No ${this.chain} Client Found`, isError: false };
     }
 
-    if (!client.validateAddress(this.targetAddress)) {
+    if (
+      !client.validateAddress(this.targetAddress) &&
+      this.targetAddress.length > 5
+    ) {
       return { text: `Invalid ${this.chain} Address`, isError: true };
     }
 
     if (!this.user) {
       return 'No User found';
-    }
-
-    if (
-      !this.mockClientService
-        .getMockClientByChain(this.chain)
-        .validateAddress(this.targetAddress)
-    ) {
-      return `Invalid ${this.chain} Address`;
     }
 
     return { text: 'PREPARE', isError: false };

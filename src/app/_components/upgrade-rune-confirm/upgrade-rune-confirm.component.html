@@ -92,7 +92,7 @@
 
           <div class="swap-details">
             <div class="flex justify-between list-items">
-              <span class="tx-detail-label">Network Fees:</span>
+              <span class="tx-detail-label">Network Fee:</span>
               <span class="text-sm" *ngIf="networkFee && asset"
                 >{{ networkFee | number: "0.0-8" }}
                 {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
