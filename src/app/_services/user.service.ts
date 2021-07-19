@@ -633,17 +633,17 @@ export class UserService {
     }
     let availableChains: Chain[] = [];
     for (const [key, _value] of Object.entries(this._user.clients)) {
-      if (key === 'binance') {
+      if (key === 'binance' && _value) {
         availableChains.push('BNB');
-      } else if (key === 'ethereum') {
+      } else if (key === 'ethereum' && _value) {
         availableChains.push('ETH');
-      } else if (key === 'thorchain') {
+      } else if (key === 'thorchain' && _value) {
         availableChains.push('THOR');
-      } else if (key === 'bitcoin') {
+      } else if (key === 'bitcoin' && _value) {
         availableChains.push('BTC');
-      } else if (key === 'bitcoinCash') {
+      } else if (key === 'bitcoinCash' && _value) {
         availableChains.push('BCH');
-      } else if (key === 'litecoin') {
+      } else if (key === 'litecoin' && _value) {
         availableChains.push('LTC');
       }
     }
