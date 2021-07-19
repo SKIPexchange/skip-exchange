@@ -13,6 +13,7 @@
         <app-asset-input
           [label]="label[0]"
           [(selectedAsset)]="asset[0].asset"
+          [balance]="asset[0].balance.amount().toNumber()"
           [(assetUnit)]="amount[0]"
           [disabledAssetSymbol]="asset[0].asset.symbol"
           [disabledMarketSelect]="true"
@@ -62,6 +63,7 @@
         [disableInput]="true"
         [hideMax]="true"
         [processing]="true"
+        [showPrice]="false"
       >
       </app-asset-input>
 
@@ -81,6 +83,8 @@
         [hideMax]="true"
         [targetLabel]="targetAddress? 'Receiving at' : undefined"
         [processing]="true"
+        [showPrice]="false"
+        [extraLabel]="poolType ? undefined : '(estimated)'"
       >
       </app-asset-input>
     </div>

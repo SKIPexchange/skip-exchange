@@ -90,10 +90,8 @@
         <div class="swap-details">
           <div class="flex justify-between" *ngIf="basePrice && selectedTargetAsset && selectedSourceAsset">
             <span class="tx-detail-label">Price:</span>
-            <span
-              >{{ basePrice | number: "1.2-4" }}
-              {{ selectedSourceAsset.ticker }} =
-              1 {{ selectedTargetAsset.ticker }}
+            <span>
+              1 {{ selectedTargetAsset.ticker }} = {{ basePrice | number: "1.2-4" }} {{ selectedSourceAsset.ticker }}
               <span
                 *ngIf="sourceAssetPrice"
                 class="mono"
@@ -108,10 +106,9 @@
           </div>
           <div *ngIf="selectedSourceAsset && networkFeeInSource" class="flex justify-between text-white">
             <span class="tx-detail-label">Network Fee:</span>
-            <span
-              >{{ networkFeeInSource | number: "1.0-8" }}
-              {{ selectedSourceAsset.chain }}.{{ selectedSourceAsset.ticker
-              }}<span
+            <span>
+              {{ networkFeeInSource | number: "1.0-8" }} {{ selectedSourceAsset.ticker }}
+              <span
                 *ngIf="sourceAssetPrice"
                 class="mono"
                 style="margin-left: 5px"
