@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  getSwapSlip,
   getValueOfAssetInRune,
   getValueOfRuneInAsset,
   PoolData,
@@ -26,7 +27,11 @@ import { ConfirmDepositData } from './confirm-deposit-modal/confirm-deposit-moda
 import { User } from '../_classes/user';
 import { Balances } from '@xchainjs/xchain-client';
 import { AssetAndBalance } from '../_classes/asset-and-balance';
-import { DepositViews, OverlaysService } from '../_services/overlays.service';
+import {
+  DepositViews,
+  MainViewsEnum,
+  OverlaysService,
+} from '../_services/overlays.service';
 import { ThorchainPricesService } from '../_services/thorchain-prices.service';
 import { TransactionUtilsService } from '../_services/transaction-utils.service';
 import { debounceTime } from 'rxjs/operators';
@@ -44,6 +49,7 @@ import { MetamaskService } from '../_services/metamask.service';
 import { ethers } from 'ethers';
 import { environment } from 'src/environments/environment';
 import { isError } from 'util';
+import { SlippageToleranceService } from '../_services/slippage-tolerance.service';
 
 @Component({
   selector: 'app-deposit',
@@ -126,6 +132,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   bchLegacyPooled: boolean;
   loading: boolean;
   poolType: PoolTypeOption;
+  userSelectedPoolType: boolean;
   poolTypeOptions: AvailablePoolTypeOptions = {
     asymAsset: true,
     asymRune: true,
@@ -138,6 +145,8 @@ export class DepositComponent implements OnInit, OnDestroy {
   };
   metaMaskProvider?: ethers.providers.Web3Provider;
   metaMaskNetwork?: 'testnet' | 'mainnet';
+  slip: number;
+  slippageTolerance: number;
 
   constructor(
     private userService: UserService,
@@ -150,7 +159,8 @@ export class DepositComponent implements OnInit, OnDestroy {
     private curService: CurrencyService,
     private analytics: AnalyticsService,
     private ethUtilService: EthUtilsService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    private slipLimitService: SlippageToleranceService
   ) {
     this.poolNotFoundErr = false;
     this.ethContractApprovalRequired = false;
@@ -162,6 +172,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     this.isHalted = false;
     this.bchLegacyPooled = false;
     this.poolType = 'SYM';
+    this.userSelectedPoolType = false;
     this.formValidation = {
       message: '',
       isValid: false,
@@ -265,13 +276,35 @@ export class DepositComponent implements OnInit, OnDestroy {
         this.setSourceChainBalance();
 
         // Metamask - restrict to ASYM deposits
-        if (this.user && this.user.type === 'metamask') {
+        if (this.user && !this.userSelectedPoolType) {
+          const chains = this.userService.clientAvailableChains();
           this.poolTypeOptions = {
-            asymAsset: true,
-            asymRune: false,
-            sym: false,
+            asymAsset: chains.includes(this.asset.chain),
+            asymRune: chains.includes(this.rune.chain),
+            sym:
+              chains.includes(this.asset.chain) &&
+              chains.includes(this.rune.chain),
           };
-          this.setPoolTypeOption('ASYM_ASSET');
+          if (
+            Object.values(this.poolTypeOptions).filter(Boolean).length === 1
+          ) {
+            if (chains.includes(this.asset.chain))
+              this.setPoolTypeOption('ASYM_ASSET');
+            else if (chains.includes(this.rune.chain))
+              this.setPoolTypeOption('ASYM_RUNE');
+          } else if (
+            Object.values(this.poolTypeOptions).filter(Boolean).length > 1
+          ) {
+            this.overlaysService.setCurrentDepositView('PoolType');
+          }
+
+          if (
+            chains.filter(
+              (c) => c === this.rune.chain || c === this.asset.chain
+            ).length === 0
+          ) {
+            this.router.navigate(['/', 'pool']);
+          }
         }
 
         // Metamask - redirect to ETH if asset chain is not ETH
@@ -291,13 +324,6 @@ export class DepositComponent implements OnInit, OnDestroy {
         ) {
           this.checkContractApproved(this.asset);
         }
-
-        //After loading user, see the options
-        if (Object.values(this.poolTypeOptions).filter(Boolean).length > 1) {
-          this.overlaysService.setCurrentDepositView('PoolType');
-        }
-
-        this.validate();
       }
     );
 
@@ -316,6 +342,11 @@ export class DepositComponent implements OnInit, OnDestroy {
     const cur$ = this.curService.cur$.subscribe((cur) => {
       this.currency = cur;
     });
+
+    const slippageTolerange$ =
+      this.slipLimitService.slippageTolerance$.subscribe(
+        (limit) => (this.slippageTolerance = limit)
+      );
 
     this.getPools();
     this.getEthRouter();
@@ -360,6 +391,7 @@ export class DepositComponent implements OnInit, OnDestroy {
 
   setPoolTypeOption(option: PoolTypeOption) {
     this.poolType = option;
+    this.userSelectedPoolType = true;
     this.validate();
     this.checkContractApproved(this.asset);
   }
@@ -386,6 +418,21 @@ export class DepositComponent implements OnInit, OnDestroy {
       }
     }
 
+    if (this.poolType === 'ASYM_ASSET') {
+      const slip = getSwapSlip(
+        assetToBase(assetAmount(this.assetAmount)),
+        this.assetPoolData,
+        true
+      );
+      this.slip = slip.toNumber();
+    } else if (this.poolType === 'ASYM_RUNE') {
+      const slip = getSwapSlip(
+        assetToBase(assetAmount(this.runeAmount)),
+        this.assetPoolData,
+        false
+      );
+      this.slip = slip.toNumber();
+    }
     this.validate();
   }
 
@@ -856,6 +903,8 @@ export class DepositComponent implements OnInit, OnDestroy {
       poolTypeOption: this.poolType,
       depositValue,
       assetPrice,
+      slip: this.slip,
+      slippageTolerance: this.slippageTolerance,
     };
 
     let depositAmountUsd =
@@ -971,7 +1020,6 @@ export class DepositComponent implements OnInit, OnDestroy {
     const depositAsset = (this.poolType === 'ASYM_RUNE' ? 0 : Math.max(0, this.assetAmount)) * this.assetPrice * this.currency.value;
     // eslint-disable-next-line prettier/prettier
     const depositRune = (this.poolType === 'ASYM_ASSET' ? 0 : Math.max(0, this.runeAmount)) * this.runePrice * this.currency.value;
-    console.log(depositAsset, depositRune);
     const depositValue = (depositAsset || 0) + (depositRune || 0);
     return depositValue > 0 ? depositValue : 0;
   }
@@ -992,6 +1040,14 @@ export class DepositComponent implements OnInit, OnDestroy {
       `${this.asset.chain}.${this.asset.ticker}`
     );
     this.overlaysService.setCurrentDepositView('Connect');
+  }
+
+  goToSettings() {
+    this.overlaysService.setSettingViews(
+      MainViewsEnum.AccountSetting,
+      'SLIP',
+      true
+    );
   }
 
   ngOnDestroy() {

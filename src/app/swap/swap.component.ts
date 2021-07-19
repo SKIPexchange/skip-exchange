@@ -322,6 +322,9 @@ export class SwapComponent implements OnInit, OnDestroy {
       ) {
         this.checkContractApproved();
       }
+
+      // for force changing the selectable markets
+      this.setSelectableMarkets();
     });
 
     const metaMaskProvider$ = this.metaMaskService.provider$.subscribe(

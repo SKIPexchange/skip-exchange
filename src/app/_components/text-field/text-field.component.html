@@ -3,6 +3,7 @@
     <label>{{ label }}</label>
     <input
       class="field focus:outline-none focus:ring-0"
+      [ngClass]="{ processing: processing }"
       [ngModel]="textOfField"
       (ngModelChange)="updateFieldText($event)"
       [name]="name"

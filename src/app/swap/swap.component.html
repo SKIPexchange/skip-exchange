@@ -26,6 +26,7 @@
         <!-- SOURCE -->
         <app-asset-input
           label="Send"
+          type="swap"
           [(selectedAsset)]="selectedSourceAsset"
           [(assetUnit)]="sourceAssetUnit"
           [balance]="sourceBalance"
@@ -51,7 +52,7 @@
         <!-- TARGET -->
         <app-asset-input
           label="Receive"
-          extraLabel="(estimated)"
+          [extraLabel]="selectedTargetAsset ? '(estimated)' : undefined"
           [(selectedAsset)]="selectedTargetAsset"
           [(assetUnit)]="targetAssetUnitDisplay"
           [balance]="targetBalance"

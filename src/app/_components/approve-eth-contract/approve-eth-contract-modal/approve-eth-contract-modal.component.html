@@ -42,15 +42,14 @@
   </app-notice>
 
   <div class="swap-details">
-    <div class="flex justify-between">
-      <span class="tx-detail-label">Disclaimer:</span>
-      <span>Approve {{data.asset.ticker}} to be used by THORChain smart contract</span>
+    <div class="flex justify-between white-text">
+      <span>This will add the {{data.asset.ticker}} to be used by THORChain smart contract.</span>
     </div>
-    <div class="flex justify-between">
+    <!-- <div class="flex justify-between">
       <span class="tx-detail-label">Estimated ETH Fee:</span>
       <span *ngIf="fee">{{ fee }} ETH</span>
       <span *ngIf="!fee">...</span>
-    </div>
+    </div> -->
   </div>
 
   <div class="bottom-actions two-btn">

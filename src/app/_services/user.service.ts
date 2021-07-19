@@ -159,13 +159,9 @@ export class UserService {
         etherscanApiKey: environment.etherscanKey,
         infuraCreds: { projectId: environment.infuraProjectId },
       });
+      userEthereumClient.getAddress = () => this._user.wallet;
       this._user.clients = {
         ethereum: userEthereumClient,
-        binance: undefined,
-        bitcoin: undefined,
-        bitcoinCash: undefined,
-        thorchain: undefined,
-        litecoin: undefined,
       };
 
       promises.push(
@@ -207,17 +203,19 @@ export class UserService {
   }
 
   async fetchBalance(chain: Chain): Promise<void> {
-    let key = this.getClientByChain(chain);
-    if (key === 'binance') {
-      this.getBinanceBalances();
-    } else if (key === 'ethereum') {
-      const client = this._user.clients.ethereum;
-      const address = client.getAddress();
-      this.getEthereumBalances(client, address);
-    } else if (key === 'bitcoin') {
-      this.getBitcoinBalances();
-    } else {
-      this.getGeneralBalance(key);
+    if (this.clientAvailableChains().includes(chain)) {
+      let key = this.getClientByChain(chain);
+      if (key === 'binance') {
+        this.getBinanceBalances();
+      } else if (key === 'ethereum') {
+        const client = this._user.clients.ethereum;
+        const address = client.getAddress();
+        this.getEthereumBalances(client, address);
+      } else if (key === 'bitcoin') {
+        this.getBitcoinBalances();
+      } else {
+        this.getGeneralBalance(key);
+      }
     }
   }
 

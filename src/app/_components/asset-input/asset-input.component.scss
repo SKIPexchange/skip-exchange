@@ -41,6 +41,17 @@
       fill: #474e5d;
     }
   }
+
+  &.error {
+    .launch-markets-btn,
+    .label-title,
+    .expand-more,
+    .priceInput,
+    .usd-est {
+      color: var(--primary-red) !important;
+      fill: var(--primary-red);
+    }
+  }
 }
 
 .label-title {

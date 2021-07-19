@@ -5,6 +5,7 @@
     [isSending]="false"
     [asset]="[asset, nativeRune]"
     [amount]="[amount, amount]"
+    type="Upgrade"
   >
     <app-breadcrumb
       [path]="[
@@ -64,6 +65,7 @@
         <div class="content-middle">
           <app-asset-input
             label="Upgrade"
+            type="upgrade"
             [(selectedAsset)]="asset.asset"
             [(assetUnit)]="amount"
             [balance]="asset.balance.amount().toNumber()"

@@ -23,6 +23,7 @@
       <div class="modal-head confirm-modal-head">
         <app-asset-input
           label="Send"
+          type="send"
           [(selectedAsset)]="asset.asset"
           [(assetUnit)]="amount"
           [balance]="asset.balance.amount().toNumber()"
@@ -116,6 +117,7 @@
   [amount]="[amount]"
   [memo]="memo"
   [recipientAddress]="recipientAddress"
+  type="Send"
 >
   <app-breadcrumb
     [path]="[

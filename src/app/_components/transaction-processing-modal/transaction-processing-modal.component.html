@@ -84,7 +84,7 @@
         [targetLabel]="targetAddress? 'Receiving at' : undefined"
         [processing]="true"
         [showPrice]="false"
-        [extraLabel]="poolType ? undefined : '(estimated)'"
+        [extraLabel]="type === 'Swap' ? '(estimated)' : undefined"
       >
       </app-asset-input>
     </div>

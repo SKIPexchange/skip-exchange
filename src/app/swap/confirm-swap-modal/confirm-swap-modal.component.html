@@ -6,6 +6,7 @@
   [asset]="[swapData.sourceAsset, swapData.targetAsset]"
   [amount]="[swapData.inputValue, swapData.outputValue]"
   [targetAddress]="swapData.targetAddress"
+  type="Swap"
 >
   <app-breadcrumb
     [path]="[
@@ -85,6 +86,7 @@
 
       <app-asset-input
         label="Send"
+        type="swap"
         [(selectedAsset)]="swapData.sourceAsset.asset"
         [(assetUnit)]="swapData.inputValue"
         [balance]="swapData.balance"

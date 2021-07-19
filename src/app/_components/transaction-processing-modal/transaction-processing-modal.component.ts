@@ -2,6 +2,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 
+type ProcessingType =
+  | 'Swap'
+  | 'Deposit'
+  | 'Withdraw'
+  | 'Create Pool'
+  | 'Send'
+  | 'Upgrade';
+
 @Component({
   selector: 'app-transaction-processing-modal',
   templateUrl: './transaction-processing-modal.component.html',
@@ -20,6 +28,7 @@ export class TransactionProcessingModalComponent {
   @Input() isPlus: boolean = false;
   @Input() memo: string;
   @Input() targetAddress?: string;
+  @Input() type: ProcessingType;
   @Input() poolType: PoolTypeOption;
 
   constructor() {

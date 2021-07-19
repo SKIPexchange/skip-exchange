@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,7 +46,7 @@ import { formatNumber } from '@angular/common';
   templateUrl: './withdraw.component.html',
   styleUrls: ['./withdraw.component.scss'],
 })
-export class WithdrawComponent implements OnInit {
+export class WithdrawComponent implements OnInit, OnDestroy {
   get withdrawPercent() {
     return this._withdrawPercent;
   }
@@ -278,12 +278,21 @@ export class WithdrawComponent implements OnInit {
        */
 
       this.setWithdrawOptions();
-      if (this.withdrawOptions.sym) {
-        this.withdrawType = 'SYM';
-      } else if (this.withdrawOptions.asymAsset) {
-        this.withdrawType = 'ASYM_ASSET';
-      } else if (this.withdrawOptions.asymRune) {
-        this.withdrawType = 'ASYM_RUNE';
+      if (!this.withdrawType) {
+        // after finding the withdraw options then navigate to pool options
+        if (Object.values(this.withdrawOptions).filter(Boolean).length > 1) {
+          this.overlaysService.setCurrentWithdrawView('PoolType');
+        } else if (
+          Object.values(this.withdrawOptions).filter(Boolean).length === 1
+        ) {
+          if (this.withdrawOptions.sym) {
+            this.setSelectedWithdrawOption('SYM');
+          } else if (this.withdrawOptions.asymRune) {
+            this.setSelectedWithdrawOption('ASYM_RUNE');
+          } else if (this.withdrawOptions.asymAsset) {
+            this.setSelectedWithdrawOption('ASYM_ASSET');
+          }
+        }
       }
     }
   }
@@ -321,11 +330,6 @@ export class WithdrawComponent implements OnInit {
 
     if (this.asymRuneMemberPool) {
       this.withdrawOptions.asymRune = true;
-    }
-
-    // after finding the withdraw options then navigate to pool options
-    if (Object.values(this.withdrawOptions).filter(Boolean).length > 1) {
-      this.overlaysService.setCurrentWithdrawView('PoolType');
     }
   }
 
@@ -806,7 +810,12 @@ export class WithdrawComponent implements OnInit {
       '0.0-6'
     );
     const poolShared = formatNumber(this.poolShare * 100, 'en-US', '0.0-6');
-    return `${withdrawPoolShare} OF ${poolShared} POOL SHARE`;
+
+    if (!this.poolShare) {
+      return '';
+    }
+
+    return `${withdrawPoolShare}% OF ${poolShared}% POOL SHARE`;
   }
 
   ngOnDestroy() {

@@ -92,9 +92,8 @@ export class StakedPoolsListComponent implements OnDestroy {
       this.notMamberPools = [] as PoolDTO[];
       this.pools.forEach((pool) => {
         if (
-          this.memberPools?.find(
-            (p) => p.pool === pool.asset || !this.chainAvaiable(pool.asset)
-          )
+          this.memberPools?.find((p) => p.pool === pool.asset) ||
+          !this.chainAvaiable(pool.asset)
         ) {
           return;
         }
@@ -125,7 +124,6 @@ export class StakedPoolsListComponent implements OnDestroy {
     // no users because there is no available clients
     if (!clients) return true;
 
-    console.log(chain, clients, clients.includes(chain));
     return clients.includes(chain);
   }
 

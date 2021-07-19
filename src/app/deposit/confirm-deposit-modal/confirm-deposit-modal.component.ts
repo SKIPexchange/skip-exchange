@@ -57,6 +57,8 @@ export interface ConfirmDepositData {
   runeFee: number;
   poolTypeOption: PoolTypeOption;
   depositValue: number;
+  slip?: number;
+  slippageTolerance?: number;
 }
 
 @Component({
@@ -482,15 +484,11 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
           res.in
             .find((inTX) =>
               inTX.coins.find(
-                (c) =>
-                  c.asset ===
-                  `${this.data.asset.asset.chain}.${this.data.asset.asset.ticker}`
+                (c) => c.asset === assetToString(this.data.asset.asset)
               )
             )
             ?.coins.find(
-              (c) =>
-                c.asset ===
-                `${this.data.asset.asset.chain}.${this.data.asset.asset.ticker}`
+              (c) => c.asset === assetToString(this.data.asset.asset)
             ).amount
         )
           .div(10 ** 8)
@@ -499,9 +497,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
         this.outboundHash =
           res.in.find((inTX) =>
             inTX.coins.find(
-              (c) =>
-                c.asset ===
-                `${this.data.asset.asset.chain}.${this.data.asset.asset.ticker}`
+              (c) => c.asset === assetToString(this.data.asset.asset)
             )
           )?.txID || '';
       }
@@ -519,6 +515,9 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       isThorchainTx: this.data.poolTypeOption === 'SYM' ? false : true,
     });
 
+    if (this.data.asset.asset.chain === 'ETH') {
+      hash = this.ethUtilsService.strip0x(hash);
+    }
     this.getOutboundSuccess(hash);
   }
 

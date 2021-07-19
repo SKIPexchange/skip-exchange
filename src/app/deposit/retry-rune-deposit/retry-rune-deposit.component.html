@@ -28,7 +28,7 @@
     >
     </app-asset-input>
 
-    <app-arrow [isPlus]="true" [isGrey]="true"></app-arrow>
+    <app-arrow [isPlus]="true" [isError]="true"></app-arrow>
 
     <app-asset-input
       label="Deposit"
@@ -41,6 +41,7 @@
       [disabledMarketSelect]="true"
       [isDeposit]="true"
       [inputColor]="'var(--primary-red)'"
+      [isError]="true"
     >
     </app-asset-input>
 
@@ -157,6 +158,7 @@
   [transactionDetail]="processingMessage"
   (closeDialog)="closeModal.emit()"
   [isPlus]="true"
+  type="Deposit"
 >
   <app-breadcrumb
     [path]="[

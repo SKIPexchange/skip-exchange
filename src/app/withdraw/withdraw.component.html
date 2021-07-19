@@ -61,7 +61,7 @@
           </span>
         </div>
         <div *ngIf="totalWithdrawal()" class="flex justify-between primary-text">
-          <span class="tx-detail-label">Total Withdrawal: (est)</span>
+          <span class="tx-detail-label">Total Withdrawal:</span>
           <span>{{ totalWithdrawal() | number: '0.2-2' }} {{currency.code}}</span>
         </div>
         <div

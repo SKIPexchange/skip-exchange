@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   assetToString,
   baseAmount,
@@ -25,7 +32,7 @@ import { MockClientService } from 'src/app/_services/mock-client.service';
   templateUrl: './transaction-success-modal.component.html',
   styleUrls: ['./transaction-success-modal.component.scss'],
 })
-export class TransactionSuccessModalComponent {
+export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
   @Input() chain: Chain;
   @Input() hash: string;
   // @Input() tx: Tx;
@@ -234,7 +241,11 @@ export class TransactionSuccessModalComponent {
 
     //get balance of the new
     this.asset.forEach((asset) => {
-      this.userService.fetchBalance(asset.asset.chain);
+      try {
+        this.userService.fetchBalance(asset.asset.chain);
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     const balances$ = this.userService.userBalances$.subscribe((balances) => {

@@ -24,6 +24,7 @@
 
       <app-asset-input
         *ngIf="poolType === 'SYM' || poolType === 'ASYM_ASSET'"
+        type="deposit"
         label="Deposit"
         [(selectedAsset)]="asset"
         [assetUnit]="assetAmount"
@@ -46,6 +47,7 @@
       <app-asset-input
         *ngIf="poolType === 'SYM' || poolType === 'ASYM_RUNE'"
         label="Deposit"
+        type="deposit"
         [(selectedAsset)]="rune"
         [assetUnit]="runeAmount"
         (assetUnitChange)="updateValues('RUNE', $event)"
@@ -77,7 +79,7 @@
           </span>
         </div>
         <div *ngIf="totalDeposit()" class="flex justify-between primary-text">
-          <span class="tx-detail-label">Total Deposit: (est)</span>
+          <span class="tx-detail-label">Total Deposit:</span>
           <span>{{ totalDeposit() | number: '0.2-2' }} {{currency.code}}</span>
         </div>
         <div class="flex justify-between white-text">
@@ -93,6 +95,33 @@
               <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.2-2'}} {{currency.code}})</span>
             </span>
           </div>
+        </div>
+        <div *ngIf="poolType !== 'SYM' && user && slip" class="flex justify-between">
+          <span *ngIf="poolType === 'ASYM_ASSET'" class="tx-detail-label">50% Swap to <span class="small-1">THOR</span>.RUNE Slip:</span>
+          <span *ngIf="poolType === 'ASYM_RUNE'"  class="tx-detail-label">50% Swap to <span class="small-1">{{this.asset.chain}}</span>.{{this.asset.ticker}} Slip:</span>
+          <span class="white-text" [ngClass]="{'red-text': slippageTolerance < (slip * 100)}">
+            {{ this.slip * 100 | number: '0.0-2' }}%
+            <span *ngIf="poolType === 'ASYM_ASSET'"> ( {{ this.currency.value * assetPrice * assetAmount * slip | number: '0.0-2' }} {{ currency.code }})</span>
+            <span *ngIf="poolType === 'ASYM_RUNE'"> ( {{ this.currency.value * runePrice * runeAmount * slip | number: '0.0-2' }} {{ currency.code }})</span>
+          </span>
+        </div>
+        <div *ngIf="poolType !== 'SYM' && user && slippageTolerance" class="flex justify-between">
+          <span class="tx-detail-label">Settings:</span>
+          <span (click)="goToSettings()" class="hoverable-item">
+              {{ slippageTolerance }}% slip tolerance
+              <svg
+                class="expand-more"
+                [ngClass]="{ disable: !user }"
+                width="10"
+                height="5"
+                viewBox="0 0 15 9"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.50071 8.69094C7.23188 8.69094 6.96308 8.5883 6.75812 8.38344L0.308445 1.9337C-0.101838 1.52341 -0.101838 0.858209 0.308445 0.448091C0.718563 0.0379736 1.38363 0.0379736 1.79395 0.448091L7.50071 6.15518L13.2075 0.44829C13.6178 0.0381727 14.2828 0.0381727 14.6929 0.44829C15.1034 0.858408 15.1034 1.52361 14.6929 1.9339L8.24329 8.38364C8.03824 8.58853 7.76944 8.69094 7.50071 8.69094Z"
+                />
+              </svg>
+          </span>
         </div>
       </div>
 

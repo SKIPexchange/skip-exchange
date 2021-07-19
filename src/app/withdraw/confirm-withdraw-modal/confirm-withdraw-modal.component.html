@@ -45,7 +45,7 @@
     ></app-double-asset-field>
 
     <div class="swap-details">
-      <!-- <div class="flex justify-between">
+      <div class="flex justify-between">
         <span class="tx-detail-label">Prices:</span>
         <span>
           1 {{ data.rune.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.ticker }}
@@ -58,7 +58,7 @@
           1 {{ data.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.ticker }}
           <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
         </span>
-      </div> -->
+      </div>
       <div *ngIf="data.withdrawalValue" class="flex justify-between primary-text">
           <span class="tx-detail-label">Total Withdrawal:</span>
           <span>{{ data.withdrawalValue | number: '0.2-2' }} {{currency.code}}</span>
@@ -85,13 +85,12 @@
         </span>
         <span *ngIf="!data.networkFee">...</span>
       </div>
-      <div class="flex justify-between">
+      <!-- <div class="flex justify-between">
         <div class="tx-detail-label">
           Estimated Tx Time
-          <!-- <mat-icon style="transform: scale(.6)" matTooltip="Estimated Confirmation Time is the time it will take for THORChain to process your transaction.">info</mat-icon> -->
         </div>
         <span class="flex items-end"><{{ estimatedMinutes }} min</span>
-      </div>
+      </div> -->
     </div>
 
     <div class="bottom-actions two-btn">
@@ -128,6 +127,7 @@
     data.asset.ticker
   }} + {{ data.runeAmount }} {{ data.rune.ticker }}"
   (closeDialog)="closeDialog()"
+  type="Withdraw"
 >
   <app-breadcrumb
     [path]="[

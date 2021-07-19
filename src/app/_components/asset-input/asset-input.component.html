@@ -1,4 +1,4 @@
-<div class="swap-input uni-input" [ngClass]="{ disable: disableUser }">
+<div class="swap-input uni-input" [ngClass]="{ disable: disableUser, error: isError }">
   <div class="swap-input--inner">
     <div class="flex justify-between label-wrapper">
       <label class="label-title" for="{{ label }}Input">
@@ -168,20 +168,20 @@
     </span>
     <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice"> / </span>
     <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue">
-      {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}
+      {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
     </span>
     <span
       class="usd-est"
       [ngClass]="{ processing: processing }"
       *ngIf="showPrice && !inputUsdValue && priceInput && assetUnit"
     >
-      {{ priceInput * currency.value * assetUnit | number: ".2-3" }} {{ currency.code }} 
+      {{ priceInput * currency.value * assetUnit | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
     </span>
     <span
       class="usd-est"
       [ngClass]="{ processing: processing }"
       *ngIf="showPrice && !inputUsdValue && (assetUnit == 0 || !assetUnit)"
-    >{{ 0 | number: ".2-3" }} {{ currency.code }}
+    >{{ 0 | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
     </span>
   </div>
 </div>
