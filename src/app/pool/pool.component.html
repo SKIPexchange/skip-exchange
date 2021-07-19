@@ -68,7 +68,7 @@
                 <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAmountAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
               </span>
             </div>
-            <div *ngIf="pooledShare" class="flex justify-between">
+            <div *ngIf="pooledShare" class="flex justify-between text-white">
               <span class="tx-detail-label">Pool Share:</span>
               <span *ngIf="pooledShare">
                 {{ pooledShare * 100 | number: "0.0-6" }}%

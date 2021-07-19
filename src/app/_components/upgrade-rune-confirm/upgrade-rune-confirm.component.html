@@ -92,15 +92,15 @@
 
           <div class="swap-details">
             <div class="flex justify-between list-items">
-              <span class="tx-detail-label">Fees:</span>
+              <span class="tx-detail-label">Network Fees:</span>
               <span class="text-sm" *ngIf="networkFee && asset"
                 >{{ networkFee | number: "0.0-8" }}
                 {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
-              <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.0-2'}} {{currency.code}})</span>
+              <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
               </span>
               <span class="text-sm" *ngIf="!networkFee || !asset">...</span>
             </div>
-            <div class="disclaimer">
+            <!-- <div class="disclaimer">
               Some of your RUNE is currently a
               {{ asset.asset.chain }} token.<br />
               <span style="color: var(--primary-red)"
@@ -109,7 +109,7 @@
               >
               <br />
               Your native THOR.RUNE will show up in your wallet. <br />
-            </div>
+            </div> -->
           </div>
 
           <div>
