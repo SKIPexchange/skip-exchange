@@ -53,7 +53,7 @@
                 alt="checkmark"
               />
               <div *ngIf="!providerInfo.enabled" class="not-checked"></div>
-              <span>{{ providerInfo.title.split(" ")[0] }}</span>
+              <span [ngClass]="{'red-text': !providerInfo.enabled}">{{ providerInfo.title.split(" ")[0] }}</span>
             </div>
           </app-notice>
         </div>
@@ -100,7 +100,7 @@
             <button
               class="next-btn"
               (click)="initUnlock()"
-              [disabled]="connecting || !isValidNetwork || providersAllDisabled()"
+              [disabled]="connecting || !isValidNetwork || providersDisabled()"
             >
               <span>Connect</span>
             </button>

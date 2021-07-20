@@ -74,7 +74,7 @@ export class XDEFIConnectComponent implements OnInit {
     }
 
     if (this.listProviders?.some((p) => !p.enabled)) {
-      return { text: 'Some dApps are disabled !', isError: false };
+      return { text: 'Some dApps are disabled !', isError: true };
     }
 
     if (this.xdefiConnecting) {
@@ -117,8 +117,8 @@ export class XDEFIConnectComponent implements OnInit {
     }
   }
 
-  providersAllDisabled() {
-    return this.listProviders?.every((p) => !p.enabled);
+  providersDisabled() {
+    return this.listProviders?.some((p) => !p.enabled);
   }
 
   backNav() {
