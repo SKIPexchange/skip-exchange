@@ -1009,8 +1009,6 @@ export class DepositComponent implements OnInit, OnDestroy {
       poolTypeOption: this.poolType,
       depositValue,
       assetPrice,
-      slip: this.slip,
-      slippageTolerance: this.slippageTolerance,
     };
 
     let depositAmountUsd =

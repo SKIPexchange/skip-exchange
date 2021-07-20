@@ -98,7 +98,7 @@
             </span>
           </div>
         </div>
-        <div *ngIf="poolType !== 'SYM' && user && slip" class="flex justify-between">
+        <!-- <div *ngIf="poolType !== 'SYM' && user && slip" class="flex justify-between">
           <span *ngIf="poolType === 'ASYM_ASSET'" class="tx-detail-label">50% Swap to <span class="small-1">THOR</span>.RUNE Slip:</span>
           <span *ngIf="poolType === 'ASYM_RUNE'"  class="tx-detail-label">50% Swap to <span class="small-1">{{this.asset.chain}}</span>.{{this.asset.ticker}} Slip:</span>
           <span class="white-text" [ngClass]="{'red-text': slippageTolerance < (slip * 100)}">
@@ -124,7 +124,7 @@
                 />
               </svg>
           </span>
-        </div>
+        </div> -->
       </div>
 
       <div *ngIf="user" class="bottom-actions two-btn">

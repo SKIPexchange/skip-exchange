@@ -178,13 +178,14 @@ export class ConnectModal {
     this.analytics.event('connect_select_wallet', 'option_connect_wallet');
     this.message = 'loading';
     this.wcService
-      .connect()
+      .connect(() => {
+        this.message = 'select';
+      })
       .then((res) => {
         this.message = 'select';
-        this.closeEvent.emit();
       })
       .catch((err) => {
-        this.message = err.message || err;
+        this.message = err.message || err || 'select';
         this.wcService.killSession();
       });
   }

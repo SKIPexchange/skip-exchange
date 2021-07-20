@@ -160,7 +160,7 @@ export class WalletConnectService {
     this.connector = null;
   };
 
-  async connect() {
+  async connect(closeCallback?) {
     const options: IWalletConnectOptions = {
       bridge: 'https://polygon.bridge.walletconnect.org',
       qrcodeModal: QRCodeModal,
@@ -175,7 +175,14 @@ export class WalletConnectService {
       await connector.createSession();
 
       // display QR Code modal OR MobileLink for trustwallet
-      QRCodeModal.open(connector.uri, () => {}, qrcodeModalOptions);
+      QRCodeModal.open(
+        connector.uri,
+        () => {
+          console.log('QR is closed');
+          closeCallback();
+        },
+        qrcodeModalOptions
+      );
     }
 
     this.connector = connector;
