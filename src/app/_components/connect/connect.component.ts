@@ -18,7 +18,7 @@ import {
 } from 'src/app/_services/overlays.service';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { WalletConnectService } from 'src/app/_services/wallet-connect.service';
-
+import { Platform } from '@angular/cdk/platform';
 @Component({
   selector: 'app-connect',
   templateUrl: './connect.component.html',
@@ -109,7 +109,8 @@ export class ConnectModal {
     public overlaysService: OverlaysService,
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
-    private wcService: WalletConnectService
+    private wcService: WalletConnectService,
+    public platform: Platform
   ) {
     this.isTestnet = environment.network === 'testnet' ? true : false;
 

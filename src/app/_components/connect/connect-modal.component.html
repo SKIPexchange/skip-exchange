@@ -96,6 +96,7 @@
 
         <button
           class="connect-option focus:outline-none justify-between"
+          [disabled]="!(platform.BLINK && platform.isBrowser)"
           (click)="connectXDEFI()"
         >
           <div class="flex item items-center">
@@ -118,7 +119,10 @@
           </div>
         </button>
 
-        <button class="connect-option" (click)="connectMetaMask()">
+        <button class="connect-option"
+          [disabled]="!(platform.BLINK || platform.FIREFOX || platform.EDGE)"
+          (click)="connectMetaMask()"
+        >
           <div class="flex item items-center">
             <div class="add-icon">
               <img
