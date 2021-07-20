@@ -26,6 +26,7 @@ import {
 } from 'src/app/_services/analytics.service';
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { Asset } from 'src/app/_classes/asset';
 
 @Component({
   selector: 'app-transaction-success-modal',
@@ -57,6 +58,7 @@ export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
   @Input() hasOutbound: boolean = false;
   @Input() hashOutbound: string = '';
   @Input() targetAddress?: string;
+  @Input() disabledAsset: Asset;
   @Input() poolType: PoolTypeOption;
 
   binanceExplorerUrl: string;

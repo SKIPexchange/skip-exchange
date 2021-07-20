@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Asset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 
@@ -28,6 +29,7 @@ export class TransactionProcessingModalComponent {
   @Input() isPlus: boolean = false;
   @Input() memo: string;
   @Input() targetAddress?: string;
+  @Input() disabledAsset: Asset;
   @Input() type: ProcessingType;
   @Input() poolType: PoolTypeOption;
 

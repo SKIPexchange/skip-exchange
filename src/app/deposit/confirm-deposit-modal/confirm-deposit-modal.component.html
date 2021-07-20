@@ -54,20 +54,22 @@
       >
       </app-asset-input>
       <div class="swap-details" *ngIf="txState !== 'ERROR'">
-        <div class="flex justify-between">
-          <span class="tx-detail-label">Prices:</span>
-          <span>
-            1 {{ data.rune.asset.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.asset.ticker }}
-            <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
-          </span>
-        </div>
-        <div class="flex justify-between">
-          <span class="tx-detail-label"></span>
-          <span>
-            1 {{ data.asset.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.asset.ticker }}
-            <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
-          </span>
-        </div>
+        <ng-container *ngIf="data.poolTypeOption === 'SYM'">
+          <div class="flex justify-between">
+            <span class="tx-detail-label">Prices:</span>
+            <span>
+              1 {{ data.rune.asset.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.asset.ticker }}
+              <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="tx-detail-label"></span>
+            <span>
+              1 {{ data.asset.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.asset.ticker }}
+              <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+          </div>
+        </ng-container>
         <div *ngIf="data.depositValue" class="flex justify-between primary-text">
           <span class="tx-detail-label">Total Deposit:</span>
           <span>{{ data.depositValue | number: '0.2-2' }} {{currency.code}}</span>

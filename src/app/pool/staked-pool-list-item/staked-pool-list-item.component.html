@@ -19,11 +19,10 @@
       </span>
     </div>
 
-    <span class="pending" *ngIf="isPending"
-      >({{ isPending.action + 'ING' }})</span
-    >
-
     <div class="flex justify-between">
+      <app-tag class="pending" *ngIf="isPending">
+        {{ isPending.action + 'ING' }}
+      </app-tag>
       <ng-container *ngIf="activate && !isPending">
         <app-tag *ngIf="!isTestnet">
           <a

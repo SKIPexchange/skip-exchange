@@ -42,10 +42,11 @@
       [assetUnits]="[data.assetAmount, data.runeAmount]"
       [priceInputs]="[data.assetPrice, data.runePrice]"
       [bottomLabel]="data.poolShareMessage"
+      [disabledAsset]="disabledAsset()"
     ></app-double-asset-field>
 
     <div class="swap-details">
-      <div class="flex justify-between">
+      <!-- <div class="flex justify-between">
         <span class="tx-detail-label">Prices:</span>
         <span>
           1 {{ data.rune.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.ticker }}
@@ -58,7 +59,7 @@
           1 {{ data.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.ticker }}
           <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
         </span>
-      </div>
+      </div> -->
       <div *ngIf="data.withdrawalValue" class="flex justify-between primary-text">
           <span class="tx-detail-label">Total Withdrawal:</span>
           <span>{{ data.withdrawalValue | number: '0.2-2' }} {{currency.code}}</span>
@@ -128,6 +129,7 @@
   }} + {{ data.runeAmount }} {{ data.rune.ticker }}"
   (closeDialog)="closeDialog()"
   type="Withdraw"
+  [disabledAsset]="disabledAsset()"
 >
   <app-breadcrumb
     [path]="[
@@ -157,6 +159,7 @@
   (closeDialog)="closeToPool()"
   [hashOutbound]="outboundHash"
   [hasOutbound]="data.withdrawType !== 'ASYM_RUNE'"
+  [disabledAsset]="disabledAsset()"
 >
   <app-breadcrumb
     [path]="[

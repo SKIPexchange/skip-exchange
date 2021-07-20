@@ -17,23 +17,27 @@
       </span>
     </div>
 
-    <span class="pending" *ngIf="isPending">({{ isPending.action + 'ING' }})</span>
-    <div class="flex justify-between" *ngIf="activate && !isPending">
-      <app-tag>
-        <a
-          [href]="getPoolUrl()"
-          (click)="statEvent()"
-          target="_blank"
-          >POOL STATS</a
-        >
+    <div class="flex justify-between" >
+      <app-tag class="pending" *ngIf="isPending">
+        {{ isPending.action + 'ING' }}
       </app-tag>
-      <div style="width: 5px"></div>
-      <app-tag *ngIf="!depositsDisabled">
-        <a [routerLink]="['/', 'deposit', asset.chain + '.' + asset.symbol]"
-          (click)="depositEvent()"
-          >Deposit</a
-        >
-      </app-tag>
+      <ng-container *ngIf="activate && !isPending" >
+        <app-tag>
+          <a
+            [href]="getPoolUrl()"
+            (click)="statEvent()"
+            target="_blank"
+            >POOL STATS</a
+          >
+        </app-tag>
+        <div style="width: 5px"></div>
+        <app-tag *ngIf="!depositsDisabled">
+          <a [routerLink]="['/', 'deposit', asset.chain + '.' + asset.symbol]"
+            (click)="depositEvent()"
+            >Deposit</a
+          >
+        </app-tag>
+      </ng-container>
     </div>
   </div>
 </div>

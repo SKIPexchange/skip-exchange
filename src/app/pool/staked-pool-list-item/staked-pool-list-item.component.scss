@@ -26,10 +26,6 @@
     }
   }
 
-  &.pending > div {
-    justify-content: initial;
-  }
-
   .pending {
     color: var(--primary-grey-color);
     text-transform: uppercase;

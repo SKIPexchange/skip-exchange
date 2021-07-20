@@ -20,7 +20,7 @@ import { EthUtilsService } from 'src/app/_services/eth-utils.service';
 import { User } from 'src/app/_classes/user';
 import { Subscription } from 'rxjs';
 import { Balance } from '@xchainjs/xchain-client';
-import { baseToAsset } from '@xchainjs/xchain-util';
+import { assetToString, baseToAsset } from '@xchainjs/xchain-util';
 import { MidgardService } from 'src/app/_services/midgard.service';
 import { ThorchainPricesService } from 'src/app/_services/thorchain-prices.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
@@ -166,6 +166,10 @@ export class DoubleAssetFieldComponent {
       0 * this.assetUnits[1] ??
       0
     );
+  }
+
+  assetToString(asset: Asset) {
+    return assetToString(asset);
   }
 
   ngOnDestroy() {

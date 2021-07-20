@@ -483,6 +483,18 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
     this.router.navigate(['/', 'pool']);
   }
 
+  disabledAsset() {
+    if (this.data.withdrawType === 'SYM') {
+      return undefined;
+    } else if (this.data.withdrawType === 'ASYM_ASSET') {
+      return this.rune;
+    } else if (this.data.withdrawType === 'ASYM_RUNE') {
+      return this.data.asset;
+    } else {
+      return this.rune;
+    }
+  }
+
   ngOnDestroy() {
     for (const sub of this.subs) {
       sub.unsubscribe();

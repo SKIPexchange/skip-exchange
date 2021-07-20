@@ -26,10 +26,6 @@
     }
   }
 
-  &.pending > div {
-    justify-content: initial;
-  }
-
   &:hover {
     color: var(--primary-dark-color);
     background: var(--primary-default);
