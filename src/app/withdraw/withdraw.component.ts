@@ -80,6 +80,9 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   removeRuneAmount: number;
   removeAssetAmount: number;
 
+  assetPoolShare: number;
+  runePoolShare: number;
+
   runeBasePrice: number;
   assetBasePrice: number;
 
@@ -801,6 +804,18 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       },
       (err) => console.error('error getting pool detail: ', err)
     );
+  }
+
+  disabledAsset() {
+    if (this.withdrawType === 'SYM') {
+      return undefined;
+    } else if (this.withdrawType === 'ASYM_ASSET') {
+      return this.rune;
+    } else if (this.withdrawType === 'ASYM_RUNE') {
+      return this.asset;
+    } else {
+      return this.rune;
+    }
   }
 
   poolShareMessage() {

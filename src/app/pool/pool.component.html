@@ -47,22 +47,15 @@
 
         <div class="swap-details">
           <ng-container *ngIf="poolType !== 'notMember'">
-            <div *ngIf="pooledAmountRune != undefined" class="flex justify-between" style="color: var(--primary-default);">
+            <div *ngIf="pooledAmountRune" class="flex justify-between" style="color: var(--primary-default);">
               <span class="tx-detail-label">Pooled THOR.RUNE:</span>
               <span>
                 {{ pooledAmountRune | number: "0.0-6" }}
                 <span *ngIf="runePrice && currency"> ({{runePrice * pooledAmountRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
               </span>
             </div>
-            <div *ngIf="pooledAsset != undefined" class="flex justify-between" style="color: var(--primary-default);">
-              <span class="tx-detail-label">
-                Pooled
-                <span *ngIf="pooledAsset">
-                  {{ pooledAsset.chain }}.{{ pooledAsset.ticker }}
-                </span>
-                <span *ngIf="!pooledAsset">
-                  Asset
-                </span>:</span>
+            <div *ngIf="pooledAsset && pooledAmountAsset" class="flex justify-between" style="color: var(--primary-default);">
+              <span class="tx-detail-label"> Pooled <span *ngIf="pooledAsset"> {{ pooledAsset.chain }}.{{ pooledAsset.ticker }}</span><span *ngIf="!pooledAsset">Asset</span>:</span>
               <span> 
                 {{ pooledAmountAsset | number: "0.0-6" }}
                 <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAmountAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>

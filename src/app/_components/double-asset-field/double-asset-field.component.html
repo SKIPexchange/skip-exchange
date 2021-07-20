@@ -1,4 +1,4 @@
-<div class="swap-input uni-input" [ngClass]="{ disable: disableUser }">
+<div class="swap-input uni-input" [ngClass]="{ disable: disableUser, 'one-asset': disabledAsset }">
   <div class="swap-input--inner">
     <div class="flex justify-between label-wrapper">
       <label class="label-title" for="{{ label }}Input">{{ label }}</label>
@@ -28,7 +28,7 @@
     </div>
 
     <div class="inputs">
-      <div class="input flex-grow">
+      <div *ngIf="selectedAssets[0] !== disabledAsset" class="input flex-grow">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"
@@ -62,7 +62,7 @@
         </button>
       </div>
 
-      <div class="input flex-grow" style="margin-top: -5px">
+      <div *ngIf="selectedAssets[1] !== disabledAsset" class="input flex-grow" style="margin-top: -5px">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"

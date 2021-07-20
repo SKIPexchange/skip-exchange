@@ -5,6 +5,10 @@
   background-color: transparent;
   height: 143px;
 
+  &.one-asset {
+    height: 113px;
+  }
+
   &--inner {
     height: 100%;
     width: 100%;

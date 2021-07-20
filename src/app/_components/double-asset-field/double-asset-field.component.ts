@@ -53,6 +53,7 @@ export class DoubleAssetFieldComponent {
   @Input() disabledAssetSymbol: string;
   @Input() isWallet: boolean = false;
   @Input() bottomLabel: string;
+  @Input() disabledAsset: Asset;
 
   /**
    * Wallet balance
