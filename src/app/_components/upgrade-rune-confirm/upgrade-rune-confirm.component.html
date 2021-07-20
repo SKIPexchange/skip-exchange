@@ -93,14 +93,12 @@
           </app-asset-input>
 
           <div class="swap-details">
-            <div class="flex justify-between list-items">
+            <div *ngIf="networkFee && asset" class="flex justify-between list-items white-text">
               <span class="tx-detail-label">Network Fee:</span>
-              <span class="text-sm" *ngIf="networkFee && asset"
-                >{{ networkFee | number: "0.0-8" }}
-                {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
-              <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
+              <span class="text-sm">
+                {{ networkFee | number: "0.0-8" }} {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
+                <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
               </span>
-              <span class="text-sm" *ngIf="!networkFee || !asset">...</span>
             </div>
             <!-- <div class="disclaimer">
               Some of your RUNE is currently a

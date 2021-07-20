@@ -35,10 +35,7 @@
         <div style="width: 5px"></div>
         <app-tag>
           <a
-            [href]="
-              'https://thorchain.delphidigital.io/thorchain/' +
-              (isTestnet ? 'testnet/' : 'chaosnet/')
-            "
+            [href]="getPoolUrl()"
             target="_blank"
             (click)="statEvent()"
             >POOL STATS</a

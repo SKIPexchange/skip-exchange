@@ -280,6 +280,14 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
     }
   }
 
+  getPoolUrl() {
+    return (
+      'https://viewblock.io/thorchain/pool/' +
+      assetToString(this.asset) +
+      (this.isTestnet ? '?network=testnet' : '')
+    );
+  }
+
   runeyieldAddress() {
     const runeAddress = this.memberPoolData.find(
       (pool) => pool.runeAddress

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { getPoolShare, PoolData, UnitData } from '@thorchain/asgardex-util';
-import { baseAmount } from '@xchainjs/xchain-util';
+import { assetToString, baseAmount } from '@xchainjs/xchain-util';
 import BigNumber from 'bignumber.js';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -62,7 +62,7 @@ export class PoolListItemComponent implements OnChanges {
     this.expanded = false;
     this.activate = false;
 
-    this.isTestnet = environment.network === 'tesnet' ? true : false;
+    this.isTestnet = environment.network === 'testnet' ? true : false;
   }
 
   ngOnChanges() {
@@ -95,6 +95,14 @@ export class PoolListItemComponent implements OnChanges {
       this.currency.value;
 
     this.subs = [poolDetail$, pendingTx$];
+  }
+
+  getPoolUrl() {
+    return (
+      'https://viewblock.io/thorchain/pool/' +
+      assetToString(this.asset) +
+      (this.isTestnet ? '?network=testnet' : '')
+    );
   }
 
   toggleExpanded() {

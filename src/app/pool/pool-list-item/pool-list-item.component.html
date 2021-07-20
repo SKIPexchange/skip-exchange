@@ -21,10 +21,7 @@
     <div class="flex justify-between" *ngIf="activate && !isPending">
       <app-tag>
         <a
-          [href]="
-            'https://thorchain.delphidigital.io/thorchain/' +
-            (isTestnet ? 'testnet/' : 'chaosnet/')
-          "
+          [href]="getPoolUrl()"
           (click)="statEvent()"
           target="_blank"
           >POOL STATS</a

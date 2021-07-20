@@ -13,8 +13,9 @@
               disable: true
             }
           ]"
+          [isError]="isError"
           (funcCaller)="breadcrumbNav($event)"
-          [message]="amountSpendable ? 'ready' : 'prepare'"
+          [message]="breadcrumbMessage()"
         ></app-breadcrumb>
         <div class="top-right"></div>
       </div>
@@ -52,6 +53,13 @@
         </app-asset-input>
 
         <div class="swap-details">
+          <div *ngIf="networkFee && asset.asset && amount" class="flex justify-between list-items white-text">
+            <span class="tx-detail-label">Network Fee:</span>
+            <span class="text-sm">
+              {{ networkFee | number: "0.0-8" }} {{ getChainAssetCaller(asset.asset).chain }}.{{ getChainAssetCaller(asset.asset).ticker }}
+              <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
+            </span>
+          </div>
           <!-- <div class="disclaimer">
             Some of your RUNE is currently a {{ asset.asset.chain }} token.
             <br />
