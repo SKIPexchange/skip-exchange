@@ -16,7 +16,7 @@
             <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}} + <span class="small-1">THOR</span>.RUNE</label>
           </div>
           <div style="margin-left: 0;" class="addr">
-            <span *ngIf="assets[0].assetPriceUSD && assets[1].assetPriceUSD">{{ (assets[0].assetPriceUSD * (assets[0].balance || 0) * currency.value) + (assets[1].assetPriceUSD * (assets[1].balance || 0) * currency.value) | number: '0.0-2' }} {{ currency.code }}</span>
+            <span *ngIf="userValues && userValues.sym">{{ userValues.sym * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
           </div>
         </button>
       
@@ -28,7 +28,7 @@
             <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}}</label>
           </div>
           <div style="margin-left: 0;" class="addr">
-            <span *ngIf="assets[0].assetPriceUSD">{{ assets[0].assetPriceUSD * (assets[0].balance || 0) * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+            <span *ngIf="userValues && userValues.asymAsset">{{ userValues.asymAsset * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
           </div>
         </button>
       
@@ -40,7 +40,7 @@
             <label><span class="small-1">THOR</span>.RUNE</label>
           </div>
           <div style="margin-left: 0;" class="addr">
-            <span *ngIf="assets[1].assetPriceUSD">{{ assets[1].assetPriceUSD * assets[1].balance * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+            <span *ngIf="userValues && userValues.asymRune">{{ userValues.asymRune * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
           </div>
         </button>
       </div>

@@ -64,20 +64,22 @@
       </app-asset-input>
 
       <div *ngIf="assetAmount || runeAmount" class="swap-details">
-        <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between">
-          <span class="tx-detail-label">Prices:</span>
-          <span>
-            1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
-            <span *ngIf="runePrice">({{ runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
-          </span>
-        </div>
-        <div class="flex justify-between">
-          <span class="tx-detail-label"></span>
-          <span>
-            1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
-            <span *ngIf="assetPrice">({{ assetPrice | number: '0.2-2'}} {{currency.code}})</span>
-          </span>
-        </div>
+        <ng-container *ngIf="assetBasePrice && runeBasePrice && poolType === 'SYM' && userSelectedPoolType">
+          <div class="flex justify-between">
+            <span class="tx-detail-label">Prices:</span>
+            <span>
+              1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
+              <span *ngIf="runePrice">({{ runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="tx-detail-label"></span>
+            <span>
+              1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
+              <span *ngIf="assetPrice">({{ assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+          </div>
+        </ng-container>
         <div *ngIf="totalDeposit()" class="flex justify-between primary-text">
           <span class="tx-detail-label">Total Deposit:</span>
           <span>{{ totalDeposit() | number: '0.2-2' }} {{currency.code}}</span>
@@ -226,6 +228,7 @@
 <app-pool-type-options 
   *ngIf="view === 'PoolType'"
   [assets]="[{asset: asset, balance: assetBalance, assetPriceUSD: assetPrice}, {asset: rune, balance: runeBalance, assetPriceUSD: runePrice}]" 
+  [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
   [selectedPoolType]="poolType" 
   [poolTypeOptions]="poolTypeOptions" 
   (selectPoolType)="setPoolTypeOptionFromEvent($event)"

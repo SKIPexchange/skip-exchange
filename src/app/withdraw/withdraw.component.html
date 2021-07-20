@@ -47,7 +47,7 @@
 
       <!-- Swap details -->
       <div *ngIf="asset && withdrawPercent" class="swap-details">
-        <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
+        <!-- <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span class="tx-detail-label">Prices:</span>
           <span *ngIf="asset && assetBasePrice" >
             1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
@@ -60,7 +60,7 @@
             1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
             <span *ngIf="assetPrice"> ({{ assetPrice * currency.value | number: '0.2-2'}} {{currency.code}})</span>
           </span>
-        </div>
+        </div> -->
         <div *ngIf="totalWithdrawal()" class="flex justify-between primary-text">
           <span class="tx-detail-label">Total Withdrawal:</span>
           <span>{{ totalWithdrawal() | number: '0.2-2' }} {{currency.code}}</span>
@@ -116,6 +116,7 @@
 <app-pool-type-options
   *ngIf="view === 'PoolType'"
   [assets]="[{asset: asset, balance: 0, assetPriceUSD: assetPrice}, {asset: rune, balance: 0, assetPriceUSD: runePrice}]" 
+  [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
   [selectedPoolType]="withdrawType" 
   [poolTypeOptions]="withdrawOptions" 
   (selectPoolType)="setSelectedWithdrawOptionFromEvent($event)"

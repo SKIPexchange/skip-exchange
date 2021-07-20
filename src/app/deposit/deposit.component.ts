@@ -12,6 +12,7 @@ import {
   assetAmount,
   baseToAsset,
   assetToString,
+  bn,
 } from '@xchainjs/xchain-util';
 import { combineLatest, Subscription } from 'rxjs';
 import {
@@ -48,8 +49,10 @@ import { EthUtilsService } from '../_services/eth-utils.service';
 import { MetamaskService } from '../_services/metamask.service';
 import { ethers } from 'ethers';
 import { environment } from 'src/environments/environment';
-import { isError } from 'util';
 import { SlippageToleranceService } from '../_services/slippage-tolerance.service';
+import { PoolDTO } from '../_classes/pool';
+import BigNumber from 'bignumber.js';
+import { MemberPool } from '../_classes/member';
 
 @Component({
   selector: 'app-deposit',
@@ -62,6 +65,10 @@ export class DepositComponent implements OnInit, OnDestroy {
    */
   rune: Asset;
   runeAmount: number;
+  poolData: PoolDTO;
+  userThorValue: number;
+  userAssetValue: number;
+  userSymValue: number;
 
   /**
    * Asset
@@ -268,6 +275,8 @@ export class DepositComponent implements OnInit, OnDestroy {
           this.asset
         );
 
+        this.getPoolMembership();
+
         if (pendingBalances && (!this.assetBalance || !this.runeBalance)) {
           this.loadingBalances = true;
         } else {
@@ -357,7 +366,8 @@ export class DepositComponent implements OnInit, OnDestroy {
       depositView$,
       cur$,
       metaMaskProvider$,
-      metaMaskNetwork$
+      metaMaskNetwork$,
+      slippageTolerange$
     );
   }
 
@@ -386,6 +396,101 @@ export class DepositComponent implements OnInit, OnDestroy {
     const match = bchLps.find((lp) => lp.asset_address === legacyAddress);
     if (match) {
       this.bchLegacyPooled = true;
+    }
+  }
+
+  async getPoolMembership() {
+    try {
+      const thorAddress =
+        this.userService?.getAdrressChain('THOR') ?? undefined;
+      const chainAddress =
+        this.userService?.getAdrressChain(this.asset?.chain) ?? undefined;
+
+      let chainAssetPool: MemberPool;
+      let thorAssetPool: MemberPool;
+      let symPool: MemberPool;
+
+      if (thorAddress) {
+        try {
+          const memeber = await this.midgardService
+            .getMember(thorAddress)
+            .toPromise();
+          thorAssetPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.runeAddress === thorAddress &&
+              pool.assetAddress === ''
+          );
+
+          symPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.runeAddress === thorAddress &&
+              pool.assetAddress === chainAddress
+          );
+
+          console.log(thorAssetPool);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      if (chainAddress) {
+        try {
+          const memeber = await this.midgardService
+            .getMember(chainAddress)
+            .toPromise();
+          chainAssetPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.assetAddress === chainAddress &&
+              pool.runeAddress === ''
+          );
+
+          symPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.runeAddress === thorAddress &&
+              pool.assetAddress === chainAddress
+          );
+
+          console.log(chainAssetPool);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      const poolValue = bn(+this.poolData.assetDepth)
+        .div(10 ** 8)
+        .multipliedBy(+this.poolData.assetPriceUSD)
+        .plus(
+          bn(this.poolData.runeDepth)
+            .div(10 ** 8)
+            .multipliedBy(this.runePrice)
+        );
+
+      const userThorValue =
+        poolValue.multipliedBy(
+          bn(+thorAssetPool?.liquidityUnits).div(+this.poolData.units)
+        ) ?? bn(0);
+
+      const userAssetValue =
+        poolValue.multipliedBy(
+          bn(+chainAssetPool?.liquidityUnits).div(+this.poolData.units)
+        ) ?? bn(0);
+
+      const userSymValue =
+        poolValue.multipliedBy(
+          bn(+symPool?.liquidityUnits).div(+this.poolData.units)
+        ) ?? bn(0);
+
+      [this.userThorValue, this.userAssetValue, this.userSymValue] = [
+        userThorValue.toNumber(),
+        userAssetValue.toNumber(),
+        userSymValue.toNumber(),
+      ];
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -611,6 +716,7 @@ export class DepositComponent implements OnInit, OnDestroy {
           );
 
           this.assetPrice = +res.assetPriceUSD;
+          this.poolData = res;
 
           this.loading = false;
         }

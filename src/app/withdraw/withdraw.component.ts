@@ -40,6 +40,7 @@ import {
   PoolTypeOption,
 } from '../_const/pool-type-options';
 import { formatNumber } from '@angular/common';
+import { PoolDTO } from '../_classes/pool';
 
 @Component({
   selector: 'app-withdraw',
@@ -47,6 +48,10 @@ import { formatNumber } from '@angular/common';
   styleUrls: ['./withdraw.component.scss'],
 })
 export class WithdrawComponent implements OnInit, OnDestroy {
+  poolData: PoolDTO;
+  userThorValue: any;
+  userAssetValue: any;
+  userSymValue: any;
   get withdrawPercent() {
     return this._withdrawPercent;
   }
@@ -186,6 +191,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
         this.getPoolDetail(asset);
         this.getAccountStaked();
+        this.getPoolMembership();
 
         if (this.balances) {
           this.assetBalance = this.userService.findBalance(
@@ -350,6 +356,101 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     this.midgardService.getQueue().subscribe((res) => {
       this.queue = res;
     });
+  }
+
+  async getPoolMembership() {
+    try {
+      const thorAddress =
+        this.userService?.getAdrressChain('THOR') ?? undefined;
+      const chainAddress =
+        this.userService?.getAdrressChain(this.asset?.chain) ?? undefined;
+
+      let chainAssetPool: MemberPool;
+      let thorAssetPool: MemberPool;
+      let symPool: MemberPool;
+
+      if (thorAddress) {
+        try {
+          const memeber = await this.midgardService
+            .getMember(thorAddress)
+            .toPromise();
+          thorAssetPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.runeAddress === thorAddress &&
+              pool.assetAddress === ''
+          );
+
+          symPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.runeAddress === thorAddress &&
+              pool.assetAddress === chainAddress
+          );
+
+          console.log(thorAssetPool);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      if (chainAddress) {
+        try {
+          const memeber = await this.midgardService
+            .getMember(chainAddress)
+            .toPromise();
+          chainAssetPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.assetAddress === chainAddress &&
+              pool.runeAddress === ''
+          );
+
+          symPool = memeber.pools.find(
+            (pool) =>
+              pool.pool === assetToString(this.asset) &&
+              pool.runeAddress === thorAddress &&
+              pool.assetAddress === chainAddress
+          );
+
+          console.log(chainAssetPool);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      const poolValue = bn(+this.poolData.assetDepth)
+        .div(10 ** 8)
+        .multipliedBy(+this.poolData.assetPriceUSD)
+        .plus(
+          bn(this.poolData.runeDepth)
+            .div(10 ** 8)
+            .multipliedBy(this.runePrice)
+        );
+
+      const userThorValue =
+        poolValue.multipliedBy(
+          bn(+thorAssetPool?.liquidityUnits).div(+this.poolData.units)
+        ) ?? bn(0);
+
+      const userAssetValue =
+        poolValue.multipliedBy(
+          bn(+chainAssetPool?.liquidityUnits).div(+this.poolData.units)
+        ) ?? bn(0);
+
+      const userSymValue =
+        poolValue.multipliedBy(
+          bn(+symPool?.liquidityUnits).div(+this.poolData.units)
+        ) ?? bn(0);
+
+      [this.userThorValue, this.userAssetValue, this.userSymValue] = [
+        userThorValue.toNumber(),
+        userAssetValue.toNumber(),
+        userSymValue.toNumber(),
+      ];
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   calculate() {
@@ -773,6 +874,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
             assetBalance: baseAmount(res.assetDepth),
             runeBalance: baseAmount(res.runeDepth),
           };
+          this.poolData = res;
           this.poolUnits = +res.units;
           this.assetPrice = parseFloat(res.assetPriceUSD);
           this.runePrice =

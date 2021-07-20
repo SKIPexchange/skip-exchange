@@ -19,6 +19,7 @@ import { Currency } from '../account-settings/currency-converter/currency-conver
 export class PoolTypeOptionsComponent implements OnInit {
   @Input() assets: { asset: Asset; balance: number; assetPriceUSD: number }[];
   @Input() selectedPoolType: PoolTypeOption;
+  @Input() userValues: { sym: number; asymAsset: number; asymRune: number };
   @Input() poolTypeOptions: AvailablePoolTypeOptions;
   @Output() selectPoolType: EventEmitter<PoolTypeOption>;
 
