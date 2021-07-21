@@ -981,6 +981,7 @@ a.mat-primary {
   &.disabled {
     background-color: #0d1b23;
     background-image: unset;
+    cursor: initial;
 
     &.waiting {
       color: #fff;
