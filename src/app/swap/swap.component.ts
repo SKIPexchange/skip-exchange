@@ -180,9 +180,9 @@ export class SwapComponent implements OnInit, OnDestroy {
     }
 
     try {
-      this.targetClientAddress = this.userService
-        .getChainClient(this.user, this._selectedTargetAsset?.chain)
-        ?.getAddress();
+      this.targetClientAddress = this.userService.getAdrressChain(
+        this.selectedTargetAsset.chain
+      );
     } catch (error) {
       this.targetAddress = undefined;
     }
@@ -970,7 +970,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     /** CHECK that there is non wallet address that the user wants to send */
     if (this.selectedTargetAsset && this.user) {
       if (
-        this.targetClientAddress &&
+        this.targetAddress &&
         this.targetAddress !== this.targetClientAddress
       ) {
         return `SWAP + RECEIVE AT ${this.targetAddress.substring(

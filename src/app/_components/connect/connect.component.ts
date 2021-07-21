@@ -184,6 +184,7 @@ export class ConnectModal {
       })
       .then((res) => {
         this.message = 'select';
+        this.closeEvent.emit();
       })
       .catch((err) => {
         this.message = err.message || err || 'select';
