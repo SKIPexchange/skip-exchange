@@ -108,6 +108,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   };
 
   withdrawType: PoolTypeOption;
+  userSelectedType: boolean;
   assetBalance: number;
   runeBalance: number;
   balances: Balances;
@@ -133,6 +134,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     this.removeAssetAmount = 0;
     this.removeRuneAmount = 0;
     this.sliderDisabled = true;
+    this.userSelectedType = false;
 
     const user$ = this.userService.user$.subscribe((user) => {
       this.user = user;
@@ -288,7 +290,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
        */
 
       this.setWithdrawOptions();
-      if (!this.withdrawType) {
+      if (!this.withdrawType && !this.userSelectedType) {
         // after finding the withdraw options then navigate to pool options
         if (Object.values(this.withdrawOptions).filter(Boolean).length > 1) {
           this.overlaysService.setCurrentWithdrawView('PoolType');
@@ -344,6 +346,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   }
 
   setSelectedWithdrawOption(option: PoolTypeOption) {
+    this.userSelectedType = true;
     this.withdrawType = option;
     this.calculate();
   }
