@@ -22,9 +22,10 @@
         style="font-size: 'Roboto'"
         [(ngModel)]="phrase"
         name="keystore-phrase"
-        placeholder="________________________________________"
+        placeholder=" "
         type="text"
       />
+      <span class="pulse-placeholder"></span>
     </div>
 
     <app-arrow></app-arrow>
@@ -44,10 +45,11 @@
 
   </div>
 
-  <div class="disclaimer swap-details">
-    <span style="color: var(--primary-red)"
-      >This will create and download a keystore to your computer. Please store it offline safely.</span
-    >
+  <div class="descriptive">
+    <span>
+      This will create and download a keystore to your computer. <br />
+      Please store this file offline in a safe place.
+    </span>
   </div>
 </div>  
 

@@ -1,16 +1,27 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Subscription } from "rxjs";
-import { AssetAndBalance } from "src/app/_classes/asset-and-balance";
-import { PoolAddressDTO } from "src/app/_classes/pool-address";
-import { AnalyticsService, assetString } from "src/app/_services/analytics.service";
-import { MidgardService } from "src/app/_services/midgard.service";
-import { MainViewsEnum, OverlaysService } from "src/app/_services/overlays.service";
-import { UserService } from "src/app/_services/user.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Asset, getChainAsset } from 'src/app/_classes/asset';
+import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
+import { PoolAddressDTO } from 'src/app/_classes/pool-address';
+import {
+  AnalyticsService,
+  assetString,
+} from 'src/app/_services/analytics.service';
+import { CurrencyService } from 'src/app/_services/currency.service';
+import { MidgardService } from 'src/app/_services/midgard.service';
+import {
+  MainViewsEnum,
+  OverlaysService,
+} from 'src/app/_services/overlays.service';
+import { TransactionUtilsService } from 'src/app/_services/transaction-utils.service';
+import { UserService } from 'src/app/_services/user.service';
+import { Currency } from '../account-settings/currency-converter/currency-converter.component';
 
 @Component({
-  selector: "app-upgrade-rune",
-  templateUrl: "./upgrade-rune.component.html",
-  styleUrls: ["./upgrade-rune.component.scss"],
+  selector: 'app-upgrade-rune',
+  templateUrl: './upgrade-rune.component.html',
+  styleUrls: ['./upgrade-rune.component.scss'],
 })
 export class UpgradeRuneComponent implements OnInit {
   @Input() asset: AssetAndBalance;
@@ -33,16 +44,25 @@ export class UpgradeRuneComponent implements OnInit {
   subs: Subscription[];
   balance: number;
   inboundAddresses: PoolAddressDTO[];
+  networkFee: number;
+  currency: Currency;
+  insufficientChainBalance: boolean;
+  isError: boolean;
 
   constructor(
     private userService: UserService,
     private midgardService: MidgardService,
     private overlaysService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private txUtilsService: TransactionUtilsService,
+    private currencyService: CurrencyService
   ) {
     this.back = new EventEmitter<null>();
     this.confirmUpgrade = new EventEmitter<{ amount: number }>();
     this.amountSpendable = false;
+    this.currencyService.cur$
+      .pipe(take(1))
+      .subscribe((currency) => (this.currency = currency));
   }
 
   ngOnInit(): void {
@@ -54,30 +74,64 @@ export class UpgradeRuneComponent implements OnInit {
       });
 
       this.subs = [balances$];
+      this.estimateFees();
     }
   }
 
+  async estimateFees() {
+    const inboundAddresses = await this.midgardService
+      .getInboundAddresses()
+      .toPromise();
+    this.networkFee = this.txUtilsService.calculateNetworkFee(
+      this.asset.asset,
+      inboundAddresses,
+      'INBOUND'
+    );
+  }
+
+  getChainAssetCaller(asset: Asset) {
+    return getChainAsset(asset.chain);
+  }
+
+  breadcrumbMessage() {
+    this.insufficientChainBalance = this.balance < this.networkFee;
+    if (this.insufficientChainBalance) {
+      this.isError = true;
+      return `Insufficient ${this.asset.asset.chain}.${this.asset.asset.ticker} for Fees`;
+    }
+
+    if (this.amountSpendable) {
+      return 'ready';
+    }
+
+    return 'prepare';
+  }
+
   breadcrumbNav(val: string): void {
-    if (val == "back") {
+    if (val == 'back') {
       this.analytics.event('upgrade_prepare', 'breadcrumb_upgrade');
       this.back.emit();
-    }
-    else if (val == 'swap') 
-    {
+    } else if (val == 'swap') {
       this.analytics.event('upgrade_prepare', 'breadcrumb_skip');
-      this.overlaysService.setViews(MainViewsEnum.Swap, "Swap");
+      this.overlaysService.setViews(MainViewsEnum.Swap, 'Swap');
     }
   }
 
   upgradeConfirm() {
     let upgradeAmoundUSD = this.amount * this.asset.assetPriceUSD;
-    this.analytics.event('upgrade_prepare', 'button_upgrade_*FROM_ASSET*_THOR.RUNE_usd_*numerical_usd_value*', upgradeAmoundUSD, assetString(this.asset.asset), upgradeAmoundUSD.toString())
+    this.analytics.event(
+      'upgrade_prepare',
+      'button_upgrade_*FROM_ASSET*_THOR.RUNE_usd_*numerical_usd_value*',
+      upgradeAmoundUSD,
+      assetString(this.asset.asset),
+      upgradeAmoundUSD.toString()
+    );
     this.confirmUpgrade.next({ amount: this.amount });
   }
 
   close() {
     this.analytics.event('upgrade_prepare', 'button_cancel');
-    this.back.emit()
+    this.back.emit();
   }
 
   setPoolAddresses() {

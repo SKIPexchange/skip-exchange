@@ -5,6 +5,10 @@
   background-color: transparent;
   height: 143px;
 
+  &.one-asset {
+    height: 113px;
+  }
+
   &--inner {
     height: 100%;
     width: 100%;
@@ -37,9 +41,13 @@
     .label-title,
     .expand-more,
     .usd-est {
-      color: #474e5d;
-      fill: #474e5d;
+      color: var(--primary-grey-color);
+      fill: var(--primary-grey-color);
     }
+  }
+  
+  .usd-est.processing {
+    color: var(--primary-grey-color);
   }
 }
 
@@ -58,10 +66,18 @@
   }
 
   &.disable {
-    color: #474e5d;
+    color: var(--primary-grey-color);
 
     &::placeholder {
-      color: #474e5d;
+      color: var(--primary-grey-color);
+    }
+  }
+  
+  &.processing {
+    color: var(--primary-grey-color) !important;
+    
+    &::placeholder {
+      color: var(--primary-grey-color) !important;
     }
   }
 }

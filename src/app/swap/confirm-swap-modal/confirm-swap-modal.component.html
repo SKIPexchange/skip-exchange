@@ -6,13 +6,14 @@
   [asset]="[swapData.sourceAsset, swapData.targetAsset]"
   [amount]="[swapData.inputValue, swapData.outputValue]"
   [targetAddress]="swapData.targetAddress"
+  type="Swap"
 >
   <app-breadcrumb
     [path]="[
       { name: 'skip', call: 'skip' },
       { name: 'Swap', call: 'swap' }
     ]"
-    message="TRANSACTION PROCESSING"
+    message="PROCESSING"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>
@@ -38,7 +39,7 @@
       },
       { name: 'Swap', call: 'swap' }
     ]"
-    message="SUCCESS"
+    [message]="outboundHash ? 'SUCCESS' : 'Waiting for Confirmation'"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>
@@ -85,6 +86,7 @@
 
       <app-asset-input
         label="Send"
+        type="swap"
         [(selectedAsset)]="swapData.sourceAsset.asset"
         [(assetUnit)]="swapData.inputValue"
         [balance]="swapData.balance"
@@ -101,6 +103,7 @@
         label="Receive"
         [(selectedAsset)]="swapData.targetAsset.asset"
         [(assetUnit)]="swapData.outputValue"
+        [balance]="swapData.targetAsset?.balance?.amount().toNumber()"
         [disableInput]="true"
         [disabledAssetSymbol]="swapData.targetAsset.asset.symbol"
         [priceInput]="swapData.targetAsset.assetPriceUSD"
@@ -108,38 +111,34 @@
         [targetAddress]="swapData.targetAddress"
         [hideMax]="true"
         extraLabel="(estimated)"
-        [showBalance]="false"
       ></app-asset-input>
 
       <div>
         <div class="swap-details">
           <div class="flex justify-between">
             <span class="tx-detail-label">Price:</span>
-            <span
-              >{{ swapData.basePrice | number: "1.2-4" }}
-              {{ swapData.sourceAsset.asset.ticker }} per
-              {{ swapData.targetAsset.asset.ticker
-              }}<span
+            <span>
+              1 {{ swapData.targetAsset.asset.ticker }} = {{ swapData.basePrice | number: "1.2-4" }} {{ swapData.sourceAsset.asset.ticker }}
+              <span
                 *ngIf="swapData.sourceAsset.assetPriceUSD"
                 class="mono"
                 style="margin-left: 5px"
-                >({{
+              >
+                ({{
                   swapData.sourceAsset.assetPriceUSD *
                     currency.value *
                     swapData.basePrice | number: "0.2-2"
                 }}
-                {{ currency.code }})</span
-              ></span
-            >
+                {{ currency.code }})
+              </span>
+            </span>
           </div>
 
-          <div *ngIf="swapData.networkFeeInSource" class="flex justify-between">
-            <span class="tx-detail-label">Total Fee:</span>
-            <span
-              >{{ swapData.networkFeeInSource | number: "1.0-8" }}
-              {{ swapData.sourceAsset.asset.chain }}.{{
-                swapData.sourceAsset.asset.ticker
-              }}<span
+          <div *ngIf="swapData.networkFeeInSource" class="flex justify-between text-white">
+            <span class="tx-detail-label">Network Fee:</span>
+            <span>
+              {{ swapData.networkFeeInSource | number: "1.0-8" }} {{ swapData.sourceAsset.asset.ticker }}
+              <span
                 *ngIf="swapData.sourceAsset.assetPriceUSD"
                 class="mono"
                 style="margin-left: 5px"
@@ -193,13 +192,12 @@
             <span>{{swapData.networkFeeInSource | number:"1.0-4"}} {{swapData.sourceAsset.ticker}}</span>
           </div> -->
 
-          <div class="flex justify-between">
+          <!-- <div class="flex justify-between">
             <div class="tx-detail-label">
               Estimated Transaction Time:
-              <!-- <mat-icon style="transform: scale(.6)" matTooltip="Estimated Confirmation Time is the time it will take for THORChain to process your transaction.">info</mat-icon> -->
             </div>
             <span><{{ estimatedMinutes }} min</span>
-          </div>
+          </div> -->
         </div>
 
         <div class="bottom-actions two-btn">

@@ -57,7 +57,7 @@
                 alt="plus icon"
               />
             </div>
-            <span class="item-text">ADD TOKEN</span>
+            <span class="item-text">ADD <span class="small-1">TOKEN</span></span>
           </div>
         </div>
       </li>
@@ -80,18 +80,15 @@
               [ticker]="item.asset.ticker"
               [iconPath]="item.asset.iconPath"
             ></app-icon-ticker>
-            <span *ngIf="showApy && hasAPY(item)" class="side-asset"> / {{+hasAPY(item).apy * 100 | number: '0.0-2'}}% APY</span>
+            <span *ngIf="showApy && hasAPY(item)" class="side-asset small-1 mono">({{+hasAPY(item).apy * 100 | number: '0.0-2'}}% APY)</span>
           </div>
           <div
             *ngIf="item.balance"
             class="flex text-right"
             style="text-align: right"
           >
-            <span class="market-list-item__balance">{{
-              item.balance.amount().toNumber() | number: "1.2-6"
-            }} 
-            <span *ngIf="item.assetPriceUSD && showPrice">({{item.assetPriceUSD * item.balance.amount().toNumber() * currency.value | shortNumber: showApy ? false : true}} {{currency.code}})</span>
-            </span>
+          <span class="market-list-item__balance">{{item.balance.amount().toNumber() | number: "1.2-6"}}<span *ngIf="item.assetPriceUSD && showPrice" class="small-1 ml-0.5">({{item.assetPriceUSD * item.balance.amount().toNumber() * currency.value | shortNumber: showApy ? false : true}} {{currency.code}})</span>
+          </span>
           </div>
 
           <!-- <span *ngIf="item.asset.chain === 'ETH' && item.asset.ticker !== 'ETH'" class="text-xs text-gray-400">{{item.asset.symbol.split('-')[1]}}</span> -->

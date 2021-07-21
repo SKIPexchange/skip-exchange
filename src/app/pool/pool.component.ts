@@ -1,31 +1,32 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Balances } from "@xchainjs/xchain-client";
-import { combineLatest, Subscription } from "rxjs";
-import { User } from "../_classes/user";
-import { MidgardService } from "../_services/midgard.service";
-import { UserService } from "../_services/user.service";
-import { PoolDTO } from "../_classes/pool";
-import { MemberPool } from "../_classes/member";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Balances } from '@xchainjs/xchain-client';
+import { combineLatest, Subscription } from 'rxjs';
+import { User } from '../_classes/user';
+import { MidgardService } from '../_services/midgard.service';
+import { UserService } from '../_services/user.service';
+import { PoolDTO } from '../_classes/pool';
+import { MemberPool } from '../_classes/member';
 import {
   TransactionStatusService,
   Tx,
-} from "../_services/transaction-status.service";
-import { PoolDetailService } from "../_services/pool-detail.service";
-import { Router } from "@angular/router";
-import { isNonNativeRuneToken } from "../_classes/asset";
-import { ThorchainPricesService } from "../_services/thorchain-prices.service";
-import { CurrencyService } from "../_services/currency.service";
-import { Currency } from "../_components/account-settings/currency-converter/currency-converter.component";
-import { OverlaysService, PoolViews } from "../_services/overlays.service";
-import { AnalyticsService } from "../_services/analytics.service";
-import { HttpErrorResponse } from "@angular/common/http";
-import { NetworkSummary } from "../_classes/network";
-import { environment } from "src/environments/environment";
+} from '../_services/transaction-status.service';
+import { PoolDetailService } from '../_services/pool-detail.service';
+import { Router } from '@angular/router';
+import { Asset, isNonNativeRuneToken } from '../_classes/asset';
+import { ThorchainPricesService } from '../_services/thorchain-prices.service';
+import { CurrencyService } from '../_services/currency.service';
+import { Currency } from '../_components/account-settings/currency-converter/currency-converter.component';
+import { OverlaysService, PoolViews } from '../_services/overlays.service';
+import { AnalyticsService } from '../_services/analytics.service';
+import { assetToString } from '@xchainjs/xchain-util';
+import { HttpErrorResponse } from '@angular/common/http';
+import { NetworkSummary } from '../_classes/network';
+import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: "app-pool",
-  templateUrl: "./pool.component.html",
-  styleUrls: ["./pool.component.scss"],
+  selector: 'app-pool',
+  templateUrl: './pool.component.html',
+  styleUrls: ['./pool.component.scss'],
 })
 export class PoolComponent implements OnInit, OnDestroy {
   user: User;
@@ -36,14 +37,15 @@ export class PoolComponent implements OnInit, OnDestroy {
   balances: Balances;
   createablePools: string[];
   memberPools: MemberPool[];
-  poolType: "member" | "notMember";
+  poolType: 'member' | 'notMember';
   runePrice: number;
   currency: Currency;
-  pooledRune: number;
-  pooledAsset: number;
+  pooledAmountRune: number;
+  pooledAmountAsset: number;
+  pooledAsset: Asset;
+  pooledDepth: number;
+  pooledDayAverage: number;
   pooledShare: number;
-  pooledAssetTicker: String;
-  pooledAssetChain: String;
   pendingPoolTxs: Tx[];
   addresses: string[];
   maxLiquidityRune: number;
@@ -51,6 +53,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   depositsDisabled: boolean;
   txStreamInitSuccess: boolean;
   mode: PoolViews;
+  assetPriceUSD: number;
   appLocked: boolean;
 
   constructor(
@@ -97,11 +100,15 @@ export class PoolComponent implements OnInit, OnDestroy {
     const poolDeatil$ = this.poolDetailService.pooledDetails$.subscribe(
       (poolDetails) => {
         this.poolType = poolDetails.poolType;
-        this.pooledRune = poolDetails.pooledRune;
+        this.pooledAmountRune = poolDetails.pooledAmountRune;
+        this.pooledAmountAsset = poolDetails.pooledAmountAsset;
         this.pooledAsset = poolDetails.pooledAsset;
+        this.pooledDepth = poolDetails.pooledDepth;
+        this.pooledDayAverage = poolDetails.pooledDayAverage;
         this.pooledShare = poolDetails.pooledShare;
-        this.pooledAssetTicker = poolDetails.pooledAssetTicker;
-        this.pooledAssetChain = poolDetails.pooledAssetChain;
+        this.assetPriceUSD = +this.pools?.find((pool) =>
+          pool.asset.includes(assetToString(this.pooledAsset))
+        )?.assetPriceUSD;
       }
     );
 
@@ -125,11 +132,9 @@ export class PoolComponent implements OnInit, OnDestroy {
       this.currency = cur;
     });
 
-    const ovr$ = this.ovrService.PoolView.subscribe(
-      (ovr) => {
-        this.mode = ovr;
-      }
-    )
+    const ovr$ = this.ovrService.PoolView.subscribe((ovr) => {
+      this.mode = ovr;
+    });
 
     this.subs.push(
       user$,
@@ -148,22 +153,23 @@ export class PoolComponent implements OnInit, OnDestroy {
     }
 
     if (this.userPoolError) {
-      return { text: "Cannot fetch user Pools", isError: true };
+      return { text: 'Cannot fetch user Pools', isError: true };
     }
 
     if (this.depositsDisabled) {
-      return { text: "CAPS REACHED", isError: true };
+      return { text: 'CAPS REACHED', isError: true };
     }
 
-    return "SELECT";
+    return 'SELECT';
   }
 
   clearPoolDetail() {
-    this.pooledRune = null;
+    this.pooledAmountRune = null;
+    this.pooledAmountAsset = null;
     this.pooledAsset = null;
     this.pooledShare = null;
-    this.pooledAssetTicker = null;
-    this.pooledAssetChain = null;
+    this.pooledDepth = null;
+    this.pooledDayAverage = null;
   }
 
   ngOnInit(): void {
@@ -175,7 +181,7 @@ export class PoolComponent implements OnInit, OnDestroy {
     this.midgardService.getPools().subscribe((res) => {
       this.pools = res;
       let availablePools = this.pools.filter(
-        (pool) => pool.status === "available"
+        (pool) => pool.status === 'available'
       );
       this.runePrice =
         this.thorchainPricesService.estimateRunePrice(availablePools);
@@ -184,42 +190,33 @@ export class PoolComponent implements OnInit, OnDestroy {
   }
 
   breadcrumbNav(nav: string) {
-    if (nav === "pool") {
-      this.router.navigate(["/", "pool"]);
-    } else if (nav === "swap") {
-      this.router.navigate(["/", "swap"]);
+    if (nav === 'pool') {
+      this.router.navigate(['/', 'pool']);
+    } else if (nav === 'swap') {
+      this.router.navigate(['/', 'swap']);
       if (!this.user) {
         this.analytics.event('pool_disconnected', 'breadcrumb_skip');
-      }
-      else {
+      } else {
         this.analytics.event('pool_select', 'breadcrumb_skip');
       }
     }
   }
 
   switchNav(val: string) {
-    if (val === "left") {
-      if (!this.user)
-        this.analytics.event('pool_disconnected', 'switch_swap');
+    if (val === 'left') {
+      if (!this.user) this.analytics.event('pool_disconnected', 'switch_swap');
       else if (this.user) {
         this.analytics.event('pool_select', 'switch_swap');
       }
-      this.router.navigate([
-        "/",
-        "swap"
-      ]);
-    }
-    else if (val === "right") {
-      this.router.navigate([
-        "/",
-        "pool"
-      ]);
+      this.router.navigate(['/', 'swap']);
+    } else if (val === 'right') {
+      this.router.navigate(['/', 'pool']);
     }
   }
 
   connectWallet() {
     this.analytics.event('pool_disconnected', 'button_connect_wallet');
-    this.ovrService.setCurrentPoolView('Connect')
+    this.ovrService.setCurrentPoolView('Connect');
   }
 
   checkCreateableMarkets() {
@@ -232,7 +229,7 @@ export class PoolComponent implements OnInit, OnDestroy {
               (pool) => pool.asset === `${asset.chain}.${asset.symbol}`
             ) &&
             !isNonNativeRuneToken(asset) &&
-            asset.chain !== "THOR"
+            asset.chain !== 'THOR'
           );
         })
         .map((balance) => `${balance.asset.chain}.${balance.asset.symbol}`);
@@ -244,7 +241,10 @@ export class PoolComponent implements OnInit, OnDestroy {
     const network$ = this.midgardService.network$;
     const combined = combineLatest([mimir$, network$]);
     const sub = combined.subscribe(([mimir, network]) => {
-      if (network instanceof HttpErrorResponse || mimir instanceof HttpErrorResponse) {
+      if (
+        network instanceof HttpErrorResponse ||
+        mimir instanceof HttpErrorResponse
+      ) {
         this.depositsDisabled = true;
       } else {
         // prettier-ignore
@@ -266,32 +266,49 @@ export class PoolComponent implements OnInit, OnDestroy {
   }
 
   async getAddresses(): Promise<string[]> {
-    const thorClient = this.user.clients.thorchain;
-    const thorAddress = await thorClient.getAddress();
+    if (this.user && this.user.type === 'metamask') {
+      return [this.user.wallet.toLowerCase()];
+    } else if (this.user && this.user.type === 'walletconnect') {
+      const clientsChain = this.userService.clientAvailableChains();
 
-    const btcClient = this.user.clients.bitcoin;
-    const btcAddress = await btcClient.getAddress();
+      let addresses = [];
+      clientsChain.forEach(async (chain) => {
+        let address = await this.userService
+          .getChainClient(this.user, chain)
+          .getAddress()
+          .toLowerCase();
+        if (address) addresses.push(address);
+      });
 
-    const ltcClient = this.user.clients.litecoin;
-    const ltcAddress = await ltcClient.getAddress();
+      return addresses;
+    } else {
+      const thorClient = this.user.clients.thorchain;
+      const thorAddress = await thorClient.getAddress();
 
-    const bchClient = this.user.clients.bitcoinCash;
-    const bchAddress = await bchClient.getAddress();
+      const btcClient = this.user.clients.bitcoin;
+      const btcAddress = await btcClient.getAddress();
 
-    const bnbClient = this.user.clients.binance;
-    const bnbAddress = await bnbClient.getAddress();
+      const ltcClient = this.user.clients.litecoin;
+      const ltcAddress = await ltcClient.getAddress();
 
-    const ethClient = this.user.clients.ethereum;
-    const ethAddress = await ethClient.getAddress();
+      const bchClient = this.user.clients.bitcoinCash;
+      const bchAddress = await bchClient.getAddress();
 
-    return [
-      thorAddress,
-      btcAddress,
-      ltcAddress,
-      bchAddress,
-      bnbAddress,
-      ethAddress,
-    ];
+      const bnbClient = this.user.clients.binance;
+      const bnbAddress = await bnbClient.getAddress();
+
+      const ethClient = this.user.clients.ethereum;
+      const ethAddress = await ethClient.getAddress().toLowerCase();
+
+      return [
+        thorAddress,
+        btcAddress,
+        ltcAddress,
+        bchAddress,
+        bnbAddress,
+        ethAddress,
+      ];
+    }
   }
 
   async getAccountPools() {
@@ -307,7 +324,10 @@ export class PoolComponent implements OnInit, OnDestroy {
         this.midgardService.getMember(address).subscribe((res) => {
           for (const pool of res.pools) {
             const match = this.memberPools.find(
-              (existingPool) => existingPool.pool === pool.pool
+              (existingPool) =>
+                existingPool.pool === pool.pool &&
+                existingPool.assetAddress === pool.assetAddress &&
+                existingPool.runeAddress === pool.runeAddress
             );
             if (!match) {
               const memberPools = this.memberPools;
@@ -317,7 +337,6 @@ export class PoolComponent implements OnInit, OnDestroy {
           }
         });
       }
-
     }
 
     this.loading = false;

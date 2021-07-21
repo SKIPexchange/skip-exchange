@@ -1,4 +1,4 @@
-<div class="swap-input uni-input" [ngClass]="{ disable: disableUser }">
+<div class="swap-input uni-input" [ngClass]="{ disable: disableUser, 'one-asset': disabledAsset }">
   <div class="swap-input--inner">
     <div class="flex justify-between label-wrapper">
       <label class="label-title" for="{{ label }}Input">{{ label }}</label>
@@ -28,7 +28,7 @@
     </div>
 
     <div class="inputs">
-      <div class="input flex-grow">
+      <div *ngIf="!disabledAsset || assetToString(selectedAssets[0]) !== assetToString(disabledAsset)" class="input flex-grow">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"
@@ -38,7 +38,7 @@
           placeholder="0.0"
           type="number"
           [disabled]="true"
-          [ngClass]="{ disable: disableUser }"
+          [ngClass]="{ disable: disableUser, processing: processing }"
         />
         <div
           class="tag-space--between"
@@ -62,7 +62,7 @@
         </button>
       </div>
 
-      <div class="input flex-grow" style="margin-top: -5px">
+      <div *ngIf="!disabledAsset || assetToString(selectedAssets[1]) !== assetToString(disabledAsset)" class="input flex-grow" style="margin-top: -5px">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"
@@ -72,7 +72,7 @@
           placeholder="0.0"
           type="number"
           [disabled]="true"
-          [ngClass]="{ disable: disableUser }"
+          [ngClass]="{ disable: disableUser, processing: processing }"
         />
         <div
           class="tag-space--between"
@@ -99,17 +99,10 @@
 
     <span
       class="usd-est"
-      *ngIf="showPrice && priceInputs && assetUnits[0] && assetUnits[1]"
-      >{{
-        (priceInputs[0] * assetUnits[0] + priceInputs[1] * assetUnits[1]) *
-          currency.value | number: ".2-3"
-      }}
-      {{ currency.code }} CUMULATIVE</span
+      *ngIf="showPrice"
+      [ngClass]="{ processing: processing }"
     >
-    <span
-      class="usd-est"
-      *ngIf="showPrice && (!assetUnits[0] || !assetUnits[1])"
-      >{{ 0 | number: ".2-3" }} {{ currency.code }} CUMULATIVE</span
-    >
+      {{bottomLabel}}
+    </span>
   </div>
 </div>

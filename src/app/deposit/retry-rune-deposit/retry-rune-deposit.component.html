@@ -28,7 +28,7 @@
     >
     </app-asset-input>
 
-    <app-arrow [isPlus]="true" [isGrey]="true"></app-arrow>
+    <app-arrow [isPlus]="true" [isError]="true"></app-arrow>
 
     <app-asset-input
       label="Deposit"
@@ -41,6 +41,7 @@
       [disabledMarketSelect]="true"
       [isDeposit]="true"
       [inputColor]="'var(--primary-red)'"
+      [isError]="true"
     >
     </app-asset-input>
 
@@ -50,7 +51,7 @@
         succeeded, but there was an error depositing {{ rune.chain }}.{{
           rune.ticker
         }}. <br />
-        The error is “. We use symmetrical deposits, which means THORChain is
+        The error is {{errorMessage}}. We use symmetrical deposits, which means THORChain is
         waiting for the <br />
         {{ rune.chain }}.{{ rune.ticker }} deopsit to register you as a pool
         member.
@@ -157,6 +158,7 @@
   [transactionDetail]="processingMessage"
   (closeDialog)="closeModal.emit()"
   [isPlus]="true"
+  type="Deposit"
 >
   <app-breadcrumb
     [path]="[

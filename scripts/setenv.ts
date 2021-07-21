@@ -30,10 +30,11 @@ if (isTestnet) {
 const environmentFileContent = `// prettier-ignore
 export const environment = {
    production: ${isProduction},
-   network: '${isTestnet ? 'testnet' : 'chaosnet'}',
+   network: '${isTestnet ? 'testnet' : 'mainnet'}',
    etherscanKey: '${process.env.ETHERSCAN_KEY}',
    infuraProjectId: '${process.env.INFURA_PROJECT_ID}',
-   appLocked: ${process.env.APP_LOCKED ?? false}
+   appLocked: ${process.env.APP_LOCKED ?? false},
+   googleMeasurement: '${process.env.GOOGLE_MEASUREMENT_ID ?? ''}'
 };
 `;
 // write the content to the respective file

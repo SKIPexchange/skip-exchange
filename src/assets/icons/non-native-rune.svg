@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>BNB.RUNE</title>
+    <defs>
+        <circle id="path-1" cx="12" cy="12" r="11.5384615"></circle>
+    </defs>
+    <g id="⚡-Active---SKIP" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop:-Views-(don't-use-to-code)" transform="translate(-882.000000, -445.000000)">
+            <g id="Content" transform="translate(-2.000000, -34.000000)">
+                <g id="Pool-Views" transform="translate(355.000000, 140.000000)">
+                    <g id="Withdrawing" transform="translate(51.000000, 259.000000)">
+                        <g id="BNB.RUNE" transform="translate(478.000000, 80.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="Oval" fill="#000B12" xlink:href="#path-1"></use>
+                            <path d="M12,0 C18.627417,0 24,5.372583 24,12 C24,18.627417 18.627417,24 12,24 C5.372583,24 0,18.627417 0,12 C0,5.372583 5.372583,0 12,0 Z M12,0.923076923 C5.88238431,0.923076923 0.923076923,5.88238431 0.923076923,12 C0.923076923,18.1176157 5.88238431,23.0769231 12,23.0769231 C18.1176157,23.0769231 23.0769231,18.1176157 23.0769231,12 C23.0769231,5.88238431 18.1176157,0.923076923 12,0.923076923 Z" id="Oval" fill="#F3BA2F" fill-rule="nonzero"></path>
+                            <polygon id="Mask-Copy-12" fill="#F3BA2F" points="10.7867034 17.8090132 9.27987089 17.8090132 9.27987089 5.80901319 10.7867034 5.80901319 14.643867 7.99232371 14.643867 9.64211853 13.2680634 12.0060036 15.4627977 17.8090132 13.8576935 17.8090132 11.6793379 11.9239243 13.3663351 8.98548377 10.7867034 7.52447147"></polygon>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

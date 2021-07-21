@@ -1,16 +1,25 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
-import { BehaviorSubject, Observable, timer } from "rxjs";
-import { MidgardConstants } from "../_classes/midgard-constants";
-import { PoolAddressDTO } from "../_classes/pool-address";
-import { TransactionDTO } from "../_classes/transaction";
-import { LastBlock } from "../_classes/last-block";
-import { PoolDTO } from "../_classes/pool";
-import { MemberDTO } from "../_classes/member";
-import { shareReplay } from "rxjs/operators";
-import { environment } from "src/environments/environment";
-import { NetworkSummary } from "../_classes/network";
-import { LiquidityProvider } from "../_classes/liquidity-provider";
+import { Injectable } from '@angular/core';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
+import { BehaviorSubject, Observable, timer } from 'rxjs';
+import { MidgardConstants } from '../_classes/midgard-constants';
+import { PoolAddressDTO } from '../_classes/pool-address';
+import { TransactionDTO } from '../_classes/transaction';
+import { LastBlock } from '../_classes/last-block';
+import { PoolDTO } from '../_classes/pool';
+import { MemberDTO } from '../_classes/member';
+import { map, shareReplay } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { NetworkSummary } from '../_classes/network';
+import { LiquidityProvider } from '../_classes/liquidity-provider';
+import {
+  MsgNativeTx,
+  ThorchainDepositResponse,
+} from '@xchainjs/xchain-thorchain';
+import { StdTx } from 'cosmos-client/x/auth';
 
 export interface MimirResponse {
   [key: string]: number;
@@ -29,7 +38,7 @@ export interface ThorchainQueue {
 }
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class MidgardService {
   private v2BasePath: string;
@@ -37,22 +46,26 @@ export class MidgardService {
   private _constants$: Observable<MidgardConstants>;
   private _mimir$: Observable<MimirResponse>;
 
-  private mimirSource = new BehaviorSubject<MimirResponse | HttpErrorResponse>(null);
+  private mimirSource = new BehaviorSubject<MimirResponse | HttpErrorResponse>(
+    null
+  );
   mimir$ = this.mimirSource.asObservable();
 
-  private networkSource = new BehaviorSubject<NetworkSummary | HttpErrorResponse>(null);
+  private networkSource = new BehaviorSubject<
+    NetworkSummary | HttpErrorResponse
+  >(null);
   network$ = this.networkSource.asObservable();
 
   constructor(private http: HttpClient) {
     this.v2BasePath =
-      environment.network === "testnet"
-        ? "https://testnet.midgard.thorchain.info/v2"
-        : "https://midgard.thorchain.info/v2";
+      environment.network === 'testnet'
+        ? 'https://testnet.midgard.thorchain.info/v2'
+        : 'https://midgard.thorchain.info/v2';
 
     this._thornodeBasePath =
-      environment.network === "testnet"
-        ? "https://testnet.thornode.thorchain.info"
-        : "https://thornode.thorchain.info";
+      environment.network === 'testnet'
+        ? 'https://testnet.thornode.thorchain.info'
+        : 'https://thornode.thorchain.info';
 
     // cached since constants are constant
     this._constants$ = this.http
@@ -103,9 +116,9 @@ export class MidgardService {
 
   getTransaction(txId: string): Observable<TransactionDTO> {
     const params = new HttpParams()
-      .set("offset", "0")
-      .set("limit", "1")
-      .set("txid", txId);
+      .set('offset', '0')
+      .set('limit', '1')
+      .set('txid', txId);
     return this.http.get<TransactionDTO>(`${this.v2BasePath}/actions`, {
       params,
     });
@@ -113,9 +126,9 @@ export class MidgardService {
 
   getAddrTransactions(address: string): Observable<TransactionDTO> {
     const params = new HttpParams()
-      .set("offset", "0")
-      .set("limit", "10")
-      .set("address", address);
+      .set('offset', '0')
+      .set('limit', '10')
+      .set('address', address);
     return this.http.get<TransactionDTO>(`${this.v2BasePath}/actions`, {
       params,
     });
@@ -140,7 +153,9 @@ export class MidgardService {
   }
 
   updateMimir(): Observable<MimirResponse> {
-    return this.http.get<MimirResponse>(`${this._thornodeBasePath}/thorchain/mimir`);
+    return this.http.get<MimirResponse>(
+      `${this._thornodeBasePath}/thorchain/mimir`
+    );
   }
 
   getThorchainLiquidityProviders(
@@ -150,4 +165,35 @@ export class MidgardService {
       `${this._thornodeBasePath}/thorchain/pool/${asset}/liquidity_providers`
     );
   }
+
+  buildDepositTx = async (msgNativeTx: MsgNativeTx): Promise<StdTx> => {
+    try {
+      const response = await this.http
+        .post<ThorchainDepositResponse>(
+          `${this._thornodeBasePath}/thorchain/deposit`,
+          {
+            coins: msgNativeTx.coins,
+            memo: msgNativeTx.memo,
+            base_req: { chain_id: 'thorchain', from: msgNativeTx.signer },
+          }
+        )
+        .toPromise();
+
+      console.log(msgNativeTx, response);
+      if (!response || !response.value) {
+        throw new Error('Invalid client url');
+      }
+
+      const unsignedStdTx = StdTx.fromJSON({
+        msg: response.value.msg,
+        fee: response.value.fee,
+        signatures: [],
+        memo: '',
+      });
+
+      return unsignedStdTx;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
 }

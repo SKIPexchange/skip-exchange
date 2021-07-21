@@ -3,25 +3,32 @@
   *ngIf="view === 'Asset' || view === 'Deposit' || view === 'Approve' || view === 'Connect'"
 >
   <div class="container">
-    <div *ngIf="view === 'Deposit'">
-      <div class="main-container">
-        <nav class="content-top">
-          <app-breadcrumb
-            [path]="[
-              { name: 'skip', call: 'swap' },
-              { name: 'Pools', call: 'pool' },
-              { name: 'Deposit', disable: true }
-            ]"
-            [message]="mainButtonText()"
-            (funcCaller)="breadCrumbNav($event, 'deposit')"
-          ></app-breadcrumb>
-        </nav>
-      </div>
+    <div *ngIf="view === 'Deposit'" class="main-container">
+      <nav class="content-top">
+        <app-breadcrumb
+          [path]="[
+            { name: 'skip', call: 'swap' },
+            { name: 'Pools', call: 'pool' },
+            { name: 'Deposit', disable: true },
+            { name: asset?.chain + '.' + asset?.ticker, disable: true },
+            { name: poolType === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
+          ]"
+          [message]="{text: formValidation.message, isError: formValidation.isError}"
+          (funcCaller)="breadCrumbNav($event, 'deposit')"
+        ></app-breadcrumb>
+        <!-- <div class="top-right">
+          <app-pool-type-options [asset]="asset" [selectedPoolType]="poolType" [poolTypeOptions]="poolTypeOptions" (selectPoolType)="setPoolTypeOption($event)"></app-pool-type-options>
+        </div> -->
+      </nav>
+
 
       <app-asset-input
+        *ngIf="poolType === 'SYM' || poolType === 'ASYM_ASSET'"
+        type="deposit"
         label="Deposit"
         [(selectedAsset)]="asset"
-        [(assetUnit)]="assetAmount"
+        [assetUnit]="assetAmount"
+        (assetUnitChange)="updateValues('ASSET', $event)"
         [balance]="assetBalance"
         [disabledAssetSymbol]="rune.symbol"
         [selectableMarkets]="selectableMarkets"
@@ -35,16 +42,17 @@
       >
       </app-asset-input>
 
-      <app-arrow [isPlus]="true"></app-arrow>
+      <app-arrow *ngIf="poolType === 'SYM'" [isPlus]="true"></app-arrow>
 
       <app-asset-input
+        *ngIf="poolType === 'SYM' || poolType === 'ASYM_RUNE'"
         label="Deposit"
+        type="deposit"
         [(selectedAsset)]="rune"
-        [(assetUnit)]="runeAmount"
+        [assetUnit]="runeAmount"
+        (assetUnitChange)="updateValues('RUNE', $event)"
         [balance]="runeBalance"
         [priceInput]="runePrice"
-        [hideMax]="true"
-        [disableInput]="true"
         [disabledAssetSymbol]="rune.symbol"
         [disabledMarketSelect]="true"
         [isDeposit]="true"
@@ -55,22 +63,68 @@
       >
       </app-asset-input>
 
-      <div class="swap-details">
-        <div class="flex justify-between">
-          <span class="tx-detail-label">Fees:</span>
-          <span *ngIf="networkFee"
-            >{{ networkFee | number: "1.0-8" }} {{ asset.ticker }}.{{
-              asset.chain
-            }} 
-            <span *ngIf="currency && assetPrice">({{this.currency.value * networkFee * assetPrice | number: '0.0-2'}} {{currency.code}})</span>
+      <div *ngIf="assetAmount || runeAmount" class="swap-details">
+        <ng-container *ngIf="assetBasePrice && runeBasePrice && poolType === 'SYM' && userSelectedPoolType">
+          <div class="flex justify-between">
+            <span class="tx-detail-label">Prices:</span>
+            <span>
+              1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
+              <span *ngIf="runePrice">({{ runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="tx-detail-label"></span>
+            <span>
+              1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
+              <span *ngIf="assetPrice">({{ assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+          </div>
+        </ng-container>
+        <div *ngIf="totalDeposit()" class="flex justify-between primary-text">
+          <span class="tx-detail-label">Total Deposit:</span>
+          <span>{{ totalDeposit() | number: '0.2-2' }} {{currency.code}}</span>
+        </div>
+        <div class="flex justify-between white-text">
+          <span class="tx-detail-label">Network Fees:</span>
+          <div>
+            <span *ngIf="networkFee && poolType != 'ASYM_RUNE'"> 
+              {{ networkFee | number: "1.0-8" }} {{ asset.ticker }} 
+              <span *ngIf="currency && assetPrice">({{this.currency.value * networkFee * assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+            <span *ngIf="poolType === 'SYM' && runeFee && networkFee" > + </span>
+            <span *ngIf="runeFee && poolType != 'ASYM_ASSET'">
+              {{ runeFee | number: "1.0-4" }} RUNE 
+              <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.2-2'}} {{currency.code}})</span>
+            </span>
+          </div>
+        </div>
+        <!-- <div *ngIf="poolType !== 'SYM' && user && slip" class="flex justify-between">
+          <span *ngIf="poolType === 'ASYM_ASSET'" class="tx-detail-label">50% Swap to <span class="small-1">THOR</span>.RUNE Slip:</span>
+          <span *ngIf="poolType === 'ASYM_RUNE'"  class="tx-detail-label">50% Swap to <span class="small-1">{{this.asset.chain}}</span>.{{this.asset.ticker}} Slip:</span>
+          <span class="white-text" [ngClass]="{'red-text': slippageTolerance < (slip * 100)}">
+            {{ this.slip * 100 | number: '0.0-2' }}%
+            <span *ngIf="poolType === 'ASYM_ASSET'"> ( {{ this.currency.value * assetPrice * assetAmount * slip | number: '0.0-2' }} {{ currency.code }})</span>
+            <span *ngIf="poolType === 'ASYM_RUNE'"> ( {{ this.currency.value * runePrice * runeAmount * slip | number: '0.0-2' }} {{ currency.code }})</span>
           </span>
-          <span *ngIf="!networkFee">...</span>
         </div>
-        <div class="flex justify-between">
-          <span class="tx-detail-label"></span>
-          <span *ngIf="runeFee">{{ runeFee | number: "1.0-4" }} RUNE <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.0-2'}} {{currency.code}})</span></span>
-          <span *ngIf="!runeFee">...</span>
-        </div>
+        <div *ngIf="poolType !== 'SYM' && user && slippageTolerance" class="flex justify-between">
+          <span class="tx-detail-label">Settings:</span>
+          <span (click)="goToSettings()" class="hoverable-item">
+              {{ slippageTolerance }}% slip tolerance
+              <svg
+                class="expand-more"
+                [ngClass]="{ disable: !user }"
+                width="10"
+                height="5"
+                viewBox="0 0 15 9"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.50071 8.69094C7.23188 8.69094 6.96308 8.5883 6.75812 8.38344L0.308445 1.9337C-0.101838 1.52341 -0.101838 0.858209 0.308445 0.448091C0.718563 0.0379736 1.38363 0.0379736 1.79395 0.448091L7.50071 6.15518L13.2075 0.44829C13.6178 0.0381727 14.2828 0.0381727 14.6929 0.44829C15.1034 0.858408 15.1034 1.52361 14.6929 1.9339L8.24329 8.38364C8.03824 8.58853 7.76944 8.69094 7.50071 8.69094Z"
+                />
+              </svg>
+          </span>
+        </div> -->
       </div>
 
       <div *ngIf="user" class="bottom-actions two-btn">
@@ -85,7 +139,7 @@
             *ngIf="!ethContractApprovalRequired"
             (click)="openConfirmationDialog()"
             class="next-btn graident-btn"
-            [disabled]="formDisabled() || !assetPoolData || poolNotFoundErr || bchLegacyPooled"
+            [disabled]="!formValidation.isValid"
           >
             <span>Deposit</span>
           </button>
@@ -95,6 +149,7 @@
             [asset]="asset"
             (approveClicked)="overlaysService.setCurrentDepositView('Approve')"
             (approved)="contractApproved()"
+            eventCategory="deposit_approve_contract"
           >
           </app-approve-eth-contract>
         </div>
@@ -108,9 +163,7 @@
         </div>
         <div class="divider"></div>
         <div class="right-btn">
-          <button class="next-btn" (click)="connectWallet()">
-            <span>Connect</span>
-          </button>
+          <app-connect (openWalletOptions)="connectWallet()"></app-connect>
         </div>
       </div>
     </div>
@@ -147,6 +200,7 @@
             { name: 'skip', call: 'swap' },
             { name: 'Pools', call: 'pool' },
             { name: 'Deposit', call: 'deposit-back' },
+            { name: asset?.chain + '.' + asset?.ticker , disable: true },
             { name: 'SEARCH', disable: true }
           ]"
           message="SELECT"
@@ -160,7 +214,7 @@
       *ngIf="view === 'Approve'"
     >
       <app-approve-eth-contract-modal
-        [data]="{ asset: asset, contractAddress: ethRouter }"
+        [data]="{ asset: asset, routerAddress: ethRouter }"
         (approvedHash)="contractApproved()"
         (close)="overlaysService.setCurrentDepositView('Deposit')"
         eventCategory="deposit_contract_approve"
@@ -176,6 +230,34 @@
   [data]="depositData"
 >
 </app-confirm-deposit-modal>
+
+<app-pool-type-options 
+  *ngIf="view === 'PoolType'"
+  [assets]="[{asset: asset, balance: assetBalance, assetPriceUSD: assetPrice}, {asset: rune, balance: runeBalance, assetPriceUSD: runePrice}]" 
+  [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
+  [selectedPoolType]="poolType" 
+  [poolTypeOptions]="poolTypeOptions" 
+  (selectPoolType)="setPoolTypeOptionFromEvent($event)"
+>
+<ng-container>
+  <app-breadcrumb
+    [path]="[
+      { name: 'skip', call: 'swap' },
+      { name: 'Pools', call: 'pool' },
+      { name: 'Deposit', disable: true },
+      { name: asset?.chain + '.' + asset?.ticker , disable: true },
+      { name: 'type', disable: true }
+    ]"
+    message="select deposit type"
+    (funcCaller)="breadCrumbNav($event, 'deposit')"
+  ></app-breadcrumb>
+</ng-container>
+<ng-container disclaimer>
+  <div>If you chose to deposit assymetrically using {{asset.chain}}.{{asset.ticker}} or THOR.RUNE, be aware that you will be selling 50% of your asset in order to enter the pool symmetrically ({{asset.chain}}.{{asset.ticker}} + THOR.RUNE).</div>
+  <div class="pt-5">All THORChain pools require symmetrical positions, even if you enter with one asset only.</div>
+</ng-container>
+</app-pool-type-options>
+
 
 <!-- TODO: this should be checked -->
 <!-- <div *ngIf="poolNotFoundErr">

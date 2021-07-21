@@ -1,30 +1,33 @@
-import { Component, EventEmitter, OnDestroy, Output } from "@angular/core";
-import { MatDialogRef } from "@angular/material/dialog";
-import { Subscription } from "rxjs";
-import { ExplorerPathsService } from "src/app/_services/explorer-paths.service";
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
+import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
 import {
   TransactionStatusService,
   Tx,
   TxActions,
   TxStatus,
-} from "src/app/_services/transaction-status.service";
+} from 'src/app/_services/transaction-status.service';
 import {
   OverlaysService,
   MainViewsEnum,
-} from "src/app/_services/overlays.service";
-import { Asset } from "src/app/_classes/asset";
-import { environment } from "src/environments/environment";
-import { User } from "src/app/_classes/user";
-import { UserService } from "src/app/_services/user.service";
-import { MidgardService } from "src/app/_services/midgard.service";
-import { TransactionDTO } from "src/app/_classes/transaction";
-import { Chain } from "@xchainjs/xchain-util";
-import { AnalyticsService, assetString } from "src/app/_services/analytics.service";
+} from 'src/app/_services/overlays.service';
+import { Asset } from 'src/app/_classes/asset';
+import { environment } from 'src/environments/environment';
+import { User } from 'src/app/_classes/user';
+import { UserService } from 'src/app/_services/user.service';
+import { MidgardService } from 'src/app/_services/midgard.service';
+import { TransactionDTO } from 'src/app/_classes/transaction';
+import { Chain } from '@xchainjs/xchain-util';
+import {
+  AnalyticsService,
+  assetString,
+} from 'src/app/_services/analytics.service';
 
 @Component({
-  selector: "app-pending-txs-modal",
-  templateUrl: "./pending-txs-modal.component.html",
-  styleUrls: ["./pending-txs-modal.component.scss"],
+  selector: 'app-pending-txs-modal',
+  templateUrl: './pending-txs-modal.component.html',
+  styleUrls: ['./pending-txs-modal.component.scss'],
 })
 export class PendingTxsModalComponent implements OnDestroy {
   txs: Tx[];
@@ -72,15 +75,15 @@ export class PendingTxsModalComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getThorchainTxs();
+    this.getThorchainTxs(this.user.wallet);
   }
 
   getStatus(status: string): TxStatus {
     switch (status) {
-      case "success":
+      case 'success':
         return TxStatus.COMPLETE;
         break;
-      case "refunded":
+      case 'refunded':
         return TxStatus.REFUNDED;
         break;
       default:
@@ -91,19 +94,19 @@ export class PendingTxsModalComponent implements OnDestroy {
 
   getAction(action: string): TxActions {
     switch (action) {
-      case "swap":
+      case 'swap':
         return TxActions.SWAP;
         break;
-      case "withdraw":
+      case 'withdraw':
         return TxActions.WITHDRAW;
         break;
-      case "addLiquidity":
+      case 'addLiquidity':
         return TxActions.DEPOSIT;
         break;
-      case "switch":
+      case 'switch':
         return TxActions.UPGRADE_RUNE;
         break;
-      case "refund":
+      case 'refund':
         return TxActions.REFUND;
         break;
       default:
@@ -116,6 +119,8 @@ export class PendingTxsModalComponent implements OnDestroy {
     this.activeIndex = index;
   }
 
+  // TODO: need check all the deposit txs for asyms
+  // ALSO, need a great cleanup (see example when the tx is pending)
   transactionToTx(transactions: TransactionDTO): Tx[] {
     let txs: Tx[] = [];
 
@@ -130,7 +135,7 @@ export class PendingTxsModalComponent implements OnDestroy {
         const outboundAsset = new Asset(transaction.out[0].coins[0].asset);
 
         outbound = {
-          hash: transaction.out[0].txID,
+          hash: transaction?.out[0]?.txID,
           asset: outboundAsset,
         };
       }
@@ -139,9 +144,16 @@ export class PendingTxsModalComponent implements OnDestroy {
         const outboundAsset = new Asset(transaction.pools[0]);
 
         outbound = {
-          hash: transaction.in[1].txID,
+          hash: transaction?.in[1]?.txID,
           asset: outboundAsset,
         };
+      }
+
+      if (
+        (transaction.type == 'addLiquidity' || transaction.type == 'swap') &&
+        transaction.status == 'pending'
+      ) {
+        this.txStatusService.getOutboundHash(transaction.in[0].txID);
       }
 
       // ignore upgarde txs because of midgard bug (temp)
@@ -156,7 +168,7 @@ export class PendingTxsModalComponent implements OnDestroy {
         status,
         action,
         date,
-        isThorchainTx: inboundAsset.chain === "THOR" ? true : false,
+        isThorchainTx: inboundAsset.chain === 'THOR' ? true : false,
         symbol: inboundAsset.symbol,
         outbound,
       });
@@ -165,9 +177,9 @@ export class PendingTxsModalComponent implements OnDestroy {
     return txs;
   }
 
-  async getThorchainTxs() {
+  async getThorchainTxs(address: string) {
     this.loading = true;
-  
+
     if (!this.user && !this.user.clients && !this.user.clients.thorchain)
       return;
 
@@ -177,7 +189,7 @@ export class PendingTxsModalComponent implements OnDestroy {
     // })
 
     this.transactions = await this.midgardService
-      .getAddrTransactions(this.user.clients.thorchain.getAddress())
+      .getAddrTransactions(address)
       .toPromise();
 
     this.transactionToTx(this.transactions).forEach((tx) => {
@@ -205,114 +217,115 @@ export class PendingTxsModalComponent implements OnDestroy {
 
   explorerUrl(chain: string): string {
     switch (chain) {
-      case "BTC":
+      case 'BTC':
         return this.bitcoinExplorerUrl;
 
-      case "BNB":
+      case 'BNB':
         return this.binanceExplorerUrl;
 
-      case "THOR":
+      case 'THOR':
         return this.thorchainExplorerUrl;
 
-      case "ETH":
+      case 'ETH':
         return this.ethereumExplorerUrl;
 
-      case "LTC":
+      case 'LTC':
         return this.litecoinExplorerUrl;
 
-      case "BCH":
+      case 'BCH':
         return this.bchExplorerUrl;
 
       default:
-        return "";
+        return '';
     }
   }
 
   explorerPath(tx: Tx): string {
-    if (tx.isThorchainTx) {
-      if (tx.pollThornodeDirectly) {
-        return this.getViewBlockPath(tx.hash);
-      } else if (tx.pollRpc) {
-        /**
-         * For THOR transfers
-         */
+    if (tx.isThorchainTx && tx.chain === 'THOR') {
+      if (tx.pollThornodeDirectly || tx.pollRpc) {
         return this.getViewBlockPath(tx.hash);
       } else {
-        return this.thorchainExplorerUrl + "/" + tx.hash;
+        return this.thorchainExplorerUrl + '/' + tx.hash;
       }
-    } else if (tx.chain === "ETH") {
+    } else if (tx.chain === 'ETH') {
       return `${this.ethereumExplorerUrl}/0x${tx.hash}`;
     } else {
-      return this.explorerUrl(tx.chain) + "/" + tx.hash;
+      return this.explorerUrl(tx.chain) + '/' + tx.hash;
     }
   }
 
   explorerPathAlt(hash: string, chain: Chain, externalTx?: boolean): string {
-    if (externalTx) chain = "THOR";
+    if (externalTx) chain = 'THOR';
 
-    if (chain === "THOR") {
-      return this.thorchainExplorerUrl + "/" + hash;
-    } else if (chain === "ETH") {
+    if (chain === 'THOR') {
+      return this.thorchainExplorerUrl + '/' + hash;
+    } else if (chain === 'ETH') {
       return `${this.ethereumExplorerUrl}/0x${hash}`;
     } else {
-      return this.explorerUrl(chain) + "/" + hash;
+      return this.explorerUrl(chain) + '/' + hash;
     }
   }
 
   exploreEvent(tx: Tx, exploreAsset: string = `${tx.chain}.${tx.ticker}`) {
-    if (!exploreAsset)
-      return
-    
-    if (tx.action === "Withdraw") {
-      this.analytics.event('transaction_select', `option_selected_withdraw_*POOL_ASSET*_tag_txid_explore_*ASSET*`,
+    if (!exploreAsset) return;
+
+    if (tx.action === 'Withdraw') {
+      this.analytics.event(
+        'transaction_select',
+        `option_selected_withdraw_*POOL_ASSET*_tag_txid_explore_*ASSET*`,
         undefined,
         `${tx.chain}.${tx.ticker}`,
         exploreAsset
-      )
-    }
-    else if (tx.action === "Deposit") {
-      this.analytics.event('transaction_select', 'option_selected_deposit_*POOL_ASSET*_tag_txid_explore_*ASSET*',
+      );
+    } else if (tx.action === 'Deposit') {
+      this.analytics.event(
+        'transaction_select',
+        'option_selected_deposit_*POOL_ASSET*_tag_txid_explore_*ASSET*',
         undefined,
         `${tx.chain}.${tx.ticker}`,
         exploreAsset
-      )
-    }
-    else if (tx.action === 'Swap') {
-      this.analytics.event('transaction_select', 'option_selected_swap_*FROM_ASSET*_*TO_ASSET*_tag_txid_explore_*ASSET*',
+      );
+    } else if (tx.action === 'Swap') {
+      this.analytics.event(
+        'transaction_select',
+        'option_selected_swap_*FROM_ASSET*_*TO_ASSET*_tag_txid_explore_*ASSET*',
         undefined,
         `${tx.chain}.${tx.ticker}`,
         assetString(tx.outbound.asset),
         exploreAsset
-      )
-    }
-    else if (tx.action === "Upgrade") {
-      this.analytics.event('transaction_select', 'option_selected_upgrade_tag_txid_explore_*ASSET*',
+      );
+    } else if (tx.action === 'Upgrade') {
+      this.analytics.event(
+        'transaction_select',
+        'option_selected_upgrade_tag_txid_explore_*ASSET*',
         undefined,
         exploreAsset
-      )
-    }
-    else if (tx.action === 'Send') {
-      this.analytics.event('transaction_select', 'option_selected_send_tag_txid_explore_*ASSET*',
+      );
+    } else if (tx.action === 'Send') {
+      this.analytics.event(
+        'transaction_select',
+        'option_selected_send_tag_txid_explore_*ASSET*',
         undefined,
         exploreAsset
-      )
-    }
-    else if (tx.action === 'Refund') {
-      this.analytics.event('transaction_select', 'option_selected_refund_tag_txid_explore_*ASSET*',
+      );
+    } else if (tx.action === 'Refund') {
+      this.analytics.event(
+        'transaction_select',
+        'option_selected_refund_tag_txid_explore_*ASSET*',
         undefined,
         exploreAsset
-      )
+      );
     }
   }
 
   goToExternal(url: string) {
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   }
 
   getViewBlockPath(hash): string {
     let path = `https://viewblock.io/thorchain/tx/${hash}`;
-    if (environment.network === "testnet") {
-      path += "?network=testnet";
+    if (environment.network === 'testnet') {
+      path += '?network=testnet';
     }
     return path;
   }
@@ -326,7 +339,7 @@ export class PendingTxsModalComponent implements OnDestroy {
 
   close(): void {
     this.analytics.event('transaction_select', 'button_close');
-    this.overlaysService.setViews(MainViewsEnum.Swap, "Swap");
+    this.overlaysService.setViews(MainViewsEnum.Swap, 'Swap');
   }
 
   ngOnDestroy() {

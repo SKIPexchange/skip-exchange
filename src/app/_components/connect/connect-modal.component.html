@@ -25,7 +25,7 @@
           { name: 'skip', call: 'swap' },
           { name: 'connect', disable: true }
         ]"
-        message="select"
+        [message]="message"
         (funcCaller)="breadcrumbNav($event)"
       ></app-breadcrumb>
     </div>
@@ -55,7 +55,7 @@
                 alt="add icon"
               />
             </div>
-            <span class="item-text">Create New Keystore</span>
+            <span class="item-text"><span class="small-1">Create</span> New Keystore</span>
           </div>
         </button>
 
@@ -74,7 +74,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text">Create Keystore from phrase</span>
+            <span class="item-text"><span class="small-1">Create Keystore from </span>Phrase</span>
           </div>
         </button>
 
@@ -90,12 +90,13 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text">Connect To Existing Keystore</span>
+            <span class="item-text"><span class="small-1">Connect To </span>Existing Keystore</span>
           </div>
         </button>
 
         <button
           class="connect-option focus:outline-none justify-between"
+          [disabled]="!(platform.BLINK && platform.isBrowser)"
           (click)="connectXDEFI()"
         >
           <div class="flex item items-center">
@@ -110,11 +111,47 @@
               />
             </div>
             <span class="item-text" *ngIf="isXDEFIConnected"
-              >Connect with XDEFI</span
+              ><span class="small-1">Connect with </span>XDEFI</span
             >
-            <span class="item-text" *ngIf="!isXDEFIConnected"
-              >Install XDEFI in Chrome/Brave</span
-            >
+            <span class="item-text" *ngIf="!isXDEFIConnected">
+              <span class="small-1">Install </span>XDEFI<span class="small-1"> in Chrome/Brave</span>
+            </span>
+          </div>
+        </button>
+
+        <button class="connect-option"
+          [disabled]="!(platform.BLINK || platform.FIREFOX || platform.EDGE)"
+          (click)="connectMetaMask()"
+        >
+          <div class="flex item items-center">
+            <div class="add-icon">
+              <img
+              [src]="
+                isTestnet
+                  ? '/assets/icons/metamask-yellow.svg'
+                  : '/assets/icons/metamask-green.svg'
+              "
+                alt="folder icon"
+              />
+            </div>
+            <span *ngIf="isMetamask" class="item-text"><span class="small-1">Connect with </span>MetaMask</span>
+            <span *ngIf="!isMetamask" class="item-text"><span class="small-1">Install </span>Metamask<span class="small-1"> in Chrome/Brave/Firefox</span></span>
+          </div>
+        </button>
+
+        <button class="connect-option" (click)="connectWalletConnect()">
+          <div class="flex item items-center">
+            <div class="add-icon">
+              <img
+              [src]="
+                isTestnet
+                  ? '/assets/images/wallet-connect-icon-testnet.png'
+                  : '/assets/images/wallet-connect-icon-mainnet.png'
+              "
+                alt="folder icon"
+              />
+            </div>
+            <span class="item-text"><span class="small-1">Connect with </span>Wallet Connect</span>
           </div>
         </button>
 

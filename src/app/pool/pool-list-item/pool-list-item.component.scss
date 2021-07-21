@@ -10,8 +10,9 @@
     align-items: center;
 
     .extra-info {
-      margin-left: 10px;
-      font-size: 20px;
+      margin-left: 5px;
+      font-size: 14px;
+      font-weight: 500;
       color: var(--primary-grey-color);
     }
   }
@@ -23,10 +24,6 @@
     .pending {
       color: var(--primary-dark-color);
     }
-  }
-
-  &.pending > div {
-    justify-content: initial;
   }
 
   &:hover {

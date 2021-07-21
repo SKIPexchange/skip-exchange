@@ -5,38 +5,39 @@ import {
   EventEmitter,
   OnDestroy,
   OnInit,
-} from "@angular/core";
-import { Asset } from "src/app/_classes/asset";
-import { MarketsModalComponent } from "../markets-modal/markets-modal.component";
-import { MatDialog } from "@angular/material/dialog";
-import { UserService } from "src/app/_services/user.service";
-import { AssetAndBalance } from "src/app/_classes/asset-and-balance";
+} from '@angular/core';
+import { Asset } from 'src/app/_classes/asset';
+import { UserService } from 'src/app/_services/user.service';
+import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import {
   MainViewsEnum,
   OverlaysService,
-} from "src/app/_services/overlays.service";
-import { EthUtilsService } from "src/app/_services/eth-utils.service";
-import { User } from "src/app/_classes/user";
-import { Subscription } from "rxjs";
-import { baseToAsset } from "@xchainjs/xchain-util";
-import { MidgardService } from "src/app/_services/midgard.service";
-import { ThorchainPricesService } from "src/app/_services/thorchain-prices.service";
-import { CurrencyService } from "src/app/_services/currency.service";
-import { Currency } from "../account-settings/currency-converter/currency-converter.component";
-import { PoolAddressDTO } from "src/app/_classes/pool-address";
-import { TxType } from "src/app/_const/tx-type";
-import { take } from "rxjs/operators";
-import { AnalyticsService, assetString } from "src/app/_services/analytics.service";
+} from 'src/app/_services/overlays.service';
+import { EthUtilsService } from 'src/app/_services/eth-utils.service';
+import { User } from 'src/app/_classes/user';
+import { Subscription } from 'rxjs';
+import { baseToAsset } from '@xchainjs/xchain-util';
+import { MidgardService } from 'src/app/_services/midgard.service';
+import { ThorchainPricesService } from 'src/app/_services/thorchain-prices.service';
+import { CurrencyService } from 'src/app/_services/currency.service';
+import { Currency } from '../account-settings/currency-converter/currency-converter.component';
+import { PoolAddressDTO } from 'src/app/_classes/pool-address';
+import { TxType } from 'src/app/_const/tx-type';
+import { take } from 'rxjs/operators';
+import {
+  AnalyticsService,
+  assetString,
+} from 'src/app/_services/analytics.service';
 
 export type assetInputEventTags = {
-  event_category: string,
-  event_label_max?: string,
-  event_label_wallet?: string
-}
+  event_category: string;
+  event_label_max?: string;
+  event_label_wallet?: string;
+};
 @Component({
-  selector: "app-asset-input",
-  templateUrl: "./asset-input.component.html",
-  styleUrls: ["./asset-input.component.scss"],
+  selector: 'app-asset-input',
+  templateUrl: './asset-input.component.html',
+  styleUrls: ['./asset-input.component.scss'],
 })
 export class AssetInputComponent implements OnInit, OnDestroy {
   /**
@@ -86,6 +87,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
   }
   _balance: number;
 
+  // TODO: clean asset-input structare
   @Input() hideMax: boolean;
   @Input() extraLabel: string;
   @Input() showBalance: boolean = true;
@@ -95,6 +97,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
 
   @Input() disabledMarketSelect: boolean;
   @Input() loading: boolean;
+  @Input() processing: boolean;
   @Input() error: boolean;
   @Input() set selectableMarkets(markets: AssetAndBalance[]) {
     this._selectableMarkets = markets;
@@ -106,9 +109,12 @@ export class AssetInputComponent implements OnInit, OnDestroy {
   }
   _selectableMarkets: AssetAndBalance[];
 
+  @Input() hasAddress: boolean = false;
   @Input() priceInput: number;
   @Input() inputColor: string;
   @Input() txType?: TxType;
+  @Input() type: string;
+  @Input() isError: boolean;
   @Input() targetAddress?: string;
   @Input() targetLabel?: string;
   @Output() launchEditTargetAsset = new EventEmitter<null>();
@@ -142,18 +148,18 @@ export class AssetInputComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setPoolAddresses();
-    
+
     /** Check if the wallet have any asset of the asset-input to show */
     if (this.isWallet) {
-      this.userService.userBalances$.pipe(take(1)).subscribe(
-        (balances) => {
-          this.hasWallet = balances.filter(
-            (balance) =>
-              balance.asset.chain === this.selectedAsset.chain &&
-              balance.asset.ticker === this.selectedAsset.ticker
-          )[0] ? true : false;
-        }
-      )
+      this.userService.userBalances$.pipe(take(1)).subscribe((balances) => {
+        this.hasWallet = balances.filter(
+          (balance) =>
+            balance.asset.chain === this.selectedAsset.chain &&
+            balance.asset.ticker === this.selectedAsset.ticker
+        )[0]
+          ? true
+          : false;
+      });
     }
   }
 
@@ -207,7 +213,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
         this.selectedAsset,
         this.balance,
         this.inboundAddresses,
-        this.txType ?? "INBOUND"
+        this.txType ?? 'INBOUND'
       );
     }
   }
@@ -226,19 +232,24 @@ export class AssetInputComponent implements OnInit, OnDestroy {
         this.selectedAsset,
         this.balance,
         this.inboundAddresses,
-        this.txType ?? "INBOUND"
+        this.txType ?? 'INBOUND'
       );
 
       if (max) {
         this.assetUnitChange.emit(max);
         if (this.eventTags) {
-          this.analytics.event(this.eventTags.event_category, this.eventTags.event_label_max, undefined, assetString(this.selectedAsset));
+          this.analytics.event(
+            this.eventTags.event_category,
+            this.eventTags.event_label_max,
+            undefined,
+            assetString(this.selectedAsset)
+          );
         }
       } else {
         if (max === 0 && this.balance > 0) {
           this.maxError.emit(true);
-        } 
-        console.error("max undefined");
+        }
+        console.error('max undefined');
       }
     }
 
@@ -260,7 +271,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
           )[0];
 
           if (!balance) {
-            return
+            return;
           }
 
           const assetString = `${balance.asset.chain}.${balance.asset.symbol}`;
@@ -269,7 +280,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
           );
           let assetBalance: AssetAndBalance;
           this.midgardService.getPools().subscribe(async (pools) => {
-            if (asset.ticker === "RUNE") {
+            if (asset.ticker === 'RUNE') {
               assetBalance = {
                 asset,
                 assetPriceUSD:
@@ -290,9 +301,14 @@ export class AssetInputComponent implements OnInit, OnDestroy {
             const address = await this.userService.getAdrressChain(
               this.selectedAsset.chain
             );
-            this.analytics.event(this.eventTags.event_category, this.eventTags.event_label_wallet, undefined, assetString);
+            this.analytics.event(
+              this.eventTags.event_category,
+              this.eventTags.event_label_wallet,
+              undefined,
+              assetString
+            );
             this.overlayService.setCurrentUserView({
-              userView: "Asset",
+              userView: 'Asset',
               address,
               chain: this.selectedAsset.chain,
               asset: assetBalance,

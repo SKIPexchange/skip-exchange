@@ -9,7 +9,8 @@
           [path]="[
             { name: 'skip', call: 'swap' },
             { name: 'Pools', call: 'pool' },
-            { name: 'Withdraw', disable: true }
+            { name: 'Withdraw', disable: true },
+            { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
           ]"
           [isError]="txState === 'ERROR'"
           [message]="message"
@@ -40,54 +41,57 @@
       [selectedAssets]="[data.asset, data.rune]"
       [assetUnits]="[data.assetAmount, data.runeAmount]"
       [priceInputs]="[data.assetPrice, data.runePrice]"
+      [bottomLabel]="data.poolShareMessage"
+      [disabledAsset]="disabledAsset()"
     ></app-double-asset-field>
 
     <div class="swap-details">
-      <div class="flex justify-between">
+      <!-- <div class="flex justify-between">
         <span class="tx-detail-label">Prices:</span>
-        <span
-          >1 {{ data.rune.ticker }} =
-          {{ data.assetBasePrice | number: "1.2-4" }}
-          {{ data.asset.ticker }}</span
-        >
+        <span>
+          1 {{ data.rune.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.ticker }}
+          <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
+        </span>
       </div>
-
       <div class="flex justify-between">
         <span class="tx-detail-label"></span>
-        <span
-          >1 {{ data.asset.ticker }} =
-          {{ data.runeBasePrice | number: "1.2-4" }}
-          {{ data.rune.ticker }}</span
-        >
+        <span>
+          1 {{ data.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.ticker }}
+          <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+        </span>
+      </div> -->
+      <div *ngIf="data.withdrawalValue" class="flex justify-between primary-text">
+          <span class="tx-detail-label">Total Withdrawal:</span>
+          <span>{{ data.withdrawalValue | number: '0.2-2' }} {{currency.code}}</span>
       </div>
-
       <div
         *ngIf="data.withdrawType !== 'ASYM_ASSET'"
-        class="flex justify-between"
+        class="flex justify-between text-white"
       >
-        <span class="tx-detail-label">Fees:</span>
-        <span *ngIf="data.runeFee">{{ data.runeFee }} RUNE</span>
+        <span class="tx-detail-label">Network Fees:</span>
+        <span *ngIf="data.runeFee">
+          {{ data.runeFee }} RUNE
+          <span *ngIf="currency && data.runePrice">({{this.currency.value * data.runePrice * data.runeFee | number: '0.2-2'}} {{currency.code}})</span>
+        </span>
         <span *ngIf="!data.runeFee">...</span>
       </div>
-
       <div
         *ngIf="data.withdrawType === 'ASYM_ASSET'"
-        class="flex justify-between items-center"
+        class="flex justify-between items-center text-white"
       >
-        <span class="tx-detail-label">Fees:</span>
-        <span *ngIf="data.networkFee"
-          >{{ data.networkFee | number: "1.0-4" }} {{ data.asset.ticker }}</span
-        >
+        <span class="tx-detail-label">Network Fees:</span>
+        <span *ngIf="data.networkFee">
+          {{ data.networkFee | number: "1.0-4" }} {{ data.asset.ticker }}
+          <span *ngIf="currency && data.assetPrice">({{this.currency.value * data.networkFee * data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+        </span>
         <span *ngIf="!data.networkFee">...</span>
       </div>
-
-      <div class="flex justify-between">
+      <!-- <div class="flex justify-between">
         <div class="tx-detail-label">
           Estimated Tx Time
-          <!-- <mat-icon style="transform: scale(.6)" matTooltip="Estimated Confirmation Time is the time it will take for THORChain to process your transaction.">info</mat-icon> -->
         </div>
         <span class="flex items-end"><{{ estimatedMinutes }} min</span>
-      </div>
+      </div> -->
     </div>
 
     <div class="bottom-actions two-btn">
@@ -113,7 +117,7 @@
 <app-transaction-processing-modal
   *ngIf="txState == 'SUBMITTING'"
   [isWithdraw]="true"
-  [label]="['Withdrawing']"
+  [label]="['Withdrawing', data.poolShareMessage]"
   [asset]="[
     { asset: data.asset, balance: 0, assetPriceUSD: 0 },
     { asset: data.rune, balance: 0, assetPriceUSD: 0 }
@@ -124,15 +128,18 @@
     data.asset.ticker
   }} + {{ data.runeAmount }} {{ data.rune.ticker }}"
   (closeDialog)="closeDialog()"
+  type="Withdraw"
+  [disabledAsset]="disabledAsset()"
 >
   <app-breadcrumb
     [path]="[
       { name: 'skip', call: 'swap' },
       { name: 'Pools', call: 'pool' },
-      { name: 'Withdraw', disable: true }
+      { name: 'Withdraw', disable: true },
+      { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
     ]"
     [isError]=""
-    [message]="'TRANSACTION PROCESSING'"
+    [message]="'PROCESSING'"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>
@@ -148,17 +155,21 @@
   ]"
   [amount]="[data.assetAmount, data.runeAmount]"
   [percentage]="data.unstakePercent"
-  [label]="['Withdrawn']"
+  [label]="['Withdrawn', data.poolShareMessage]"
   (closeDialog)="closeToPool()"
+  [hashOutbound]="outboundHash"
+  [hasOutbound]="data.withdrawType !== 'ASYM_RUNE'"
+  [disabledAsset]="disabledAsset()"
 >
   <app-breadcrumb
     [path]="[
       { name: 'skip', call: 'swap' },
       { name: 'Pools', call: 'pool' },
-      { name: 'Withdraw', disable: true }
+      { name: 'Withdraw', disable: true },
+      { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
     ]"
     [isError]=""
-    [message]="'SUCCESS'"
+    [message]="hashSuccess ? 'SUCCESS' : 'Waiting for Confirmation'"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

@@ -1,19 +1,14 @@
-<div class="swap-input uni-input" [ngClass]="{ disable: disableUser }">
+<div class="swap-input uni-input" [ngClass]="{ disable: disableUser, error: isError }">
   <div class="swap-input--inner">
     <div class="flex justify-between label-wrapper">
-      <label class="label-title" for="{{ label }}Input"
-        >{{ label
-        }}<span
-          style="color: #474e5d"
-          *ngIf="selectedAsset && balance && !disableUser && showBalance"
-        >
-          (<span class="mono">{{ balance }}</span> balance)</span
-        ><span style="color: #474e5d"> {{ extraLabel }}</span></label
-      >
-      <div class="flex target-address" *ngIf="targetAddress" (click)="openTargetAddress()">
+      <label class="label-title" for="{{ label }}Input">
+        {{ label }} <span style="color: var(--primary-grey-color)"> {{ extraLabel }} </span>
+      </label>
+      <div class="flex target-address" *ngIf="(hasAddress || targetAddress) && (!disableUser && selectedAsset)" (click)="openTargetAddress()">
         <span>{{targetLabel ? targetLabel: 'Receive at'}}</span>
         <div class=" flex clickable-span items-center" [ngClass]="{'disabled': disabledMarketSelect}">
-          <span class="address mono">{{targetAddress.substring(0,7)}}...{{targetAddress.substring(targetAddress.length - 7, targetAddress.length)}}</span>
+          <span *ngIf="targetAddress" class="address mono">{{targetAddress.substring(0,7)}}...{{targetAddress.substring(targetAddress.length - 7, targetAddress.length)}}</span>
+          <span *ngIf="!targetAddress">No Address</span>
           <svg
             *ngIf="!disabledMarketSelect"
             class="expand-more"
@@ -44,8 +39,7 @@
             font-size: 22px;
             font-family: 'Roboto Mono';
           "
-          >0.0</span
-        >
+        >0.0</span>
       </div>
 
       <div
@@ -67,7 +61,7 @@
         placeholder="0.0"
         type="number"
         [disabled]="disableInput"
-        [ngClass]="{ disable: disableUser }"
+        [ngClass]="{ disable: disableUser, processing: processing }"
         [ngStyle]="{ color: inputColor }"
       />
 
@@ -165,20 +159,29 @@
       </button>
     </div>
 
-    <span class="usd-est" *ngIf="showPrice && inputUsdValue"
-      >{{ inputUsdValue * currency.value | number: ".2-3" }}
-      {{ currency.code }}</span
+    <span 
+      class="usd-est"
+      [ngClass]="{ processing: processing }"
+      *ngIf="selectedAsset && balance && !disableUser && showBalance"
     >
+      {{ balance }} BALANCE  
+    </span>
+    <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice"> / </span>
+    <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue">
+      {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
+    </span>
     <span
       class="usd-est"
+      [ngClass]="{ processing: processing }"
       *ngIf="showPrice && !inputUsdValue && priceInput && assetUnit"
-      >{{ priceInput * currency.value * assetUnit | number: ".2-3" }}
-      {{ currency.code }}</span
     >
+      {{ priceInput * currency.value * assetUnit | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
+    </span>
     <span
       class="usd-est"
+      [ngClass]="{ processing: processing }"
       *ngIf="showPrice && !inputUsdValue && (assetUnit == 0 || !assetUnit)"
-      >{{ 0 | number: ".2-3" }} {{ currency.code }}</span
-    >
+    >{{ 0 | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
+    </span>
   </div>
 </div>

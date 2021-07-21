@@ -5,6 +5,7 @@
     [isSending]="false"
     [asset]="[asset, nativeRune]"
     [amount]="[amount, amount]"
+    type="Upgrade"
   >
     <app-breadcrumb
       [path]="[
@@ -13,7 +14,7 @@
         { name: asset.asset.chain + '.' + asset.asset.ticker, disable: true }
       ]"
       (funcCaller)="breadcrumbNav($event, 'processing')"
-      message="TRANSACTION PROCESSING"
+      message="PROCESSING"
     ></app-breadcrumb>
   </app-transaction-processing-modal>
 
@@ -64,6 +65,7 @@
         <div class="content-middle">
           <app-asset-input
             label="Upgrade"
+            type="upgrade"
             [(selectedAsset)]="asset.asset"
             [(assetUnit)]="amount"
             [balance]="asset.balance.amount().toNumber()"
@@ -81,27 +83,24 @@
             label="Receive"
             [(selectedAsset)]="nativeRune.asset"
             [(assetUnit)]="amount"
-            [balance]="asset.balance.amount().toNumber()"
+            [balance]="nativeRune.balance.amount().toNumber()"
             [disabledAssetSymbol]="nativeRune.asset.symbol"
             [selectableMarkets]="[nativeRune]"
             [disableInput]="true"
             [hideMax]="true"
-            [showBalance]="false"
             [disabledMarketSelect]="true"
           >
           </app-asset-input>
 
           <div class="swap-details">
-            <div class="flex justify-between">
-              <span class="tx-detail-label">Fees:</span>
-              <span class="text-sm" *ngIf="networkFee && asset"
-                >{{ networkFee | number: "0.0-8" }}
-                {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
-              <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.0-2'}} {{currency.code}})</span>
+            <div *ngIf="networkFee && asset" class="flex justify-between list-items white-text">
+              <span class="tx-detail-label">Network Fee:</span>
+              <span class="text-sm">
+                {{ networkFee | number: "0.0-8" }} {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
+                <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
               </span>
-              <span class="text-sm" *ngIf="!networkFee || !asset">...</span>
             </div>
-            <div class="disclaimer">
+            <!-- <div class="disclaimer">
               Some of your RUNE is currently a
               {{ asset.asset.chain }} token.<br />
               <span style="color: var(--primary-red)"
@@ -110,7 +109,7 @@
               >
               <br />
               Your native THOR.RUNE will show up in your wallet. <br />
-            </div>
+            </div> -->
           </div>
 
           <div>

@@ -13,11 +13,13 @@
         <app-asset-input
           [label]="label[0]"
           [(selectedAsset)]="asset[0].asset"
+          [balance]="asset[0].balance.amount().toNumber()"
           [(assetUnit)]="amount[0]"
           [disabledAssetSymbol]="asset[0].asset.symbol"
           [disabledMarketSelect]="true"
           [disableInput]="true"
           [hideMax]="true"
+          [processing]='true'
         >
         </app-asset-input>
 
@@ -29,6 +31,7 @@
           mode="Single"
           label="Recipient Address"
           [(textOfField)]="recipientAddress"
+          [processing]="true"
           [disable]="true"
         ></app-text-field>
         <app-text-field
@@ -41,6 +44,7 @@
           [(textOfField)]="recipientAddress"
           [(textOfFieldTwo)]="memo"
           [disable]="true"
+          [processing]="true"
           [disableTwo]="true"
         ></app-text-field>
       </div>
@@ -48,21 +52,29 @@
 
     <div *ngIf="!isSending && !isWithdraw">
       <app-asset-input
+        *ngIf="!poolType || poolType === 'SYM' || poolType === 'ASYM_ASSET'"
         [label]="label[0]"
         [(selectedAsset)]="asset[0].asset"
+        [balance]="asset[0].balance.amount().toNumber() || undefined"
+        [priceInput]="asset[0].assetPriceUSD || undefined"
         [(assetUnit)]="amount[0]"
         [disabledAssetSymbol]="asset[0]?.asset?.symbol"
         [disabledMarketSelect]="true"
         [disableInput]="true"
         [hideMax]="true"
+        [processing]="true"
+        [showPrice]="false"
       >
       </app-asset-input>
 
-      <app-arrow [isPlus]="isPlus"></app-arrow>
+      <app-arrow *ngIf="!poolType || poolType === 'SYM'" [isPlus]="isPlus"></app-arrow>
 
       <app-asset-input
+        *ngIf="!poolType || poolType === 'SYM' || poolType === 'ASYM_RUNE'"
         [label]="label[1]"
         [(selectedAsset)]="asset[1].asset"
+        [balance]="asset[1].balance.amount().toNumber() || undefined"
+        [priceInput]="asset[1].assetPriceUSD || undefined"
         [(assetUnit)]="amount[1]"
         [disabledAssetSymbol]="asset[1]?.asset?.symbol"
         [targetAddress]="targetAddress"
@@ -70,6 +82,9 @@
         [disableInput]="true"
         [hideMax]="true"
         [targetLabel]="targetAddress? 'Receiving at' : undefined"
+        [processing]="true"
+        [showPrice]="false"
+        [extraLabel]="type === 'Swap' ? '(estimated)' : undefined"
       >
       </app-asset-input>
     </div>
@@ -77,7 +92,7 @@
     <div *ngIf="isWithdraw && !isSending">
       <div class="percent-container">
         <span class="percent-label">Percentage</span>
-        <span class="unstake-percent">{{ percentage }}%</span>
+        <span class="unstake-percent" style="color: var(--primary-grey-color)">{{ percentage }}%</span>
         <mat-slider
           class="slider"
           [disabled]="true"
@@ -96,7 +111,9 @@
         [label]="label[0]"
         [selectedAssets]="[asset[0].asset, asset[1].asset]"
         [assetUnits]="[amount[0], amount[1]]"
-        [showPrice]="false"
+        [bottomLabel]="label[1]"
+        [processing]="true"
+        [disabledAsset]="disabledAsset"
       ></app-double-asset-field>
     </div>
 
@@ -104,8 +121,8 @@
       <div style="width: 100%">
         <button
           [disabled]="true"
-          class="next-btn"
-          aria-label="TRANSACTION PROCESSING…"
+          class="next-btn waiting"
+          aria-label="PROCESSING…"
           (click)="onCloseDialog()"
         >
           <span>PLEASE WAIT…</span>
@@ -114,29 +131,3 @@
     </div>
   </div>
 </div>
-
-<!-- <div class="submitting">
-
-  <div class="icon-container">
-    <mat-progress-spinner mode="indeterminate" diameter="60"></mat-progress-spinner>
-  </div>
-
-  <div class="flex justify-center flex-col items-center p-4">
-
-    <div class="flex justify-between items-center mb-2">
-      <h1 mat-dialog-title class="text-2xl">Transaction Processing</h1>
-    </div>
-
-    <span *ngIf="transactionDetail" class="swap-details">{{transactionDetail}}</span>
-
-    <span class="swap-details">Confirm this transaction in your wallet</span>
-
-  </div>
-
-  <div mat-dialog-actions class="dialog-actions">
-    <button mat-icon-button aria-label="Close Markets Dialog" (click)="onCloseDialog()" mat-dialog-close>
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
-</div> -->

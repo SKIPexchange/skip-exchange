@@ -6,29 +6,17 @@
           [path]="[
             { name: 'skip', call: 'swap' },
             { name: 'Pools', call: 'pool' },
-            { name: 'Withdraw', disable: true }
+            { name: 'Withdraw', disable: true },
+            { name: asset?.chain + '.' + asset?.ticker , disable: true },
           ]"
           [isError]="isError"
           [message]="mainButtonText()"
           (funcCaller)="breadcrumbNav($event)"
         ></app-breadcrumb>
+        <!-- <div class="top-right">
+          <app-pool-type-options [asset]="asset" [selectedPoolType]="withdrawType" [poolTypeOptions]="withdrawOptions" (selectPoolType)="setSelectedWithdrawOption($event)"></app-pool-type-options>
+        </div> -->
       </nav>
-
-      <!-- <div class="px-4 h-12 flex items-center">
-        <div *ngIf="withdrawOptions.sym && asset">
-          <button (click)="setSelectedWithdrawOption('SYM')" class="mr-2 text-sm" [ngClass]="{'underline': withdrawType === 'SYM'}">{{asset.ticker}} + RUNE</button>
-          <span *ngIf="withdrawOptions.asymAsset || withdrawOptions.asymRune" class="text-xs text-gray-500 mr-2">/</span>
-        </div>
-  
-        <div *ngIf="withdrawOptions.asymAsset && asset">
-          <button (click)="setSelectedWithdrawOption('ASYM_ASSET')" class="mr-2 text-sm" [ngClass]="{'underline': withdrawType === 'ASYM_ASSET'}">{{asset.ticker}}</button>
-          <span *ngIf="withdrawOptions.asymRune" class="text-xs text-gray-500 mr-2">/</span>
-        </div>
-  
-        <div>
-          <button (click)="setSelectedWithdrawOption('ASYM_RUNE')" *ngIf="withdrawOptions.asymRune" class="text-sm" [ngClass]="{'underline': withdrawType === 'ASYM_RUNE'}">RUNE</button>
-        </div>
-      </div> -->
 
       <div class="percent-container">
         <span class="percent-label">Percentage</span>
@@ -48,54 +36,48 @@
 
       <app-arrow></app-arrow>
 
-      <!-- <div *ngIf="asset" class="unstake-calc flex justify-between">
-        <span *ngIf="removeAssetAmount">{{removeAssetAmount | number:"0.0-6"}}</span>
-        <span *ngIf="!removeAssetAmount">0</span>
-        <app-icon-ticker [iconPath]="asset.iconPath" [ticker]="asset.ticker"></app-icon-ticker>
-      </div>
-
-      <div class="unstake-calc flex justify-between">
-        <span *ngIf="removeRuneAmount">{{removeRuneAmount | number:"0.0-6"}}</span>
-        <span *ngIf="!removeRuneAmount">0</span>
-        <app-icon-ticker [iconPath]="rune.iconPath" [ticker]="rune.ticker"></app-icon-ticker>
-      </div> -->
       <app-double-asset-field
         label="Withdrawal"
         [selectedAssets]="[asset, rune]"
         [assetUnits]="[removeAssetAmount, removeRuneAmount]"
         [priceInputs]="[assetPrice, runePrice]"
+        [bottomLabel]="poolShareMessage()"
+        [disabledAsset]="disabledAsset()"
       ></app-double-asset-field>
 
-      <div class="swap-details">
-        <div class="flex justify-between items-center">
+      <!-- Swap details -->
+      <div *ngIf="asset && withdrawPercent" class="swap-details">
+        <!-- <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span class="tx-detail-label">Prices:</span>
-          <span *ngIf="asset && assetBasePrice"
-            >1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }}
-            {{ asset.ticker }}</span
-          >
-          <span *ngIf="!asset || !assetBasePrice">...</span>
+          <span *ngIf="asset && assetBasePrice" >
+            1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
+            <span *ngIf="runePrice"> ({{ runePrice * currency.value | number: '0.2-2' }} {{currency.code}})</span>
+          </span >
         </div>
-        <div class="flex justify-between items-center">
+        <div *ngIf="assetBasePrice && runeBasePrice" class="flex justify-between items-center">
           <span></span>
-          <span *ngIf="asset && runeBasePrice"
-            >1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }}
-            {{ rune.ticker }}</span
-          >
-          <span *ngIf="!asset || !runeBasePrice">...</span>
+          <span *ngIf="asset && runeBasePrice" >
+            1 {{ asset.ticker }} = {{ runeBasePrice | number: "1.2-4" }} {{ rune.ticker }}
+            <span *ngIf="assetPrice"> ({{ assetPrice * currency.value | number: '0.2-2'}} {{currency.code}})</span>
+          </span>
+        </div> -->
+        <div *ngIf="totalWithdrawal()" class="flex justify-between primary-text">
+          <span class="tx-detail-label">Total Withdrawal:</span>
+          <span>{{ totalWithdrawal() | number: '0.2-2' }} {{currency.code}}</span>
         </div>
         <div
           *ngIf="withdrawType !== 'ASYM_ASSET'"
-          class="flex justify-between items-center"
+          class="flex justify-between items-center text-white"
         >
-          <span class="tx-detail-label">Fees:</span>
+          <span class="tx-detail-label">Network Fees:</span>
           <span *ngIf="runeFee">{{ runeFee }} RUNE <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.0-2'}} {{currency.code}})</span></span>
           <span *ngIf="!runeFee">...</span>
         </div>
         <div
           *ngIf="withdrawType === 'ASYM_ASSET'"
-          class="flex justify-between items-center"
+          class="flex justify-between items-center text-white"
         >
-          <span class="tx-detail-label"></span>
+          <span class="tx-detail-label">Network Fees:</span>
           <span *ngIf="networkFee"
             >{{ networkFee | number: "1.0-4" }} {{ asset.ticker }} <span *ngIf="currency && assetPrice">({{this.currency.value * assetPrice * networkFee | number: '0.0-2'}} {{currency.code}})</span></span
           >
@@ -127,6 +109,27 @@
 <app-confirm-withdraw-modal
   *ngIf="view === 'Confirm'"
   [data]="data"
-  (close)="close($event)"
+  (closeEvent)="close($event)"
 >
 </app-confirm-withdraw-modal>
+
+<app-pool-type-options
+  *ngIf="view === 'PoolType'"
+  [assets]="[{asset: asset, balance: 0, assetPriceUSD: assetPrice}, {asset: rune, balance: 0, assetPriceUSD: runePrice}]" 
+  [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
+  [selectedPoolType]="withdrawType" 
+  [poolTypeOptions]="withdrawOptions" 
+  (selectPoolType)="setSelectedWithdrawOptionFromEvent($event)"
+>
+<app-breadcrumb
+  [path]="[
+    { name: 'skip', call: 'swap' },
+    { name: 'Pools', call: 'pool' },
+    { name: 'Withdraw', disable: true },
+    { name: asset?.chain + '.' + asset?.ticker , disable: true },
+    { name: 'type', disable: true }
+  ]"
+  message="select"
+  (funcCaller)="breadcrumbNav($event)"
+></app-breadcrumb>
+</app-pool-type-options>

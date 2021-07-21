@@ -81,6 +81,7 @@
       data.asset.ticker
     }} + {{ data.runeAmount }} {{ data.rune.ticker }}"
     (closeDialog)="closeDialog()"
+    type="Create Pool"
   >
     <app-breadcrumb
       [path]="[
@@ -88,7 +89,7 @@
         { name: 'Pools', disable: true },
         { name: 'Create', disable: true }
       ]"
-      message="Transaction Processing"
+      message="PROCESSING"
       (funcCaller)="breadcrumbNav($event, 'processing')"
     ></app-breadcrumb>
   </app-transaction-processing-modal>

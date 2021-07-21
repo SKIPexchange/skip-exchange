@@ -28,6 +28,10 @@
     &.grey .sign {
       fill: var(--primary-grey-color);
     }
+
+    &.red .sign {
+      fill: var(--primary-red);
+    }
   }
 
   .not-btn {

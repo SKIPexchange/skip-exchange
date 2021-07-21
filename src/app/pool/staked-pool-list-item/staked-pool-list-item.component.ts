@@ -1,32 +1,34 @@
-import { Component, Input, OnChanges } from "@angular/core";
-import { getPoolShare, PoolData, UnitData } from "@thorchain/asgardex-util";
-import { assetToString, baseAmount } from "@xchainjs/xchain-util";
-import BigNumber from "bignumber.js";
-import { Subscription } from "rxjs";
-import { take } from "rxjs/operators";
-import { Asset } from "src/app/_classes/asset";
-import { MemberPool } from "src/app/_classes/member";
-import { PoolDTO } from "src/app/_classes/pool";
-import { Currency } from "src/app/_components/account-settings/currency-converter/currency-converter.component";
-import { AnalyticsService } from "src/app/_services/analytics.service";
-import { PoolDetailService } from "src/app/_services/pool-detail.service";
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { getPoolShare, PoolData, UnitData } from '@thorchain/asgardex-util';
+import { assetToString, baseAmount, bn } from '@xchainjs/xchain-util';
+import BigNumber from 'bignumber.js';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Asset } from 'src/app/_classes/asset';
+import { Liquidity } from 'src/app/_classes/liquidiyt';
+import { MemberPool } from 'src/app/_classes/member';
+import { PoolDTO } from 'src/app/_classes/pool';
+import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
+import { PoolTypeOption } from 'src/app/_const/pool-type-options';
+import { AnalyticsService } from 'src/app/_services/analytics.service';
+import { PoolDetailService } from 'src/app/_services/pool-detail.service';
 import {
   RuneYieldPoolResponse,
   RuneYieldService,
-} from "src/app/_services/rune-yield.service";
+} from 'src/app/_services/rune-yield.service';
 import {
   TransactionStatusService,
   Tx,
-} from "src/app/_services/transaction-status.service";
-import { UserService } from "src/app/_services/user.service";
-import { environment } from "src/environments/environment";
+} from 'src/app/_services/transaction-status.service';
+import { UserService } from 'src/app/_services/user.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: "app-staked-pool-list-item",
-  templateUrl: "./staked-pool-list-item.component.html",
-  styleUrls: ["./staked-pool-list-item.component.scss"],
+  selector: 'app-staked-pool-list-item',
+  templateUrl: './staked-pool-list-item.component.html',
+  styleUrls: ['./staked-pool-list-item.component.scss'],
 })
-export class StakedPoolListItemComponent implements OnChanges {
+export class StakedPoolListItemComponent implements OnDestroy, OnInit {
   expanded: boolean;
 
   @Input() activate: boolean;
@@ -35,13 +37,13 @@ export class StakedPoolListItemComponent implements OnChanges {
   /**
    * Member Pool Data
    */
-  @Input() set memberPoolData(data: MemberPool) {
+  @Input() set memberPoolData(data: MemberPool[]) {
     this._memberPoolData = data;
   }
   get memberPoolData() {
     return this._memberPoolData;
   }
-  _memberPoolData: MemberPool;
+  _memberPoolData: MemberPool[];
 
   /**
    * Pool Data
@@ -74,28 +76,22 @@ export class StakedPoolListItemComponent implements OnChanges {
   constructor(
     private poolDetailService: PoolDetailService,
     private txStatusService: TransactionStatusService,
-    private analyticsService: AnalyticsService,
-    private userService: UserService,
     private analytics: AnalyticsService
   ) {
     this.expanded = false;
     this.activate = false;
 
-    this.isTestnet = environment.network === "testnet" ? true : false;
-  }
-
-  ngOnChanges() {
-    this.getPoolShare();
+    this.isTestnet = environment.network === 'testnet' ? true : false;
   }
 
   ngOnInit(): void {
     const poolDetail$ = this.poolDetailService.activatedAsset$.subscribe(
       (asset) => {
-        if (asset && this.asset) {
-          this.activate =
-            asset.symbol === this.asset.symbol &&
-            asset.chain === this.asset.chain;
+        if (asset && this.asset && this.asset == asset) {
+          this.activate = true;
           this.getPoolShare();
+        } else {
+          this.activate = false;
         }
       }
     );
@@ -127,71 +123,98 @@ export class StakedPoolListItemComponent implements OnChanges {
   }
 
   statEvent() {
-    this.analytics.event('pool_select', 'tag_pool_stats_*POOL_ASSET*', undefined, `${this.asset.chain}.${this.asset.ticker}`);
+    this.analytics.event(
+      'pool_select',
+      'tag_pool_stats_*POOL_ASSET*',
+      undefined,
+      `${this.asset.chain}.${this.asset.ticker}`
+    );
   }
 
   depositEvent() {
-    this.analytics.event('pool_select', 'tag_pool_deposit_*POOL_ASSET*', undefined, `${this.asset.chain}.${this.asset.ticker}`);
+    this.analytics.event(
+      'pool_select',
+      'tag_pool_deposit_*POOL_ASSET*',
+      undefined,
+      `${this.asset.chain}.${this.asset.ticker}`
+    );
   }
 
   withdrawEvent() {
-    this.analytics.event('pool_select', 'tag_pool_withdraw_*POOL_ASSET*', undefined, `${this.asset.chain}.${this.asset.ticker}`)
+    this.analytics.event(
+      'pool_select',
+      'tag_pool_withdraw_*POOL_ASSET*',
+      undefined,
+      `${this.asset.chain}.${this.asset.ticker}`
+    );
   }
 
-  getPoolShare(): void {
-    if (this.memberPoolData && this.poolData) {
-      const unitData: UnitData = {
-        stakeUnits: baseAmount(this.memberPoolData.liquidityUnits),
-        totalUnits: baseAmount(this.poolData.units),
-      };
+  calculatePoolShare(memberPoolData: MemberPool, poolType: PoolTypeOption) {
+    // calculating the sym deposit
+    const unitData: UnitData = {
+      stakeUnits: baseAmount(memberPoolData.liquidityUnits),
+      totalUnits: baseAmount(this.poolData.units),
+    };
 
-      const poolData: PoolData = {
-        assetBalance: baseAmount(this.poolData.assetDepth),
-        runeBalance: baseAmount(this.poolData.runeDepth),
-      };
+    const poolData: PoolData = {
+      assetBalance: baseAmount(this.poolData.assetDepth),
+      runeBalance: baseAmount(this.poolData.runeDepth),
+    };
 
-      const poolShare = getPoolShare(unitData, poolData);
+    // driverded from getPoolshare (asgardex util)
+    const units = unitData.stakeUnits.amount();
+    const total = unitData.totalUnits.amount();
+    const R = poolData.runeBalance.amount();
+    const T = poolData.assetBalance.amount();
+    let asset: BigNumber;
+    let rune: BigNumber;
+    if (poolType === 'SYM') {
+      asset = T.times(units).div(total);
+      rune = R.times(units).div(total);
+    } else if (poolType === 'ASYM_ASSET') {
+      asset = Liquidity.getAsymAssetShare(units, total, T);
+      rune = bn(0);
+    } else if (poolType === 'ASYM_RUNE') {
+      asset = bn(0);
+      rune = Liquidity.getAsymAssetShare(units, total, R);
+    }
+    const stakeData = {
+      asset: baseAmount(asset),
+      rune: baseAmount(rune),
+    };
 
-      this.pooledRune = poolShare.rune
-        .amount()
-        .div(10 ** 8)
-        .toNumber();
-      this.pooledAsset = poolShare.asset
-        .amount()
-        .div(10 ** 8)
-        .toNumber();
-      this.poolShare =
-        Number(this.memberPoolData.liquidityUnits) /
-        Number(this.poolData.units);
+    let pooledRune = stakeData.rune
+      .amount()
+      .div(10 ** 8)
+      .toNumber();
+    let pooledAsset = stakeData.asset
+      .amount()
+      .div(10 ** 8)
+      .toNumber();
+    let poolShareData =
+      Number(memberPoolData.liquidityUnits) / Number(this.poolData.units);
 
-      if (this.activate) {
-        this.poolDetailService.setPooledDetails(
-          "member",
-          this.pooledRune,
-          this.pooledAsset,
-          this.poolShare,
-          this.asset.ticker,
-          this.asset.chain
-        );
-      }
-
-      // gain/loss calculation
+    // for now we only calculate the sym deposit gain/loss
+    if (memberPoolData.runeAddress && memberPoolData.assetAddress) {
       let currentValue = new BigNumber(
-        this.poolShare * +this.poolData.runeDepth * this.poolData.runePrice +
-          this.poolShare *
+        poolShareData * +this.poolData.runeDepth * this.poolData.runePrice +
+          poolShareData *
             +this.poolData.assetDepth *
             +this.poolData.assetPriceUSD
-      ).plus(
-        new BigNumber(this.runeYieldPool?.find(
-          (p) => p.pool === this.memberPoolData.pool
-        )?.totalunstakedusd)
       )
+        .plus(
+          new BigNumber(
+            this.runeYieldPool?.find(
+              (p) => p.pool === memberPoolData.pool
+            )?.totalunstakedusd
+          )
+        )
         .div(10 ** 8)
         .toNumber();
 
       let addedValue = new BigNumber(
         this.runeYieldPool?.find(
-          (p) => p.pool === this.memberPoolData.pool
+          (p) => p.pool === memberPoolData.pool
         )?.totalstakedusd
       )
         .div(10 ** 8)
@@ -202,6 +225,82 @@ export class StakedPoolListItemComponent implements OnChanges {
       }
       this.gainLoss = ((currentValue - addedValue) / addedValue) * 100;
     }
+
+    return { pooledRune, pooledAsset, poolShare: poolShareData };
+  }
+
+  getPoolType(poolData: MemberPool): PoolTypeOption {
+    let { assetAdded, runeAdded } = poolData;
+
+    if (Number(assetAdded) === 0 && Number(runeAdded) > 0) {
+      return 'ASYM_RUNE';
+    } else if (Number(runeAdded) === 0 && Number(assetAdded) > 0) {
+      return 'ASYM_ASSET';
+    } else {
+      return 'SYM';
+    }
+  }
+
+  getPoolShare(): void {
+    if (this.memberPoolData && this.poolData) {
+      this.pooledRune = 0;
+      this.pooledAsset = 0;
+      this.poolShare = 0;
+
+      for (let memPoolData of this.memberPoolData) {
+        const poolType = this.getPoolType(memPoolData);
+
+        const { pooledRune, pooledAsset, poolShare } = this.calculatePoolShare(
+          memPoolData,
+          poolType
+        );
+
+        this.pooledRune = (this.pooledRune ?? 0) + pooledRune;
+        this.pooledAsset = (this.pooledAsset ?? 0) + pooledAsset;
+        this.poolShare = (this.poolShare ?? 0) + poolShare;
+      }
+
+      const pooledDayAverage =
+        new BigNumber(+this.poolData.volume24h).div(10 ** 8).toNumber() *
+        this.poolData?.runePrice *
+        this.currency.value;
+
+      if (this.activate) {
+        //calculating the sum of pool share from the whole deposited options
+        this.poolDetailService.setPooledDetails({
+          poolType: 'member',
+          pooledAmountRune: this.pooledRune,
+          pooledAmountAsset: this.pooledAsset,
+          pooledShare: this.poolShare,
+          pooledAsset: this.asset,
+          pooledDepth: this.assetDepth,
+          pooledDayAverage,
+        });
+      }
+    }
+  }
+
+  getPoolUrl() {
+    return (
+      'https://viewblock.io/thorchain/pool/' +
+      assetToString(this.asset) +
+      (this.isTestnet ? '?network=testnet' : '')
+    );
+  }
+
+  runeyieldAddress() {
+    const runeAddress = this.memberPoolData.find(
+      (pool) => pool.runeAddress
+    ).runeAddress;
+    const assetAddress = this.memberPoolData.find(
+      (pool) => pool.assetAddress
+    ).assetAddress;
+
+    return (
+      'https://app.runeyield.info/dashboard?' +
+      (runeAddress ? `thor=${runeAddress}&` : '') +
+      (assetAddress ? `${this.asset.chain.toLowerCase()}=${assetAddress}` : '')
+    );
   }
 
   ngOnDestroy(): void {

@@ -41,33 +41,25 @@
               alt="checkmark"
             />
             <div *ngIf="!providerInfo.enabled" class="not-checked"></div>
-            <span>{{ providerInfo.title.split(" ")[0] }}</span>
+            <span [ngClass]="{'red-text': !providerInfo.enabled}">{{ providerInfo.title.split(" ")[0] }}</span>
           </div>
         </app-notice>
       </div>
 
-      <div class="swap-details" style="color: #fff">
-        <div style="margin-bottom: 5px; font-size: 14px">
-          In XDEFI, go to:
-          <span style="color: var(--primary-default)">Settings > dApps</span> to
-          verify if the above dApps injection Providers are enabled before
-          connecting below.
-        </div>
-        <div
-          style="margin-bottom: 5px; font-size: 14px; color: var(--primary-red)"
-        >
+      <div class="descriptive" style="color: #fff">
+        In XDEFI, go to:
+        <span style="color: var(--primary-default)">Settings > dApps</span> to
+        verify if the above dApps injection Providers are enabled before
+        connecting below.
+        <br/>
+        <span style="color: var(--primary-red);">
           If you enabled them all now, reload this page in your browser before
           checking connect.
-        </div>
-        <div
-          style="
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: var(--primary-default);
-          "
-        >
+        </span>
+        <br />
+        <span style="color: var(--primary-default);">
           If they were already enabled, you may click the connect button below.
-        </div>
+        </span>
       </div>
     </div>
 
@@ -83,7 +75,7 @@
           <button
             class="next-btn"
             (click)="initUnlock()"
-            [disabled]="xdefiConnecting || !isValidNetwork || loading || providersAllDisabled()"
+            [disabled]="xdefiConnecting || !isValidNetwork || loading || providersDisabled()"
           >
             <span>Connect</span>
           </button>
