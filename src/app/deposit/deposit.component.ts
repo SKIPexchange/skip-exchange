@@ -5,6 +5,7 @@ import {
   getValueOfAssetInRune,
   getValueOfRuneInAsset,
   PoolData,
+  UnitData,
 } from '@thorchain/asgardex-util';
 import {
   baseAmount,
@@ -53,6 +54,7 @@ import { SlippageToleranceService } from '../_services/slippage-tolerance.servic
 import { PoolDTO } from '../_classes/pool';
 import BigNumber from 'bignumber.js';
 import { MemberPool } from '../_classes/member';
+import { Liquidity } from '../_classes/liquidiyt';
 
 @Component({
   selector: 'app-deposit',
@@ -399,6 +401,58 @@ export class DepositComponent implements OnInit, OnDestroy {
     }
   }
 
+  calculatePoolShare(
+    memberPoolData: MemberPool,
+    poolType: PoolTypeOption,
+    assetPoolData: PoolDTO
+  ) {
+    if (!memberPoolData || !assetPoolData) return [0, 0];
+
+    // calculating the sym deposit
+    const unitData: UnitData = {
+      stakeUnits: baseAmount(memberPoolData.liquidityUnits),
+      totalUnits: baseAmount(assetPoolData.units),
+    };
+
+    const poolData: PoolData = {
+      assetBalance: baseAmount(assetPoolData.assetDepth),
+      runeBalance: baseAmount(assetPoolData.runeDepth),
+    };
+
+    // driverded from getPoolshare (asgardex util)
+    const units = unitData.stakeUnits.amount();
+    const total = unitData.totalUnits.amount();
+    const R = poolData.runeBalance.amount();
+    const T = poolData.assetBalance.amount();
+    let asset: BigNumber;
+    let rune: BigNumber;
+    if (poolType === 'SYM') {
+      asset = T.times(units).div(total);
+      rune = R.times(units).div(total);
+    } else if (poolType === 'ASYM_ASSET') {
+      asset = Liquidity.getAsymAssetShare(units, total, T);
+      rune = bn(0);
+    } else if (poolType === 'ASYM_RUNE') {
+      asset = bn(0);
+      rune = Liquidity.getAsymAssetShare(units, total, R);
+    }
+    const stakeData = {
+      asset: baseAmount(asset),
+      rune: baseAmount(rune),
+    };
+
+    let pooledRune = stakeData.rune
+      .amount()
+      .div(10 ** 8)
+      .toNumber();
+    let pooledAsset = stakeData.asset
+      .amount()
+      .div(10 ** 8)
+      .toNumber();
+
+    return [pooledRune, pooledAsset];
+  }
+
   async getPoolMembership() {
     try {
       const thorAddress =
@@ -460,34 +514,34 @@ export class DepositComponent implements OnInit, OnDestroy {
         }
       }
 
-      const poolValue = bn(+this.poolData.assetDepth)
-        .div(10 ** 8)
-        .multipliedBy(+this.poolData.assetPriceUSD)
-        .plus(
-          bn(this.poolData.runeDepth)
-            .div(10 ** 8)
-            .multipliedBy(this.runePrice)
-        );
+      let [pooledRune, pooledAsset] = this.calculatePoolShare(
+        thorAssetPool,
+        'ASYM_RUNE',
+        this.poolData
+      );
+      const userThorValue = pooledRune * this.runePrice;
 
-      const userThorValue =
-        poolValue.multipliedBy(
-          bn(+thorAssetPool?.liquidityUnits).div(+this.poolData.units)
-        ) ?? bn(0);
+      [pooledRune, pooledAsset] = this.calculatePoolShare(
+        chainAssetPool,
+        'ASYM_ASSET',
+        this.poolData
+      );
+      console.log(this.poolData, chainAssetPool, pooledRune, pooledAsset);
+      const userAssetValue = pooledAsset * this.assetPrice;
 
-      const userAssetValue =
-        poolValue.multipliedBy(
-          bn(+chainAssetPool?.liquidityUnits).div(+this.poolData.units)
-        ) ?? bn(0);
-
+      [pooledRune, pooledAsset] = this.calculatePoolShare(
+        symPool,
+        'SYM',
+        this.poolData
+      );
       const userSymValue =
-        poolValue.multipliedBy(
-          bn(+symPool?.liquidityUnits).div(+this.poolData.units)
-        ) ?? bn(0);
+        pooledRune * this.runePrice + pooledAsset * this.assetPrice;
 
+      console.log(userSymValue, userAssetValue, userThorValue);
       [this.userThorValue, this.userAssetValue, this.userSymValue] = [
-        userThorValue.toNumber(),
-        userAssetValue.toNumber(),
-        userSymValue.toNumber(),
+        userThorValue,
+        userAssetValue,
+        userSymValue,
       ];
     } catch (error) {
       console.error(error);

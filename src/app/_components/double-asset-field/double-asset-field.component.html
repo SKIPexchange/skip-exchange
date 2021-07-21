@@ -28,7 +28,7 @@
     </div>
 
     <div class="inputs">
-      <div *ngIf="assetToString(selectedAssets[0]) !== assetToString(disabledAsset)" class="input flex-grow">
+      <div *ngIf="!disabledAsset || assetToString(selectedAssets[0]) !== assetToString(disabledAsset)" class="input flex-grow">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"
@@ -62,7 +62,7 @@
         </button>
       </div>
 
-      <div *ngIf="assetToString(selectedAssets[1]) !== assetToString(disabledAsset)" class="input flex-grow" style="margin-top: -5px">
+      <div *ngIf="!disabledAsset || assetToString(selectedAssets[1]) !== assetToString(disabledAsset)" class="input flex-grow" style="margin-top: -5px">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"
