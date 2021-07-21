@@ -488,6 +488,7 @@ export class SwapComponent implements OnInit, OnDestroy {
         this.user,
         this.selectedTargetAsset.chain
       );
+      this.setClientTargetAddress();
     }
   }
 
@@ -574,6 +575,16 @@ export class SwapComponent implements OnInit, OnDestroy {
       if (this.user)
         this.analytics.event('swap_prepare', 'select_receive_container_asset');
       this.overlaysService.setCurrentSwapView('TargetAsset');
+    }
+  }
+
+  setClientTargetAddress() {
+    try {
+      this.targetClientAddress = this.userService.getAdrressChain(
+        this.selectedTargetAsset.chain
+      );
+    } catch (error) {
+      this.targetAddress = undefined;
     }
   }
 
@@ -971,7 +982,9 @@ export class SwapComponent implements OnInit, OnDestroy {
     if (this.selectedTargetAsset && this.user) {
       if (
         this.targetAddress &&
-        this.targetAddress !== this.targetClientAddress
+        this.targetAddress.localeCompare(this.targetClientAddress, undefined, {
+          sensitivity: 'accent',
+        })
       ) {
         return `SWAP + RECEIVE AT ${this.targetAddress.substring(
           0,
