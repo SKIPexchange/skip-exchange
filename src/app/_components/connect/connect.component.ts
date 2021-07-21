@@ -171,7 +171,7 @@ export class ConnectModal {
       await this.metaMaskService.connect();
       this.closeEvent.emit();
     } else if (!this.isMetamask) {
-      return window.open('https://metamask.io/download', '_blank');
+      return window.open('https://metamask.io/', '_blank');
     }
   }
 
