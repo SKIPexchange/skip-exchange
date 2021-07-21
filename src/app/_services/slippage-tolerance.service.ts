@@ -7,12 +7,12 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class SlippageToleranceService {
-  private slippageToleranceSource = new BehaviorSubject<number>(3);
+  private slippageToleranceSource = new BehaviorSubject<number>(1);
   slippageTolerance$ = this.slippageToleranceSource.asObservable();
   private _slippageTolerance: number;
 
   constructor() {
-    this._slippageTolerance = 3;
+    this._slippageTolerance = 1;
   }
 
   setSlippageTolerance(percent: number) {
