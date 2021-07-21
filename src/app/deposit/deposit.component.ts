@@ -22,7 +22,7 @@ import {
   isNonNativeRuneToken,
   assetIsChainAsset,
 } from '../_classes/asset';
-import { MidgardService } from '../_services/midgard.service';
+import { MidgardService, ThorchainQueue } from '../_services/midgard.service';
 import { UserService } from '../_services/user.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDepositData } from './confirm-deposit-modal/confirm-deposit-modal.component';
@@ -55,6 +55,9 @@ import { PoolDTO } from '../_classes/pool';
 import BigNumber from 'bignumber.js';
 import { MemberPool } from '../_classes/member';
 import { Liquidity } from '../_classes/liquidiyt';
+import { NetworkQueueService } from '../_services/network-queue.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { NetworkSummary } from '../_classes/network';
 
 @Component({
   selector: 'app-deposit',
@@ -156,6 +159,8 @@ export class DepositComponent implements OnInit, OnDestroy {
   metaMaskNetwork?: 'testnet' | 'mainnet';
   slip: number;
   slippageTolerance: number;
+  queue: ThorchainQueue;
+  appLocked: boolean;
 
   constructor(
     private userService: UserService,
@@ -169,8 +174,10 @@ export class DepositComponent implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private ethUtilService: EthUtilsService,
     private metaMaskService: MetamaskService,
-    private slipLimitService: SlippageToleranceService
+    private slipLimitService: SlippageToleranceService,
+    private networkQueueService: NetworkQueueService
   ) {
+    this.appLocked = environment.appLocked;
     this.poolNotFoundErr = false;
     this.ethContractApprovalRequired = false;
     this.rune = new Asset('THOR.RUNE');
@@ -359,6 +366,10 @@ export class DepositComponent implements OnInit, OnDestroy {
         (limit) => (this.slippageTolerance = limit)
       );
 
+    const queue$ = this.networkQueueService.networkQueue$.subscribe(
+      (queue) => (this.queue = queue)
+    );
+
     this.getPools();
     this.getEthRouter();
     this.getPoolCap();
@@ -369,7 +380,8 @@ export class DepositComponent implements OnInit, OnDestroy {
       cur$,
       metaMaskProvider$,
       metaMaskNetwork$,
-      slippageTolerange$
+      slippageTolerange$,
+      queue$
     );
   }
 
@@ -613,13 +625,19 @@ export class DepositComponent implements OnInit, OnDestroy {
     const network$ = this.midgardService.network$;
     const combined = combineLatest([mimir$, network$]);
     const sub = combined.subscribe(([mimir, network]) => {
-      // prettier-ignore
-      const totalPooledRune = +network.totalPooledRune / (10 ** 8);
-
-      if (mimir && mimir['mimir//MAXIMUMLIQUIDITYRUNE']) {
+      if (
+        network instanceof HttpErrorResponse ||
+        mimir instanceof HttpErrorResponse
+      ) {
+        this.depositsDisabled = true;
+      } else {
         // prettier-ignore
-        const maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
-        this.depositsDisabled = totalPooledRune / maxLiquidityRune >= 0.9;
+        const totalPooledRune = +(network as NetworkSummary).totalPooledRune / (10 ** 8);
+        if (mimir && mimir['mimir//MAXIMUMLIQUIDITYRUNE']) {
+          // prettier-ignore
+          const maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
+          this.depositsDisabled = totalPooledRune / maxLiquidityRune >= 0.99;
+        }
       }
     });
 
@@ -813,12 +831,36 @@ export class DepositComponent implements OnInit, OnDestroy {
         );
         this.runePrice =
           this.thorchainPricesService.estimateRunePrice(availablePools);
+
+        this.assetPrice = this.selectableMarkets.find(
+          (item) =>
+            item.asset.chain === this.asset.chain &&
+            item.asset.ticker === this.asset.ticker
+        ).assetPriceUSD;
       },
       (err) => console.error('error fetching pools:', err)
     );
   }
 
   validate(): void {
+    if (this.appLocked) {
+      this.formValidation = {
+        message: 'MAINTENANCE ENABLED',
+        isValid: false,
+        isError: false,
+      };
+      return;
+    }
+
+    if (this.isHalted) {
+      this.formValidation = {
+        message: `${this.asset.chain} chain is Halted`,
+        isValid: false,
+        isError: true,
+      };
+      return;
+    }
+
     /** Wallet not connected */
     if (!this.balances) {
       this.formValidation = {

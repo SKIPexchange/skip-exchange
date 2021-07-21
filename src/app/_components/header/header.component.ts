@@ -40,6 +40,7 @@ export class HeaderComponent implements OnDestroy {
   maxLiquidityRune: number;
   depositsDisabled: boolean;
   error: boolean;
+  appLocked: boolean;
 
   private _overlay: boolean;
   get overlay(): boolean {
@@ -60,6 +61,7 @@ export class HeaderComponent implements OnDestroy {
     private analytics: AnalyticsService,
     private router: Router
   ) {
+    this.appLocked = environment.appLocked;
     this.isTestnet = environment.network === 'testnet' ? true : false;
 
     const user$ = this.userService.user$.subscribe(
@@ -99,9 +101,17 @@ export class HeaderComponent implements OnDestroy {
     const network$ = this.midgardService.network$;
     const combined = combineLatest([mimir$, network$]);
 
+    if (this.appLocked) {
+      this.topbar = 'Thorchain is under maintenance';
+      return;
+    }
+
     this.topbar = 'LOADING CAPS';
     const sub = combined.subscribe(([mimir, network]) => {
-      if (network instanceof HttpErrorResponse) {
+      if (
+        network instanceof HttpErrorResponse ||
+        mimir instanceof HttpErrorResponse
+      ) {
         this.topbar = 'THE MIDGARD DATABASE IS HAVING ISSUES. PLEASE TRY LATER';
         this.depositsDisabled = false;
         this.error = true;
@@ -119,7 +129,7 @@ export class HeaderComponent implements OnDestroy {
       ) {
         this.maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / 10 ** 8;
         this.depositsDisabled =
-          this.totalPooledRune / this.maxLiquidityRune >= 0.9;
+          this.totalPooledRune / this.maxLiquidityRune >= 0.99;
 
         this.topbar = `${this._decimalPipe.transform(
           this.totalPooledRune,

@@ -6,7 +6,7 @@
     href="https://viewblock.io/thorchain/pools"
     target="_blank"
     class="gradient"
-    [ngClass]="{ 'special-gradient': depositsDisabled, 'red': error }"
+    [ngClass]="{ 'special-gradient': depositsDisabled, 'red': error || appLocked }"
     *ngIf="!isTestnet"
     >{{ topbar }}</a
   >

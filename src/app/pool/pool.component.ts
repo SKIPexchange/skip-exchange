@@ -19,6 +19,9 @@ import { Currency } from '../_components/account-settings/currency-converter/cur
 import { OverlaysService, PoolViews } from '../_services/overlays.service';
 import { AnalyticsService } from '../_services/analytics.service';
 import { assetToString } from '@xchainjs/xchain-util';
+import { HttpErrorResponse } from '@angular/common/http';
+import { NetworkSummary } from '../_classes/network';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-pool',
@@ -51,6 +54,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   txStreamInitSuccess: boolean;
   mode: PoolViews;
   assetPriceUSD: number;
+  appLocked: boolean;
 
   constructor(
     private userService: UserService,
@@ -63,6 +67,7 @@ export class PoolComponent implements OnInit, OnDestroy {
     public ovrService: OverlaysService,
     private analytics: AnalyticsService
   ) {
+    this.appLocked = environment.appLocked;
     this.subs = [];
     this.memberPools = [];
     this.depositsDisabled = false;
@@ -143,6 +148,10 @@ export class PoolComponent implements OnInit, OnDestroy {
   }
 
   getBreadcrumbText() {
+    if (this.appLocked) {
+      return { text: 'MAINTENANCE ENABLED', isError: false };
+    }
+
     if (this.userPoolError) {
       return { text: 'Cannot fetch user Pools', isError: true };
     }
@@ -232,14 +241,19 @@ export class PoolComponent implements OnInit, OnDestroy {
     const network$ = this.midgardService.network$;
     const combined = combineLatest([mimir$, network$]);
     const sub = combined.subscribe(([mimir, network]) => {
-      // prettier-ignore
-      this.totalPooledRune = +network.totalPooledRune / (10 ** 8);
-
-      if (mimir && mimir['mimir//MAXIMUMLIQUIDITYRUNE']) {
+      if (
+        network instanceof HttpErrorResponse ||
+        mimir instanceof HttpErrorResponse
+      ) {
+        this.depositsDisabled = true;
+      } else {
         // prettier-ignore
-        this.maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
-        this.depositsDisabled =
-          this.totalPooledRune / this.maxLiquidityRune >= 0.9;
+        const totalPooledRune = +(network as NetworkSummary).totalPooledRune / (10 ** 8);
+        if (mimir && mimir['mimir//MAXIMUMLIQUIDITYRUNE']) {
+          // prettier-ignore
+          const maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
+          this.depositsDisabled = totalPooledRune / maxLiquidityRune >= 0.99;
+        }
       }
 
       setTimeout(() => {

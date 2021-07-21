@@ -165,8 +165,7 @@
 
         <!-- please connect button -->
         <div class="bottom-actions">
-          <app-connect *ngIf="!user" (openWalletOptions)="connectWallet()"></app-connect>
-
+          <app-connect *ngIf="!user && !appLocked" (openWalletOptions)="connectWallet()"></app-connect>
 
           <button
             *ngIf="
@@ -187,7 +186,7 @@
           </button>
 
           <button *ngIf="appLocked" class="next-btn bug-btn" [disabled]="true">
-            <span>FIXING BUGS. WE'LL BE BACK SOON.</span>
+            <span>UNDER MAINTENANCE</span>
           </button>
 
           <div

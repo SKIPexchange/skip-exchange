@@ -19,6 +19,7 @@ import { NetworkSummary } from './_classes/network';
 import { AnalyticsService } from './_services/analytics.service';
 import { User } from './_classes/user';
 import { MetamaskService } from './_services/metamask.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,7 @@ import { MetamaskService } from './_services/metamask.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   killPolling: Subject<void> = new Subject();
+  killMidgard: Subject<void> = new Subject();
   subs: Subscription[];
   isTestnet: boolean;
   showSwap: boolean;
@@ -220,32 +222,45 @@ export class AppComponent implements OnInit, OnDestroy {
     const mimirInterval$ = timer(0, 15000)
       .pipe(
         // This kills the request if the user closes the component
-        takeUntil(this.killPolling),
-        // switchMap cancels the last request, if no response have been received since last tick
-        switchMap(() => this.midgardService.updateMimir()),
-        // catchError handles http throws
-        catchError((error) => of(error))
+        takeUntil(this.killMidgard)
       )
-      .subscribe(async (res: MimirResponse) => {
-        this.midgardService.setMimir(res);
+      .subscribe(async () => {
+        this.midgardService
+          .updateMimir()
+          .toPromise()
+          .then(
+            (res: MimirResponse) => {
+              this.midgardService.setMimir(res);
+            },
+            (error: HttpErrorResponse) => {
+              this.midgardService.setMimir(error);
+            }
+          );
       });
     const networkInterval$ = timer(0, 15000)
       .pipe(
         // This kills the request if the user closes the component
-        takeUntil(this.killPolling),
-        // switchMap cancels the last request, if no response have been received since last tick
-        switchMap(() => this.midgardService.getNetwork()),
-        // catchError handles http throws
-        catchError((error) => of(error))
+        takeUntil(this.killMidgard)
       )
-      .subscribe(async (res: NetworkSummary) => {
-        this.midgardService.setNetwork(res);
+      .subscribe(async () => {
+        this.midgardService
+          .getNetwork()
+          .toPromise()
+          .then(
+            (res: NetworkSummary) => {
+              this.midgardService.setNetwork(res);
+            },
+            (error: HttpErrorResponse) => {
+              this.midgardService.setNetwork(error);
+            }
+          );
       });
     this.subs.push(mimirInterval$, networkInterval$);
   }
 
   ngOnDestroy(): void {
     this.killPolling.next();
+    this.killMidgard.next();
     for (const sub of this.subs) {
       sub.unsubscribe();
     }

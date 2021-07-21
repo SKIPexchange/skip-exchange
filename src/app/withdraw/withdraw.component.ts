@@ -117,6 +117,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   metaMaskNetwork?: 'testnet' | 'mainnet';
 
   poolShare: number;
+  isHalted: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -164,6 +165,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     //first they should pooltype
     this.asset = new Asset('BTC.BTC');
 
+    this.isHalted = true;
     this.getConstants();
     this.getThorchainQueue();
 
@@ -192,6 +194,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       if (asset) {
         this.asset = new Asset(asset);
 
+        this.isChainHalted();
         this.getPoolDetail(asset);
         this.getAccountStaked();
         this.getPoolMembership();
@@ -646,6 +649,11 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       return true;
     }
 
+    /** Chain is halted */
+    if (this.isHalted) {
+      return true;
+    }
+
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
       return true;
@@ -717,10 +725,15 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       return 'Loading';
     }
 
+    if (this.isHalted) {
+      this.isError = true;
+      return `${this.asset.chain} chain is Halted`;
+    }
+
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
       this.isError = true;
-      return 'THORChain TX QUEUE FILLED. Try Later';
+      return 'THORChain TX QUEUE FILLED.';
     }
 
     /** When amount is only zero */
@@ -914,6 +927,18 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     const depositValue = (depositAsset || 0) + (depositRune || 0);
     console.log(depositAsset, depositRune);
     return depositValue > 0 ? depositValue : 0;
+  }
+
+  async isChainHalted() {
+    const inboundAddresses = await this.midgardService
+      .getInboundAddresses()
+      .toPromise();
+
+    const matchChain = inboundAddresses.find(
+      (address) => address.chain === this.asset.chain
+    );
+
+    this.isHalted = matchChain.halted;
   }
 
   async getPoolDetail(asset: string) {

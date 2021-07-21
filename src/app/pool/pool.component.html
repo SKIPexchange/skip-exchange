@@ -117,10 +117,16 @@
         </div> -->
       </div>
 
-      <div class="bottom-actions" *ngIf="!user">
+      <div class="bottom-actions" *ngIf="!user && !appLocked">
         <app-connect (openWalletOptions)="connectWallet()"></app-connect>
       </div>
       
+      <div class="bottom-actions" *ngIf="appLocked">
+        <button class="next-btn bug-btn" [disabled]="true">
+          <span>UNDER MAINTENANCE</span>
+        </button>
+      </div>
+
     </ng-container>
 
     <div

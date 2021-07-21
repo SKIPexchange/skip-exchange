@@ -44,6 +44,8 @@ export class CoinGeckoService {
 
   getCoinIdBySymbol(ticker: string, list: CGCoinListItem[]): string {
     const match = list.find((item) => item.symbol === ticker.toLowerCase());
+    // patch xrune price from coingecko
+    if (ticker === 'xrune') return 'thorstarter';
     return match?.id ?? null;
   }
 }
