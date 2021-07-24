@@ -15,19 +15,19 @@ import { PoolAddressDTO } from 'src/app/_classes/pool-address';
 import { User } from 'src/app/_classes/user';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CopyService } from 'src/app/_services/copy.service';
-import { EthUtilsService } from 'src/app/_services/eth-utils.service';
 import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
-import { MidgardService } from 'src/app/_services/midgard.service';
 import {
   MainViewsEnum,
   OverlaysService,
 } from 'src/app/_services/overlays.service';
+import { Path } from '../../breadcrumb/breadcrumb.component';
+import { getTokenAddress } from '@xchainjs/xchain-ethereum';
+import { EthUtilsService } from 'src/app/_services/eth-utils.service';
+import { MetamaskService } from 'src/app/_services/metamask.service';
 import { TransactionStatusService } from 'src/app/_services/transaction-status.service';
 import { UserService } from 'src/app/_services/user.service';
-import { Path } from '../../breadcrumb/breadcrumb.component';
-import { MetamaskService } from 'src/app/_services/metamask.service';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { getTokenAddress } from '@xchainjs/xchain-ethereum';
+import { MidgardService } from 'src/app/_services/midgard.service';
 
 export type ApproveEthContractModalParams = {
   routerAddress: string;
@@ -169,24 +169,24 @@ export class ApproveEthContractModalComponent implements OnInit, OnDestroy {
             ethInbound,
             userAddress: ethClient.getAddress(),
           });
+        } else if (this.user.type === 'XDEFI') {
+          approve = await this.ethUtilService.approveXDEFI({
+            ethClient: this.user.clients.ethereum,
+            contractAddress: strip0x,
+            spenderAddress: routerContractAddress,
+          });
         } else if (this.user.type === 'metamask') {
           approve = await this.ethUtilService.approveMetaMask({
             contractAddress: strip0x,
             routerContractAddress,
             provider: this.metaMaskProvider,
           });
-        } else if (
-          this.user.type === 'walletconnect' ||
-          this.user.type === 'XDEFI'
-        ) {
+        } else if (this.user.type === 'walletconnect') {
           const ethClient = this.user.clients.ethereum;
-          const assetAddress = getTokenAddress(asset);
 
           approve = await ethClient.approve({
-            walletIndex: 0,
-            spender: routerContractAddress,
-            sender: assetAddress,
-            feeOptionKey: 'fast',
+            contractAddress: strip0x,
+            spenderAddress: routerContractAddress,
           });
         }
         this.txStatusService.pollEthContractApproval(approve.hash);

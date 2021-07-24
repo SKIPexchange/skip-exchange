@@ -50,9 +50,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private lastBlockService: LastBlockService,
     private overlaysService: OverlaysService,
     private router: Router,
-    private userService: UserService,
     private analytics: AnalyticsService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    private userService: UserService
   ) {
     this.isTestnet = environment.network === 'testnet';
     this.mainnetUrl = this.isTestnet ? links.mainnetUrl : links.testnetUrl;

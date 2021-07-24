@@ -6,18 +6,13 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import {
-  assetToString,
-  baseAmount,
-  baseToAsset,
-  Chain,
-} from '@xchainjs/xchain-util';
+import { Chain } from '@xchainjs/xchain-util';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import { CopyService } from 'src/app/_services/copy.service';
 import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
 import BigNumber from 'bignumber.js';
 import { UserService } from 'src/app/_services/user.service';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {
@@ -67,7 +62,7 @@ export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
   thorchainExplorerUrl: string;
   litecoinExplorerUrl: string;
   bchExplorerUrl: string;
-  balances: Balances;
+  balances: Balance[];
   sourceBalance: number;
   targetBalance: number;
   subs: Subscription[];
@@ -219,7 +214,7 @@ export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
   }
 
   explorerPath(hash: string = this.hash, chain: Chain = this.chain): string {
-    if (this.externalTx) chain = 'THOR';
+    if (this.externalTx) chain = Chain.THORChain;
 
     let urlHash = chain === 'ETH' ? `0x${hash}` : hash;
     let url = this.mockClientService

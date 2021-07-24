@@ -14,6 +14,7 @@ import {
   baseToAsset,
   assetToString,
   bn,
+  Chain,
 } from '@xchainjs/xchain-util';
 import { combineLatest, Subscription } from 'rxjs';
 import {
@@ -27,7 +28,7 @@ import { UserService } from '../_services/user.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDepositData } from './confirm-deposit-modal/confirm-deposit-modal.component';
 import { User } from '../_classes/user';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { AssetAndBalance } from '../_classes/asset-and-balance';
 import {
   DepositViews,
@@ -106,7 +107,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   /**
    * Balances
    */
-  balances: Balances;
+  balances: Balance[];
   runeBalance: number;
   assetBalance: number;
 
@@ -468,7 +469,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   async getPoolMembership() {
     try {
       const thorAddress =
-        this.userService?.getAdrressChain('THOR') ?? undefined;
+        this.userService?.getAdrressChain(Chain.THORChain) ?? undefined;
       const chainAddress =
         this.userService?.getAdrressChain(this.asset?.chain) ?? undefined;
 
@@ -805,6 +806,10 @@ export class DepositComponent implements OnInit, OnDestroy {
       (res) => {
         this.selectableMarkets = res
           .sort((a, b) => a.asset.localeCompare(b.asset))
+          // only allow available
+          .filter((pool) => pool.status === 'available')
+          // pool must not be empty
+          .filter((pool) => +pool.runeDepth > 0)
           .map((pool) => ({
             asset: new Asset(pool.asset),
             assetPriceUSD: +pool.assetPriceUSD,
@@ -1147,24 +1152,6 @@ export class DepositComponent implements OnInit, OnDestroy {
   cancelButton() {
     if (this.user) {
       this.analytics.event('pool_deposit_symmetrical_prepare', 'button_cancel');
-      let depositAmountUsd =
-        this.assetPrice * this.assetAmount + this.runeFee * this.runeAmount;
-      this.analytics.event(
-        'pool_deposit_symmetrical_prepare',
-        'button_deposit_cancel_symmetrical_*POOL_ASSET*_usd_*numerical_usd_value*',
-        depositAmountUsd,
-        assetString(this.asset),
-        depositAmountUsd.toString()
-      );
-      let depositFeeAmountUSD =
-        this.networkFee * this.assetPrice + this.runeFee * this.runeFee;
-      this.analytics.event(
-        'pool_deposit_symmetrical_prepare',
-        'button_deposit_cancel_symmetrical_*POOL_ASSET*_fee_usd_*numerical_usd_value*',
-        depositFeeAmountUSD,
-        assetString(this.asset),
-        depositFeeAmountUSD.toString()
-      );
     } else
       this.analytics.event(
         'pool_disconnected_deposit',

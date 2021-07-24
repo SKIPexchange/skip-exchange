@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { Asset, getChainAsset } from '../_classes/asset';
 import { UserService } from '../_services/user.service';
 import { combineLatest, Subscription, timer } from 'rxjs';
@@ -20,6 +19,7 @@ import {
   assetToBase,
   assetAmount,
   assetToString,
+  Chain,
 } from '@xchainjs/xchain-util';
 import { PoolDetail } from '../_classes/pool-detail';
 import { MidgardService, ThorchainQueue } from '../_services/midgard.service';
@@ -29,7 +29,7 @@ import {
   SwapData,
 } from './confirm-swap-modal/confirm-swap-modal.component';
 import { User } from '../_classes/user';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { AssetAndBalance } from '../_classes/asset-and-balance';
 import { PoolDTO } from '../_classes/pool';
 import { SlippageToleranceService } from '../_services/slippage-tolerance.service';
@@ -50,6 +50,7 @@ import {
 import { UpdateTargetAddressModalComponent } from './update-target-address-modal/update-target-address-modal.component';
 import { SwapServiceService } from '../_services/swap-service.service';
 import { AnalyticsService, assetString } from '../_services/analytics.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MetamaskService } from '../_services/metamask.service';
 import { ethers } from 'ethers';
 import { EthUtilsService } from '../_services/eth-utils.service';
@@ -66,7 +67,7 @@ export enum SwapType {
   templateUrl: './swap.component.html',
   styleUrls: ['./swap.component.scss'],
 })
-export class SwapComponent implements OnInit, OnDestroy {
+export class SwapComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * From
    */
@@ -83,6 +84,7 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.targetAssetUnit = null;
       this.slip = 0;
     }
+    this.validate();
   }
   private _sourceAssetUnit: number;
   private _sourceAssetTokenValue: BaseAmount;
@@ -152,6 +154,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     this.targetAssetUnitDisplay = val
       ? Number(val.div(10 ** 8).toPrecision())
       : null;
+    this.validate();
   }
   private _targetAssetUnit: BigNumber;
 
@@ -198,7 +201,7 @@ export class SwapComponent implements OnInit, OnDestroy {
   user: User;
   basePrice: number;
 
-  balances: Balances;
+  balances: Balance[];
   sourceBalance: number;
   targetBalance: number;
 
@@ -244,6 +247,11 @@ export class SwapComponent implements OnInit, OnDestroy {
   targetClientAddress: string;
   metaMaskProvider?: ethers.providers.Web3Provider;
   metaMaskNetwork?: 'testnet' | 'mainnet';
+  formValidation: {
+    message: string;
+    isValid: boolean;
+    isError: boolean;
+  };
 
   constructor(
     private dialog: MatDialog,
@@ -267,6 +275,11 @@ export class SwapComponent implements OnInit, OnDestroy {
     this.selectableMarkets = undefined;
     this.haltedChains = [];
     this.targetAddress = '';
+    this.formValidation = {
+      message: '',
+      isValid: false,
+      isError: false,
+    };
 
     const balances$ = this.userService.userBalances$
       .pipe(debounceTime(500))
@@ -295,6 +308,7 @@ export class SwapComponent implements OnInit, OnDestroy {
             this.updateSwapDetails();
           }
         }
+        this.validate();
       });
 
     const user$ = this.userService.user$.subscribe(async (user) => {
@@ -325,6 +339,7 @@ export class SwapComponent implements OnInit, OnDestroy {
 
       // for force changing the selectable markets
       this.setSelectableMarkets();
+      this.validate();
     });
 
     const metaMaskProvider$ = this.metaMaskService.provider$.subscribe(
@@ -332,17 +347,22 @@ export class SwapComponent implements OnInit, OnDestroy {
     );
 
     const metaMaskNetwork$ = this.metaMaskService.metaMaskNetwork$.subscribe(
-      (network) => (this.metaMaskNetwork = network)
+      (network) => {
+        this.metaMaskNetwork = network;
+        this.validate();
+      }
     );
 
-    const queue$ = this.networkQueueService.networkQueue$.subscribe(
-      (queue) => (this.queue = queue)
-    );
+    const queue$ = this.networkQueueService.networkQueue$.subscribe((queue) => {
+      this.queue = queue;
+      this.validate();
+    });
 
     const slippageTolerange$ =
-      this.slipLimitService.slippageTolerance$.subscribe(
-        (limit) => (this.slippageTolerance = limit)
-      );
+      this.slipLimitService.slippageTolerance$.subscribe((limit) => {
+        this.slippageTolerance = limit;
+        this.validate();
+      });
 
     const curs$ = this.currencyService.cur$.subscribe((cur) => {
       this.currency = cur;
@@ -431,9 +451,14 @@ export class SwapComponent implements OnInit, OnDestroy {
             );
           }
         }
+        this.validate();
       });
 
     this.subs.push(sub);
+  }
+
+  ngOnChanges(): void {
+    this.validate();
   }
 
   setSelectedSourceAsset(asset: Asset, selectableMarkets: AssetAndBalance[]) {
@@ -464,6 +489,7 @@ export class SwapComponent implements OnInit, OnDestroy {
       }
 
       this.setSourceChainBalance();
+      this.validate();
     }
   }
 
@@ -480,6 +506,7 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.targetBalance = this.userService.findBalance(this.balances, asset);
       this.setTargetAddress();
     }
+    this.validate();
   }
 
   setTargetAddress() {
@@ -490,6 +517,7 @@ export class SwapComponent implements OnInit, OnDestroy {
       );
       this.setClientTargetAddress();
     }
+    this.validate();
   }
 
   setSourceChainBalance() {
@@ -503,6 +531,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     } else {
       this.sourceChainBalance = 0;
     }
+    this.validate();
   }
 
   launchEditTargetAddressModal() {
@@ -541,6 +570,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     if (newAddress && newAddress.length > 0) {
       this.targetAddress = newAddress;
     }
+    this.validate();
   }
 
   breadcrumbNav(val: string) {
@@ -638,6 +668,8 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.inboundAddresses,
       'INBOUND'
     );
+
+    this.validate();
   }
 
   goToSettings() {
@@ -684,6 +716,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     this.haltedChains = this.inboundAddresses
       .filter((inboundAddress) => inboundAddress.halted)
       .map((inboundAddress) => inboundAddress.chain);
+    this.validate();
   }
 
   setAvailablePools(pools: PoolDTO[]) {
@@ -692,6 +725,7 @@ export class SwapComponent implements OnInit, OnDestroy {
       .filter(
         (pool) => !this.haltedChains.includes(new Asset(pool.asset).chain)
       );
+    this.validate();
   }
 
   setSelectableMarkets() {
@@ -723,13 +757,14 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.selectableTargetMarkets.unshift(runeMarket);
 
       if (
-        this.userService.clientAvailableChains()?.includes('THOR') ||
+        this.userService.clientAvailableChains()?.includes(Chain.THORChain) ||
         !this.user
       ) {
         // Keeping RUNE at top by default
         this.selectableSourceMarkets.unshift(runeMarket);
       }
     }
+    this.validate();
   }
 
   async checkContractApproved() {
@@ -759,146 +794,128 @@ export class SwapComponent implements OnInit, OnDestroy {
       );
       this.ethContractApprovalRequired = !isApproved;
     }
+    this.validate();
   }
 
   contractApproved() {
     this.ethContractApprovalRequired = false;
   }
 
-  formInvalid(): boolean {
-    return (
-      !this.sourceAssetUnit ||
-      !this.selectedSourceAsset ||
-      !this.selectedTargetAsset ||
-      !this.targetAssetUnit ||
-      !this.inboundAddresses ||
-      !this.targetAddress ||
-      this.haltedChains.includes(this.selectedSourceAsset.chain) ||
-      this.haltedChains.includes(this.selectedTargetAsset?.chain) ||
-      this.sourceAssetUnit >
-        this.userService.maximumSpendableBalance(
-          this.selectedSourceAsset,
-          this.sourceBalance,
-          this.inboundAddresses
-        ) ||
-      this.sourceAssetUnit <=
-        this.userService.minimumSpendable(this.selectedSourceAsset) ||
-      this.targetAssetUnitDisplay <=
-        this.userService.minimumSpendable(this.selectedTargetAsset) ||
-      !this.user ||
-      !this.balances ||
-      this.ethContractApprovalRequired ||
-      (this.queue && this.queue.outbound >= 12) ||
-      this.slip * 100 > this.slippageTolerance ||
-      // check target asset amount is greater than outbound network fee * 3
-      this.targetAssetUnitDisplay <
-        this.outboundFees[assetToString(this.selectedTargetAsset)] ||
-      // if RUNE, ensure 3 RUNE remain in wallet
-      (this.selectedSourceAsset.chain === 'THOR' &&
-        this.sourceBalance - this.sourceAssetUnit < 3) ||
-      // check sufficient underlying chain balance to cover fees
-      this.sourceChainBalance <
-        1.5 *
-          this.inboundFees[
-            assetToString(getChainAsset(this.selectedSourceAsset.chain))
-          ] ||
-      !this.mockClientService
-        .getMockClientByChain(this.selectedTargetAsset.chain)
-        .validateAddress(this.targetAddress) ||
-      (this.user?.type === 'metamask' &&
-        this.metaMaskNetwork !== environment.network)
-    );
-  }
-
-  // getMessage() {
-  //   let message = '';
-  //   if(this.isError() != '')
-  //     message = this.isError();
-  //   else if(this.user && this.balances) {
-  //     message = 'prepare';
-  //     if (!this.formInvalid())
-  //       message = 'ready';
-  //   }
-  //   else if(this.user && !this.balances)
-  //     message = "LOADING BALANCE"
-  //   else if(!message)
-  //     message = 'connect wallet';
-  //   return message
-  // }
-
-  isError(): boolean {
-    if (
-      this.mainButtonText() == 'Select' ||
-      this.mainButtonText() == 'Connect wallet' ||
-      this.mainButtonText() == 'Enter an amount' ||
-      this.mainButtonText() == 'Ready' ||
-      this.mainButtonText() == 'LOADING BALANCE' ||
-      this.mainButtonText() == 'Maintenance Enabled'
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
-  mainButtonText(): string {
-    /** App Lock situation */
+  validate(): void {
     if (this.appLocked) {
-      return 'Maintenance Enabled';
+      this.formValidation = {
+        message: 'Maintenance Enabled',
+        isValid: true,
+        isError: false,
+      };
+      return;
     }
 
-    if (this.availablePools && this.availablePools.length === 0) {
-      return 'All chains are halted';
+    /** No user / balances */
+    if (!this.user) {
+      this.formValidation = {
+        message: 'Please connect wallet',
+        isValid: false,
+        isError: false,
+      };
+      return;
     }
 
-    /** User Not connected */
-    if (!this.user || !this.balances) {
-      return 'Connect wallet';
-    }
-
-    /** Loading balance from the user */
     if (this.user && !this.balances) {
-      return 'LOADING BALANCE';
+      this.formValidation = {
+        message: 'Loading Balance',
+        isValid: false,
+        isError: false,
+      };
+      return;
     }
 
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
-      return 'THORChain TX QUEUE FILLED';
+      this.formValidation = {
+        message: 'TX Queue is filled',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
-    /** No target asset selected */
-    if (!this.selectedTargetAsset || !this.selectedSourceAsset) {
-      return 'Select';
+    /** asset missing */
+    if (!this.selectedSourceAsset || !this.selectedTargetAsset) {
+      this.formValidation = {
+        message: 'Select',
+        isValid: false,
+        isError: false,
+      };
+      return;
     }
 
     if (
-      this.selectedSourceAsset &&
-      this.haltedChains.includes(this.selectedSourceAsset.chain)
+      this.selectedSourceAsset.chain === 'ETH' &&
+      this.ethContractApprovalRequired
     ) {
-      return `${this.selectedSourceAsset.chain} Halted`;
+      this.formValidation = {
+        message: `Approval Required`,
+        isValid: false,
+        isError: false,
+      };
+      return;
     }
 
-    if (
-      this.selectedTargetAsset &&
-      this.haltedChains.includes(this.selectedTargetAsset.chain)
-    ) {
-      return `${this.selectedTargetAsset.chain} Halted`;
+    if (this.haltedChains.includes(this.selectedSourceAsset.chain)) {
+      this.formValidation = {
+        message: `${this.selectedSourceAsset.chain} Halted`,
+        isValid: false,
+        isError: true,
+      };
+      return;
+    }
+
+    if (this.haltedChains.includes(this.selectedTargetAsset.chain)) {
+      this.formValidation = {
+        message: `${this.selectedTargetAsset.chain} Halted`,
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     if (
       this.selectedSourceAsset.chain === 'THOR' &&
       this.sourceBalance - this.sourceAssetUnit < 3
     ) {
-      return 'Min 3 RUNE in Wallet Required';
-    }
-
-    if (this.isMaxError) {
-      return 'Input Amount Less Than Fees';
+      this.formValidation = {
+        message: 'Min 3 RUNE in Wallet Required',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     /** No source amount set */
-    if (!this.sourceAssetUnit) {
-      return 'Enter an amount';
+    if (!this.sourceAssetUnit || !this.targetAssetUnit) {
+      this.formValidation = {
+        message: 'Prepare',
+        isValid: false,
+        isError: false,
+      };
+      return;
+    }
+
+    /** Input Amount is less than network fees */
+    if (
+      this.sourceChainBalance <
+      1.05 *
+        this.inboundFees[
+          assetToString(getChainAsset(this.selectedSourceAsset.chain))
+        ]
+    ) {
+      this.formValidation = {
+        message: `Insufficient ${this.selectedSourceAsset.chain} for fees`,
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     /** Output Amount is less than network fees */
@@ -906,11 +923,21 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.targetAssetUnitDisplay <
       this.outboundFees[assetToString(this.selectedTargetAsset)]
     ) {
-      return 'Output Amount Less Than Fees';
+      this.formValidation = {
+        message: 'Output Amount Less Than Fees',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     if (!this.inboundAddresses) {
-      return 'Loading';
+      this.formValidation = {
+        message: 'Loading',
+        isValid: false,
+        isError: false,
+      };
+      return;
     }
 
     /** Source amount is higher than user spendable amount */
@@ -922,19 +949,12 @@ export class SwapComponent implements OnInit, OnDestroy {
         this.inboundAddresses
       )
     ) {
-      return `Insufficient ${this.selectedSourceAsset.chain}.${this.selectedSourceAsset.ticker} balance`;
-    }
-
-    /** Input Amount is less than network fees */
-    if (
-      this.sourceChainBalance <
-      1.05 *
-        this.inboundFees[
-          assetToString(getChainAsset(this.selectedSourceAsset.chain))
-        ]
-    ) {
-      const chainAsset = getChainAsset(this.selectedSourceAsset.chain);
-      return `Insufficient ${chainAsset.chain}.${chainAsset.ticker} for Fees`;
+      this.formValidation = {
+        message: 'Insufficient balance',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     /** Amount is too low, considered "dusting" */
@@ -944,12 +964,22 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.targetAssetUnitDisplay <=
         this.userService.minimumSpendable(this.selectedTargetAsset)
     ) {
-      return 'Amount too low';
+      this.formValidation = {
+        message: 'Amount too low',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     /** Exceeds slip tolerance set in user settings */
     if (this.slip * 100 > this.slippageTolerance) {
-      return 'Slip Limit Exceeded';
+      this.formValidation = {
+        message: 'Slip Limit Exceeded',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     /** Validate Address */
@@ -958,14 +988,24 @@ export class SwapComponent implements OnInit, OnDestroy {
         .getMockClientByChain(this.selectedTargetAsset.chain)
         .validateAddress(this.targetAddress)
     ) {
-      return 'Enter Valid Address';
+      this.formValidation = {
+        message: 'Enter Valid Address',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     if (
       this.user?.type === 'metamask' &&
       this.metaMaskNetwork !== environment.network
     ) {
-      return 'Change MetaMask Network';
+      this.formValidation = {
+        message: 'Change MetaMask Network',
+        isValid: false,
+        isError: true,
+      };
+      return;
     }
 
     /** Good to go */
@@ -975,9 +1015,19 @@ export class SwapComponent implements OnInit, OnDestroy {
       this.sourceAssetUnit <= this.sourceBalance &&
       this.selectedTargetAsset
     ) {
-      return 'Ready';
+      this.formValidation = {
+        message: 'Ready',
+        isValid: true,
+        isError: false,
+      };
+      return;
     } else {
       console.warn('error creating main button text');
+      this.formValidation = {
+        message: '',
+        isValid: false,
+        isError: true,
+      };
     }
   }
 
@@ -1137,6 +1187,8 @@ export class SwapComponent implements OnInit, OnDestroy {
         (asset) => `${asset.asset.chain}.${asset.asset.ticker}` === `THOR.RUNE`
       )?.assetPriceUSD;
     }
+
+    this.validate();
   }
 
   async calculateTargetUnits() {
@@ -1167,6 +1219,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     } else {
       this.calculatingTargetAsset = false;
     }
+    this.validate();
   }
 
   setMaxError(val) {
@@ -1209,6 +1262,7 @@ export class SwapComponent implements OnInit, OnDestroy {
         'switch_arrow_send_receive_containers'
       );
     }
+    this.validate();
   }
 
   reverseTransactionDisabled(): boolean {
@@ -1312,6 +1366,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     }
 
     this.calculatingTargetAsset = false;
+    this.validate();
   }
 
   /**
@@ -1386,6 +1441,7 @@ export class SwapComponent implements OnInit, OnDestroy {
     }
 
     this.calculatingTargetAsset = false;
+    this.validate();
   }
 
   ngOnDestroy() {

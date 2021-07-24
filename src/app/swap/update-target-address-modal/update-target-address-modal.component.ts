@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { Chain } from '@xchainjs/xchain-util';
 import { User } from 'src/app/_classes/user';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
@@ -14,7 +14,7 @@ import { UserService } from 'src/app/_services/user.service';
   templateUrl: './update-target-address-modal.component.html',
   styleUrls: ['./update-target-address-modal.component.scss'],
 })
-export class UpdateTargetAddressModalComponent {
+export class UpdateTargetAddressModalComponent implements OnInit {
   @Output() back: EventEmitter<string> = new EventEmitter<string>();
   @Input() data: any;
   targetAddress: string;
@@ -36,7 +36,7 @@ export class UpdateTargetAddressModalComponent {
 
     //For events
     this.thorAddress =
-      this.userService.getTokenAddress(this.user, 'THOR') ?? undefined;
+      this.userService.getTokenAddress(this.user, Chain.THORChain) ?? undefined;
   }
 
   breadcurmbNav(val: string) {

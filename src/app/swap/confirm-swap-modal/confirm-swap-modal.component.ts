@@ -28,6 +28,7 @@ import {
   assetToBase,
   assetAmount,
   assetToString,
+  Chain,
 } from '@xchainjs/xchain-util';
 import {
   MainViewsEnum,
@@ -36,7 +37,7 @@ import {
 import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
 import { CopyService } from 'src/app/_services/copy.service';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { Transaction } from 'src/app/_classes/transaction';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
@@ -93,7 +94,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   @Output() closeTransaction = new EventEmitter<null>();
 
   estimatedMinutes: number;
-  balances: Balances;
+  balances: Balance[];
   outboundHash: string;
   currency: Currency;
   isDoubleSwap: boolean = false;
@@ -437,7 +438,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
 
         this.hash = hash;
         this.txStatusService.addTransaction({
-          chain: 'THOR',
+          chain: Chain.THORChain,
           hash: this.hash,
           ticker: sourceAsset.ticker,
           status: TxStatus.PENDING,

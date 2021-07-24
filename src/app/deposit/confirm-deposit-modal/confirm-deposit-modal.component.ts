@@ -7,9 +7,8 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { assetToString, bn } from '@xchainjs/xchain-util';
-import { Subscription, timer } from 'rxjs';
+import { assetToString, bn, Chain } from '@xchainjs/xchain-util';
+import { Subscription } from 'rxjs';
 import { PoolAddressDTO } from 'src/app/_classes/pool-address';
 import { User } from 'src/app/_classes/user';
 import { TransactionConfirmationState } from 'src/app/_const/transaction-confirmation-state';
@@ -23,7 +22,7 @@ import {
 import { EthUtilsService } from 'src/app/_services/eth-utils.service';
 import { OverlaysService } from 'src/app/_services/overlays.service';
 import { Router } from '@angular/router';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import { KeystoreDepositService } from 'src/app/_services/keystore-deposit.service';
 import { Asset } from 'src/app/_classes/asset';
@@ -74,7 +73,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   insufficientChainBalance: boolean;
   loading: boolean;
   estimatedMinutes: number;
-  balances: Balances;
+  balances: Balance[];
   metaMaskProvider?: ethers.providers.Web3Provider;
   depositSuccess: boolean;
   outboundHash: string;
@@ -452,11 +451,6 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     return runeHash;
   }
 
-  assetDepositError(error: string) {
-    this.txState = TransactionConfirmationState.ERROR;
-    this.error = error;
-  }
-
   getOutboundSuccess(hash: string) {
     this.txStatusService.getOutboundHash(hash).subscribe((res: Transaction) => {
       if (res.status === 'success') {
@@ -521,10 +515,15 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     this.getOutboundSuccess(hash);
   }
 
+  assetDepositError(error: string) {
+    this.txState = TransactionConfirmationState.ERROR;
+    this.error = error;
+  }
+
   runeDepositSuccess(runeHash: string) {
     this.hash = runeHash;
     this.txStatusService.addTransaction({
-      chain: 'THOR',
+      chain: Chain.THORChain,
       hash: runeHash,
       ticker: `RUNE`,
       status: TxStatus.PENDING,
@@ -540,7 +539,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   withdrawSuccess(hash: string) {
     this.hash = hash;
     this.txStatusService.addTransaction({
-      chain: 'THOR',
+      chain: Chain.THORChain,
       hash,
       ticker: `${this.data.asset.asset.ticker}-RUNE`,
       status: TxStatus.PENDING,
