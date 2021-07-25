@@ -814,7 +814,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** No user / balances */
     if (!this.user) {
       this.formValidation = {
-        message: 'Please connect wallet',
+        message: 'Connect wallet',
         isValid: false,
         isError: false,
       };

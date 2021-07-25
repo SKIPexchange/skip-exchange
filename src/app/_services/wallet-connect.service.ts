@@ -183,6 +183,11 @@ export class WalletConnectService {
         },
         qrcodeModalOptions
       );
+    } else {
+      connector.updateSession({
+        chainId: connector.chainId,
+        accounts: connector.accounts,
+      });
     }
 
     this.connector = connector;
@@ -487,7 +492,6 @@ export class WalletConnectService {
             { ...overrides }
           );
           unsignedTx.from = address;
-
           txResult = await this.transferERC20(unsignedTx);
         } else {
           // Transfer ETH
@@ -515,6 +519,7 @@ export class WalletConnectService {
     }) => {
       try {
         console.log('eth call', funcName);
+        let params = funcParams ?? [];
         if (!contractAddress) {
           return await Promise.reject(new Error('address must be provided'));
         }
@@ -532,7 +537,7 @@ export class WalletConnectService {
           abi,
           provider
         ).connect(signer);
-        return contract[funcName](...funcParams);
+        return contract[funcName](...params);
       } catch (error) {
         return Promise.reject(error);
       }
