@@ -1,5 +1,3 @@
-import { getPoolShare, UnitData } from '@thorchain/asgardex-util';
-import { baseAmount } from '@xchainjs/xchain-util';
 import BigNumber from 'bignumber.js';
 
 export class Liquidity {

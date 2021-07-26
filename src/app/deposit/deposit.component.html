@@ -21,7 +21,6 @@
         </div> -->
       </nav>
 
-
       <app-asset-input
         *ngIf="poolType === 'SYM' || poolType === 'ASYM_ASSET'"
         type="deposit"
@@ -30,6 +29,7 @@
         [assetUnit]="assetAmount"
         (assetUnitChange)="updateValues('ASSET', $event)"
         [balance]="assetBalance"
+        [priceInput]="assetPrice"
         [disabledAssetSymbol]="rune.symbol"
         [selectableMarkets]="selectableMarkets"
         [isDeposit]="true"

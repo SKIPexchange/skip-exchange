@@ -8,8 +8,8 @@
               { name: 'skip', call: 'skip'},
               { name: 'swap', disable: true }
             ]"
-            [isError]="isError()"
-            [message]="mainButtonText()"
+            [isError]="formValidation.isError"
+            [message]="formValidation.message"
             (funcCaller)="breadcrumbNav($event)"
           ></app-breadcrumb>
           <div class="top-right">
@@ -178,9 +178,7 @@
             "
             (click)="openConfirmationDialog()"
             class="next-btn graident-btn"
-            [disabled]="
-              formInvalid() || !balances || ethContractApprovalRequired
-            "
+            [disabled]="!formValidation.isValid"
           >
             <span>{{swapTextButton()}}</span>
           </button>

@@ -38,7 +38,7 @@ export type PoolViews = 'Pool' | 'Connect';
 export type UserOverlay = {
   userView: UserViews;
   address?: string;
-  chain?: Chain;
+  chain?: string;
   asset?: AssetAndBalance;
 };
 export enum MainViewsEnum {

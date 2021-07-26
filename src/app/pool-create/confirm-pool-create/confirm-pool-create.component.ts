@@ -6,7 +6,7 @@ import {
   Output,
 } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { assetAmount, assetToBase } from '@xchainjs/xchain-util';
+import { assetAmount, assetToBase, Chain } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/_classes/user';
 import { TransactionConfirmationState } from 'src/app/_const/transaction-confirmation-state';
@@ -23,10 +23,7 @@ import { Client as EthereumClient } from '@xchainjs/xchain-ethereum/lib';
 import { EthUtilsService } from 'src/app/_services/eth-utils.service';
 import { OverlaysService } from 'src/app/_services/overlays.service';
 import { Router } from '@angular/router';
-import { Client as LitecoinClient } from '@xchainjs/xchain-litecoin';
-import { Client as BchClient } from '@xchainjs/xchain-bitcoincash';
-import { Client as BitcoinClient } from '@xchainjs/xchain-bitcoin';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 
 export interface ConfirmCreatePoolData {
@@ -51,7 +48,7 @@ export class ConfirmPoolCreateComponent implements OnDestroy {
   txState: TransactionConfirmationState;
   hash: string;
   error: string;
-  balances: Balances;
+  balances: Balance[];
 
   //reskin data import
   @Input() data: ConfirmCreatePoolData;
@@ -114,12 +111,30 @@ export class ConfirmPoolCreateComponent implements OnDestroy {
       return;
     }
 
-    let hash = '';
+    /**
+     * Deposit RUNE
+     */
+    try {
+      const runeMemo = `+:${asset.chain}.${asset.symbol}:${address}`;
+
+      const runeHash = await thorClient.deposit({
+        amount: assetToBase(assetAmount(this.data.runeAmount)),
+        memo: runeMemo,
+      });
+
+      this.hash = runeHash;
+    } catch (error) {
+      console.error('error making RUNE transfer: ', error);
+      this.txState = TransactionConfirmationState.ERROR;
+      this.error = error;
+      return;
+    }
 
     /**
      * Deposit Token
      */
     try {
+      let hash = '';
       // deposit using xchain
       switch (this.data.asset.chain) {
         case 'BNB':
@@ -146,43 +161,27 @@ export class ConfirmPoolCreateComponent implements OnDestroy {
       }
 
       if (hash === '') {
-        console.error('no hash set');
+        this.txState = TransactionConfirmationState.ERROR;
+        this.error = 'Error getting hash from asset transaction';
         return;
       }
     } catch (error) {
-      console.error('error depositing asset');
       console.error(error);
+      this.txState = TransactionConfirmationState.ERROR;
+      this.error = 'Error depositing asset';
       return;
     }
 
-    /**
-     * Deposit RUNE
-     */
-    try {
-      const runeMemo = `+:${asset.chain}.${asset.symbol}:${address}`;
-
-      const runeHash = await thorClient.deposit({
-        amount: assetToBase(assetAmount(this.data.runeAmount)),
-        memo: runeMemo,
-      });
-
-      this.hash = runeHash;
-      this.txStatusService.addTransaction({
-        chain: 'THOR',
-        hash: runeHash,
-        ticker: `${asset.ticker}-RUNE`,
-        status: TxStatus.PENDING,
-        action: TxActions.DEPOSIT,
-        symbol: asset.symbol,
-        isThorchainTx: true,
-      });
-
-      this.txState = TransactionConfirmationState.SUCCESS;
-    } catch (error) {
-      console.error('error making RUNE transfer: ', error);
-      this.txState = TransactionConfirmationState.ERROR;
-      this.error = error;
-    }
+    this.txStatusService.addTransaction({
+      chain: Chain.THORChain,
+      hash: this.hash,
+      ticker: `${asset.ticker}-RUNE`,
+      status: TxStatus.PENDING,
+      action: TxActions.DEPOSIT,
+      symbol: asset.symbol,
+      isThorchainTx: true,
+    });
+    this.txState = TransactionConfirmationState.SUCCESS;
   }
 
   async binanceDeposit(

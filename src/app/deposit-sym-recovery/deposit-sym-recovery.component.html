@@ -43,12 +43,6 @@
           </app-asset-input>
         </div>
 
-        <!-- <div class="flex justify-between swap-details">
-          <span class="tx-detail-label"></span>
-          <span *ngIf="networkFee">{{networkFee | number:"1.0-8"}} {{missingAsset.ticker}}.{{missingAsset.chain}} Network Fee</span>
-          <span *ngIf="!networkFee">-</span>
-        </div> -->
-
         <div class="flex justify-between swap-details">
           <span class="tx-detail-label"></span>
           <span *ngIf="outboundTransactionFee"
@@ -79,10 +73,9 @@
             class="main-action-btn w-full"
             (click)="withdrawPendingDeposit()"
             mat-flat-button
-            [disabled]="runeBalance < 0.2"
+            [disabled]="!formValidation.isValid"
           >
-            <span *ngIf="runeBalance >= 0.2">Withdraw All</span>
-            <span *ngIf="runeBalance < 0.2">Insufficient RUNE</span>
+            <span>{{formValidation.message}}</span>
           </button>
         </div>
 

@@ -3,7 +3,7 @@ import { AvailableClients, User, WalletType } from '../_classes/user';
 import { Client as BinanceClient } from '@thorchain/asgardex-binance';
 import { environment } from 'src/environments/environment';
 import { Asset, checkSummedAsset } from '../_classes/asset';
-import { Balance, Balances } from '@xchainjs/xchain-client';
+import { Balance, Network } from '@xchainjs/xchain-client';
 import { BncClient } from '@binance-chain/javascript-sdk/lib/client';
 import {
   assetAmount,
@@ -42,9 +42,9 @@ export class UserService {
   private userSource = new BehaviorSubject<User>(null);
   user$ = this.userSource.asObservable();
 
-  private userBalancesSource = new BehaviorSubject<Balances>(null);
+  private userBalancesSource = new BehaviorSubject<Balance[]>(null);
   userBalances$ = this.userBalancesSource.asObservable();
-  private _balances: Balances;
+  private _balances: Balance[];
 
   private chainBalanceErrorsSource = new BehaviorSubject<Chain[]>([]);
   chainBalanceErrors$ = this.chainBalanceErrorsSource.asObservable();
@@ -79,7 +79,8 @@ export class UserService {
     this.userSource.next(user);
     this.setLastLoginType(user?.type);
     if (user) {
-      this.ThorAddress = this.getTokenAddress(user, 'THOR') ?? undefined;
+      this.ThorAddress =
+        this.getTokenAddress(user, Chain.THORChain) ?? undefined;
       this.fetchBalances();
     } else {
       this.ThorAddress = undefined;
@@ -139,8 +140,6 @@ export class UserService {
           const client = this._user.clients.ethereum;
           const address = client.getAddress();
           promises.push(this.getEthereumBalances(client, address));
-        } else if (key === 'bitcoin') {
-          promises.push(this.getBitcoinBalances());
         } else {
           promises.push(this.getGeneralBalance(key));
         }
@@ -149,7 +148,8 @@ export class UserService {
       // MetaMask
     } else if (this._user && this._user.type === 'metamask') {
       // mock client to fetch balances
-      const network = environment.network === 'testnet' ? 'testnet' : 'mainnet';
+      const network =
+        environment.network === 'testnet' ? Network.Testnet : Network.Mainnet;
       const MOCK_PHRASE =
         'image rally need wedding health address purse army antenna leopard sea gain';
       const phrase = MOCK_PHRASE;
@@ -219,13 +219,13 @@ export class UserService {
     }
   }
 
-  setBalances(balances: Balances) {
+  setBalances(balances: Balance[]) {
     this._balances = balances;
     this.userBalancesSource.next(balances);
   }
 
   // it seems updating balances will be better than only pushing to it.
-  pushBalances(balances: Balances) {
+  pushBalances(balances: Balance[]) {
     for (let i = 0; i < balances.length; i++) {
       let _balance = balances[i];
       const index = this._balances.findIndex(
@@ -260,16 +260,16 @@ export class UserService {
       // ethereum and binance are handled in respected functions
       switch (key) {
         case 'bitcoin':
-          this.pushChainBalanceErrors('BTC');
+          this.pushChainBalanceErrors(Chain.Bitcoin);
           break;
         case 'bitcoinCash':
-          this.pushChainBalanceErrors('BCH');
+          this.pushChainBalanceErrors(Chain.BitcoinCash);
           break;
         case 'litecoin':
-          this.pushChainBalanceErrors('LTC');
+          this.pushChainBalanceErrors(Chain.Litecoin);
           break;
         case 'thorchain':
-          this.pushChainBalanceErrors('THOR');
+          this.pushChainBalanceErrors(Chain.THORChain);
           break;
       }
     }
@@ -374,7 +374,7 @@ export class UserService {
           // catchError handles http throws
           catchError((error) => of(error))
         )
-        .subscribe(async (res: Balances) => {
+        .subscribe(async (res: Balance[]) => {
           const runeBalance = this.findBalance(res, new Asset('THOR.RUNE'));
           if (runeBalance && currentBalance < runeBalance) {
             console.log('increased!');
@@ -450,7 +450,7 @@ export class UserService {
     }
   }
 
-  findBalance(balances: Balances, asset: Asset) {
+  findBalance(balances: Balance[], asset: Asset) {
     if (balances && asset) {
       const match = balances.find(
         (balance) =>
@@ -467,7 +467,7 @@ export class UserService {
   }
 
   // TODO -> hacky bandaid for erc20 dusting
-  findRawBalance(balances: Balances, asset: Asset): BigNumber {
+  findRawBalance(balances: Balance[], asset: Asset): BigNumber {
     if (balances && asset) {
       const match = balances.find(
         (balance) =>
@@ -484,7 +484,7 @@ export class UserService {
   }
 
   sortMarketsByUserBalance(
-    userBalances: Balances,
+    userBalances: Balance[],
     marketListItems: AssetAndBalance[]
   ): AssetAndBalance[] {
     const balMap: { [key: string]: Balance } = {};
@@ -632,17 +632,17 @@ export class UserService {
     let availableChains: Chain[] = [];
     for (const [key, _value] of Object.entries(this._user.clients)) {
       if (key === 'binance' && _value) {
-        availableChains.push('BNB');
+        availableChains.push(Chain.Binance);
       } else if (key === 'ethereum' && _value) {
-        availableChains.push('ETH');
+        availableChains.push(Chain.Ethereum);
       } else if (key === 'thorchain' && _value) {
-        availableChains.push('THOR');
+        availableChains.push(Chain.THORChain);
       } else if (key === 'bitcoin' && _value) {
-        availableChains.push('BTC');
+        availableChains.push(Chain.Bitcoin);
       } else if (key === 'bitcoinCash' && _value) {
-        availableChains.push('BCH');
+        availableChains.push(Chain.BitcoinCash);
       } else if (key === 'litecoin' && _value) {
-        availableChains.push('LTC');
+        availableChains.push(Chain.Litecoin);
       }
     }
     return availableChains;

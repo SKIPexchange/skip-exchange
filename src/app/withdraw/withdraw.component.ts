@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -16,6 +15,7 @@ import {
   bn,
   assetToString,
   BaseAmount,
+  Chain,
 } from '@xchainjs/xchain-util';
 import BigNumber from 'bignumber.js';
 import { combineLatest, Subscription } from 'rxjs';
@@ -28,7 +28,7 @@ import { MidgardService, ThorchainQueue } from '../_services/midgard.service';
 import { TransactionUtilsService } from '../_services/transaction-utils.service';
 import { UserService } from '../_services/user.service';
 import { ConfirmWithdrawData } from './confirm-withdraw-modal/confirm-withdraw-modal.component';
-import { Balances } from '@xchainjs/xchain-client';
+import { Balance } from '@xchainjs/xchain-client';
 import { debounceTime } from 'rxjs/operators';
 import { MetamaskService } from '../_services/metamask.service';
 import { environment } from 'src/environments/environment';
@@ -111,10 +111,11 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   userSelectedType: boolean;
   assetBalance: number;
   runeBalance: number;
-  balances: Balances;
+  balances: Balance[];
   currency: Currency;
   sliderDisabled: boolean;
   metaMaskNetwork?: 'testnet' | 'mainnet';
+  poolStatus?: string;
 
   poolShare: number;
   isHalted: boolean;
@@ -263,7 +264,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
          */
         try {
           const member = await this.midgardService
-            .getMember(thorAddress)
+            .getMember(thorAddress.toLowerCase())
             .toPromise();
           const thorAssetPools = member.pools.filter(
             (pool) => pool.pool === assetToString(this.asset)
@@ -278,7 +279,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       if (chainAddress && chainAddress.length > 0) {
         try {
           const member = await this.midgardService
-            .getMember(chainAddress)
+            .getMember(chainAddress.toLowerCase())
             .toPromise();
           const assetPools = member.pools.filter(
             (pool) => pool.pool === assetToString(this.asset)
@@ -420,7 +421,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   async getPoolMembership() {
     try {
       const thorAddress =
-        this.userService?.getAdrressChain('THOR') ?? undefined;
+        this.userService?.getAdrressChain(Chain.THORChain) ?? undefined;
       const chainAddress =
         this.userService?.getAdrressChain(this.asset?.chain) ?? undefined;
 
@@ -689,6 +690,16 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       return true;
     }
 
+    /** Still fetching pool details */
+    if (!this.poolStatus) {
+      return true;
+    }
+
+    /** Pool is not Available */
+    if (this.poolStatus !== 'available') {
+      return true;
+    }
+
     /**
      * Check SYM or ASYM RUNE sufficient RUNE
      */
@@ -746,6 +757,16 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     if (this.removeAssetAmount && this.removeAssetAmount <= 0) {
       this.isError = true;
       return 'Enter an Amount';
+    }
+
+    /** Still fetching pool details */
+    if (!this.poolStatus) {
+      return 'Loading';
+    }
+
+    /** Pool is not Available */
+    if (this.poolStatus !== 'available') {
+      return `Pool ${this.poolStatus}`;
     }
 
     /**
@@ -879,32 +900,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   }
 
   back() {
-    if (this.withdrawPercent == 0) {
-      this.analytics.event(
-        'pool_withdraw_symmetrical_prepare',
-        'button_cancel'
-      );
-    } else {
-      let usdValue =
-        this.removeAssetAmount * this.assetPrice +
-        this.removeRuneAmount * this.runePrice;
-      this.analytics.event(
-        'pool_withdraw_symmetrical_prepare',
-        'button_withdraw_cancel_*POOL_ASSET*_usd_*numerical_usd_value*',
-        usdValue,
-        `${this.asset.chain}.${this.asset.ticker}`,
-        usdValue.toString()
-      );
-      let usdFeeValue =
-        this.runePrice * this.runeFee + this.assetPrice * this.networkFee;
-      this.analytics.event(
-        'pool_withdraw_symmetrical_prepare',
-        'button_withdraw_cancel_*POOL_ASSET*_fee_usd_*numerical_usd_value*',
-        usdFeeValue,
-        `${this.asset.chain}.${this.asset.ticker}`,
-        usdFeeValue.toString()
-      );
-    }
+    this.analytics.event('pool_withdraw_symmetrical_prepare', 'button_cancel');
 
     this.router.navigate(['/', 'pool']);
   }

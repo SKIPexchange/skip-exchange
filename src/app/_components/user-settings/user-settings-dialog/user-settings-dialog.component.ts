@@ -6,7 +6,6 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
 import {
   Asset,
   assetToString,
@@ -73,7 +72,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
     | 'CONFIRM_SEND'
     | 'ERROR';
   selectedAddress: string;
-  selectedChain: Chain;
+  selectedChain: string;
   selectedAsset: AssetAndBalance;
   amountToSend: number;
   recipient: string;
@@ -152,7 +151,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
   setMode(
     val: UserViews,
     address?: string,
-    chain?: Chain,
+    chain?: string,
     asset?: AssetAndBalance
   ) {
     this.overlaysService.setCurrentUserView({
@@ -237,7 +236,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectAddress(address: string, chain: Chain) {
+  selectAddress(address: string, chain: string) {
     this.selectedAddress = address;
     this.selectedChain = chain;
     this.analytics.event(

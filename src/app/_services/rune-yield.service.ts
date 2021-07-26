@@ -40,7 +40,7 @@ export class RuneYieldService {
     }
     return this.http
       .get<RuneYieldPoolResponse[]>(
-        'https://multichain-asgard-consumer-api.vercel.app/api/v2/member/poollist?address=' +
+        'https://multichain-asgard-consumer-api.vercel.app/api/v3/member/poollist?address=' +
           address.join(',')
       )
       .pipe(shareReplay());

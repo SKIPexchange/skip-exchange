@@ -21,6 +21,7 @@ import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { Router } from '@angular/router';
+import { Chain } from '@xchainjs/xchain-util';
 
 @Component({
   selector: 'app-header',
@@ -92,7 +93,7 @@ export class HeaderComponent implements OnDestroy {
   walletConnectUpgrade() {
     return (
       this.user.type === 'walletconnect' &&
-      this.userService.clientAvailableChains().includes('THOR')
+      this.userService.clientAvailableChains().includes(Chain.THORChain)
     );
   }
 

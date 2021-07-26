@@ -156,6 +156,10 @@ export class PendingTxsModalComponent implements OnDestroy {
         this.txStatusService.getOutboundHash(transaction.in[0].txID);
       }
 
+      if (transaction.type == 'withdraw') {
+        inboundAsset = new Asset(transaction.pools[0]);
+      }
+
       // ignore upgarde txs because of midgard bug (temp)
       if (action == TxActions.UPGRADE_RUNE) {
         return;
@@ -168,7 +172,7 @@ export class PendingTxsModalComponent implements OnDestroy {
         status,
         action,
         date,
-        isThorchainTx: inboundAsset.chain === 'THOR' ? true : false,
+        isThorchainTx: true,
         symbol: inboundAsset.symbol,
         outbound,
       });
@@ -255,9 +259,9 @@ export class PendingTxsModalComponent implements OnDestroy {
   }
 
   explorerPathAlt(hash: string, chain: Chain, externalTx?: boolean): string {
-    if (externalTx) chain = 'THOR';
+    if (externalTx) chain = Chain.THORChain;
 
-    if (chain === 'THOR') {
+    if (chain === Chain.THORChain) {
       return this.thorchainExplorerUrl + '/' + hash;
     } else if (chain === 'ETH') {
       return `${this.ethereumExplorerUrl}/0x${hash}`;

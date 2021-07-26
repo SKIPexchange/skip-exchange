@@ -11,12 +11,7 @@ import { Subject, Subscription } from 'rxjs';
 import { User } from '../../_classes/user';
 import { TransactionConfirmationState } from '../../_const/transaction-confirmation-state';
 import { UserService } from '../../_services/user.service';
-import {
-  assetAmount,
-  assetToBase,
-  assetToString,
-  bn,
-} from '@xchainjs/xchain-util';
+import { assetToString, baseAmount, Chain, bn } from '@xchainjs/xchain-util';
 import {
   TransactionStatusService,
   TxActions,
@@ -72,13 +67,13 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   error: string;
   estimatedMinutes: number;
   rune = new Asset('THOR.RUNE');
+  metaMaskProvider?: ethers.providers.Web3Provider;
 
   //new reskin data injection
   @Input() data: ConfirmWithdrawData;
   @Output() closeEvent: EventEmitter<boolean>;
 
   message: string = 'confirm';
-  metaMaskProvider?: ethers.providers.Web3Provider;
   hashSuccess: boolean;
   outboundHash: string;
   currency: Currency;
@@ -181,7 +176,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   async runeWithdraw(memo: string) {
     // withdraw RUNE
     try {
-      const txCost = assetToBase(assetAmount(0.00000001));
+      const txCost = baseAmount(0);
 
       const thorClient = this.data.user.clients.thorchain;
       if (!thorClient) {
@@ -397,7 +392,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
     this.txState = TransactionConfirmationState.SUCCESS;
     this.hash = hash;
     this.txStatusService.addTransaction({
-      chain: 'THOR',
+      chain: Chain.THORChain,
       hash: this.hash,
       ticker: `${this.data.asset.ticker}-RUNE`,
       symbol: this.data.asset.symbol,

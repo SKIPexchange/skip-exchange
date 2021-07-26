@@ -183,6 +183,11 @@ export class WalletConnectService {
         },
         qrcodeModalOptions
       );
+    } else {
+      connector.updateSession({
+        chainId: connector.chainId,
+        accounts: connector.accounts,
+      });
     }
 
     this.connector = connector;
@@ -257,7 +262,7 @@ export class WalletConnectService {
     // see if all walletconnects support get_accounts extension
     if (accounts && !this.supportWC(name)) {
       const isEth = this.mockClientService
-        .getMockClientByChain('ETH')
+        .getMockClientByChain(Chain.Ethereum)
         .validateAddress(accounts[0]);
       if (!isEth) {
         this.killSession();
@@ -293,14 +298,14 @@ export class WalletConnectService {
   checkEnvironmet() {
     if (
       supportedNetworkChains[environment.network] !== this.connector.chainId ||
-      (this.getAddressbyChain('BNB') &&
+      (this.getAddressbyChain(Chain.Binance) &&
         !this.mockClientService
-          .getMockClientByChain('BNB')
-          .validateAddress(this.getAddressbyChain('BNB'))) ||
-      (this.getAddressbyChain('THOR') &&
+          .getMockClientByChain(Chain.Binance)
+          .validateAddress(this.getAddressbyChain(Chain.Binance))) ||
+      (this.getAddressbyChain(Chain.THORChain) &&
         !this.mockClientService
-          .getMockClientByChain('THOR')
-          .validateAddress(this.getAddressbyChain('THOR')))
+          .getMockClientByChain(Chain.THORChain)
+          .validateAddress(this.getAddressbyChain(Chain.THORChain)))
     ) {
       throw new Error('Environmet is not right');
     }
@@ -310,23 +315,29 @@ export class WalletConnectService {
     this.checkEnvironmet();
 
     // binance client
-    const userBinanceClient = this.getAddressbyChain('BNB')
+    const userBinanceClient = this.getAddressbyChain(Chain.Binance)
       ? await this.trustWalletBinanceClient()
       : undefined;
     // thochain client
-    const userThorchainClient = this.getAddressbyChain('THOR')
+    const userThorchainClient = this.getAddressbyChain(Chain.THORChain)
       ? await this.trustWalletThorchainClient()
       : undefined;
     // eth Client
-    const userEthereumClient = this.getAddressbyChain('ETH')
+    const userEthereumClient = this.getAddressbyChain(Chain.Ethereum)
       ? await this.trustWalletEthereumClient()
       : undefined;
 
     // adding clients if they are supported by walletconnect
     const clients = {
-      ...(this.getAddressbyChain('BNB') && { binance: userBinanceClient }),
-      ...(this.getAddressbyChain('THOR') && { thorchain: userThorchainClient }),
-      ...(this.getAddressbyChain('ETH') && { ethereum: userEthereumClient }),
+      ...(this.getAddressbyChain(Chain.Binance) && {
+        binance: userBinanceClient,
+      }),
+      ...(this.getAddressbyChain(Chain.THORChain) && {
+        thorchain: userThorchainClient,
+      }),
+      ...(this.getAddressbyChain(Chain.Ethereum) && {
+        ethereum: userEthereumClient,
+      }),
     };
 
     const walletConnectUser = new User({
@@ -349,12 +360,12 @@ export class WalletConnectService {
   //Ethereum
   trustWalletEthereumClient() {
     const userEthereumClient = this.mockClientService.mockEthereumClient;
-    const address = this.getAddressbyChain('ETH');
+    const address = this.getAddressbyChain(Chain.Ethereum);
     userEthereumClient.getAddress = () => address;
 
     userEthereumClient.approve = async ({
-      spender,
-      sender,
+      spenderAddress,
+      contractAddress,
       amount,
       feeOptionKey,
     }: ApproveParams) => {
@@ -376,15 +387,15 @@ export class WalletConnectService {
             .toFixed()
         );
       const gasLimit = await userEthereumClient
-        .estimateApprove({ spender, sender, amount })
+        .estimateApprove({ spenderAddress, contractAddress, amount })
         .catch(() => undefined);
 
       const txAmount = amount
         ? BigNumber.from(amount.amount().toFixed())
         : BigNumber.from(2).pow(256).sub(1);
-      const contract = new ethers.Contract(sender, erc20ABI);
+      const contract = new ethers.Contract(contractAddress, erc20ABI);
       const unsignedTx = await contract.populateTransaction.approve(
-        spender,
+        spenderAddress,
         txAmount,
         {
           from: userEthereumClient.getAddress(),
@@ -481,7 +492,6 @@ export class WalletConnectService {
             { ...overrides }
           );
           unsignedTx.from = address;
-
           txResult = await this.transferERC20(unsignedTx);
         } else {
           // Transfer ETH
@@ -501,16 +511,16 @@ export class WalletConnectService {
       }
     };
 
-    userEthereumClient.call = async (
-      walletIndex: number,
-      routerAddress: string,
-      abi: ethers.ContractInterface,
-      func: string,
-      params: Array<any>
-    ) => {
+    userEthereumClient.call = async ({
+      contractAddress,
+      abi,
+      funcName,
+      funcParams,
+    }) => {
       try {
-        console.log('eth call', func);
-        if (!routerAddress) {
+        console.log('eth call', funcName);
+        let params = funcParams ?? [];
+        if (!contractAddress) {
           return await Promise.reject(new Error('address must be provided'));
         }
         const walletconnectProvider = new WalletConnectProvider({
@@ -523,11 +533,11 @@ export class WalletConnectService {
         const signer = provider.getSigner();
 
         const contract = new ethers.Contract(
-          routerAddress,
+          contractAddress,
           abi,
           provider
         ).connect(signer);
-        return contract[func](...params);
+        return contract[funcName](...params);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -539,7 +549,7 @@ export class WalletConnectService {
   //thorchain
   trustWalletThorchainClient() {
     const userThorchainClient = this.mockClientService.mockThorchainClient;
-    const address = this.getAddressbyChain('THOR');
+    const address = this.getAddressbyChain(Chain.THORChain);
     userThorchainClient.getAddress = () => address;
 
     userThorchainClient.transfer = async (txParams) => {
@@ -724,7 +734,7 @@ export class WalletConnectService {
   //binance
   trustWalletBinanceClient() {
     const userBinanceClient = this.mockClientService.mockBinanceClient;
-    const address = this.getAddressbyChain('BNB');
+    const address = this.getAddressbyChain(Chain.Binance);
     userBinanceClient.getAddress = () => address;
     const bncClient = userBinanceClient.getBncClient();
 

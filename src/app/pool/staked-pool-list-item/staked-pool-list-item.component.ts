@@ -11,6 +11,7 @@ import { PoolDTO } from 'src/app/_classes/pool';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
+import { CurrencyService } from 'src/app/_services/currency.service';
 import { PoolDetailService } from 'src/app/_services/pool-detail.service';
 import {
   RuneYieldPoolResponse,
@@ -39,6 +40,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
    */
   @Input() set memberPoolData(data: MemberPool[]) {
     this._memberPoolData = data;
+    this.getPoolShare();
   }
   get memberPoolData() {
     return this._memberPoolData;
@@ -51,6 +53,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
   @Input() set poolData(data: PoolDTO) {
     this._poolData = data;
     this.setAsset();
+    this.getPoolShare();
   }
   get poolData() {
     return this._poolData;
@@ -59,7 +62,15 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
 
   @Input() depositsDisabled: boolean;
   @Input() currency: Currency;
-  @Input() runeYieldPool: RuneYieldPoolResponse[];
+
+  @Input() set runeYieldPool(data: RuneYieldPoolResponse[]) {
+    this._runeYieldPool = data;
+    this.getPoolShare();
+  }
+  get runeYieldPool() {
+    return this._runeYieldPool;
+  }
+  _runeYieldPool: RuneYieldPoolResponse[];
 
   pooledRune: number;
   pooledAsset: number;
@@ -76,7 +87,8 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
   constructor(
     private poolDetailService: PoolDetailService,
     private txStatusService: TransactionStatusService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private currencyService: CurrencyService
   ) {
     this.expanded = false;
     this.activate = false;
@@ -88,8 +100,8 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
     const poolDetail$ = this.poolDetailService.activatedAsset$.subscribe(
       (asset) => {
         if (asset && this.asset && this.asset == asset) {
-          this.activate = true;
           this.getPoolShare();
+          this.activate = true;
         } else {
           this.activate = false;
         }
@@ -109,7 +121,11 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
           +this.poolData.runePrice) *
       this.currency.value;
 
-    this.subs = [poolDetail$, pendingTx$];
+    const cur$ = this.currencyService.cur$.subscribe((cur) => {
+      this.currency = cur;
+    });
+
+    this.subs = [poolDetail$, pendingTx$, cur$];
   }
 
   toggleExpanded() {
@@ -263,7 +279,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
       const pooledDayAverage =
         new BigNumber(+this.poolData.volume24h).div(10 ** 8).toNumber() *
         this.poolData?.runePrice *
-        this.currency.value;
+        this.currency?.value;
 
       if (this.activate) {
         //calculating the sum of pool share from the whole deposited options
