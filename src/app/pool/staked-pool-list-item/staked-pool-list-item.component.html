@@ -20,7 +20,7 @@
     </div>
 
     <div class="flex justify-between">
-      <app-tag *ngIf="isPending" type="color" [color]="isWithdraw(isPending.action) ? '#FF4954' : '#28F4AE'" [active]="true">
+      <app-tag *ngIf="isPending" type="color" [color]="isWithdraw(isPending.action) ? '#FF4954' : '#28F4AE'" [active]="hover">
         <span style="color: inherit">{{ isPending.action + 'ING' }}</span>
       </app-tag>
       <ng-container *ngIf="activate && !isPending">
