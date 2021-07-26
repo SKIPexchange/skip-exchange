@@ -166,8 +166,9 @@
                     ? '#FF4954'
                     : 'var(--primary-default)'
               }"
-              >{{ swapData.slip | percent: "0.2-4"
-              }}<span
+            >
+              {{ swapData.slip | percent: "0.2-4" }}
+              <span
                 *ngIf="swapData.sourceAsset.assetPriceUSD"
                 class="mono"
                 style="margin-left: 5px"
@@ -177,9 +178,9 @@
                     swapData.inputValue *
                     swapData.slip | number: "1.2-2"
                 }}
-                {{ currency.code }})</span
-              ></span
-            >
+                {{ currency.code }})
+              </span>
+            </span>
           </div>
 
           <!-- <div *ngIf="swapData.targetAddress" class="flex justify-between mb-2">

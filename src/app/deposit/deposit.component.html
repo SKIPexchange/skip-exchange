@@ -235,7 +235,7 @@
   *ngIf="view === 'PoolType'"
   [assets]="[{asset: asset, balance: assetBalance, assetPriceUSD: assetPrice}, {asset: rune, balance: runeBalance, assetPriceUSD: runePrice}]" 
   [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
-  [selectedPoolType]="poolType" 
+  [selectedPoolType]="userSelectedPoolType ? poolType : undefined" 
   [poolTypeOptions]="poolTypeOptions" 
   (selectPoolType)="setPoolTypeOptionFromEvent($event)"
 >
