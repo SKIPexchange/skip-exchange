@@ -946,6 +946,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
           };
           this.poolData = res;
           this.poolUnits = +res.units;
+          this.poolStatus = res.status;
           this.assetPrice = parseFloat(res.assetPriceUSD);
           this.runePrice =
             parseFloat(res.assetPriceUSD) / parseFloat(res.assetPrice);

@@ -125,14 +125,15 @@ export class PendingTxsModalComponent implements OnDestroy {
     let txs: Tx[] = [];
 
     transactions.actions.forEach((transaction) => {
-      let inboundAsset = new Asset(transaction.in[0].coins[0].asset);
+      let inboundAsset;
       let outbound = undefined;
       let status = this.getStatus(transaction.status);
       let action = this.getAction(transaction.type);
       let date = new Date(+transaction.date / 1000000);
 
       if (transaction.out.length > 0 && transaction.type == 'swap') {
-        const outboundAsset = new Asset(transaction.out[0].coins[0].asset);
+        inboundAsset = new Asset(transaction?.in[0]?.coins[0]?.asset);
+        const outboundAsset = new Asset(transaction?.out[0]?.coins[0]?.asset);
 
         outbound = {
           hash: transaction?.out[0]?.txID,
@@ -141,6 +142,7 @@ export class PendingTxsModalComponent implements OnDestroy {
       }
 
       if (transaction.type == 'addLiquidity') {
+        inboundAsset = new Asset(transaction?.in[0]?.coins[0]?.asset);
         const outboundAsset = new Asset(transaction.pools[0]);
 
         outbound = {
@@ -153,6 +155,7 @@ export class PendingTxsModalComponent implements OnDestroy {
         (transaction.type == 'addLiquidity' || transaction.type == 'swap') &&
         transaction.status == 'pending'
       ) {
+        inboundAsset = new Asset(transaction?.in[0]?.coins[0]?.asset);
         this.txStatusService.getOutboundHash(transaction.in[0].txID);
       }
 
@@ -166,9 +169,9 @@ export class PendingTxsModalComponent implements OnDestroy {
       }
 
       txs.push({
-        chain: inboundAsset.chain,
+        chain: inboundAsset?.chain,
         hash: transaction.in[0].txID,
-        ticker: inboundAsset.ticker,
+        ticker: inboundAsset?.ticker,
         status,
         action,
         date,

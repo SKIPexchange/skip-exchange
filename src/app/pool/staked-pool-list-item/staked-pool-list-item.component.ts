@@ -20,6 +20,7 @@ import {
 import {
   TransactionStatusService,
   Tx,
+  TxActions,
 } from 'src/app/_services/transaction-status.service';
 import { UserService } from 'src/app/_services/user.service';
 import { environment } from 'src/environments/environment';
@@ -317,6 +318,10 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
       (runeAddress ? `thor=${runeAddress}&` : '') +
       (assetAddress ? `${this.asset.chain.toLowerCase()}=${assetAddress}` : '')
     );
+  }
+
+  isWithdraw(action: TxActions): boolean {
+    return action === TxActions.WITHDRAW;
   }
 
   ngOnDestroy(): void {
