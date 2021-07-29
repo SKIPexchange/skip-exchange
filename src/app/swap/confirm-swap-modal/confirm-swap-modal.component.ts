@@ -50,6 +50,7 @@ import { Asset } from 'src/app/_classes/asset';
 import { ethers } from 'ethers';
 import { retry } from 'rxjs/operators';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 export interface SwapData {
   sourceAsset: AssetAndBalance;
   targetAsset: AssetAndBalance;
@@ -95,10 +96,11 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
 
   estimatedMinutes: number;
   balances: Balance[];
-  outboundHash: string;
+  hashes: noticeData[] = [];
   currency: Currency;
   isDoubleSwap: boolean = false;
   metaMaskProvider: ethers.providers.Web3Provider;
+  swapSuccessful: boolean;
 
   constructor(
     // @Inject(MAT_DIALOG_DATA) public swapData: SwapData,
@@ -251,6 +253,32 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     if (index === 0) window.open('', '_blank');
   }
 
+  makeHash(hash: string, asset: Asset, isThorchainTx: boolean = false) {
+    if (isThorchainTx === true) {
+      if (asset.chain === Chain.Ethereum) {
+        hash = this.ethUtilsService.strip0x(hash);
+      }
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(Chain.THORChain).getExplorerTxUrl(hash),
+        asset: new Asset('THOR.RUNE'),
+        isPending: true,
+      });
+    } else {
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(asset.chain).getExplorerTxUrl(hash),
+        asset: asset,
+      });
+    }
+  }
+
   submitTransaction() {
     this.txState = TransactionConfirmationState.SUBMITTING;
     this.analytics.event(
@@ -386,6 +414,8 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
         input: this.swapData.inputValue,
       });
 
+      this.makeHash(hash, this.swapData.sourceAsset.asset);
+      this.makeHash(hash, this.swapData.sourceAsset.asset, true);
       this.hash = hash.substr(2);
       this.pushTxStatus(hash, this.swapData.sourceAsset.asset);
       this.txState = TransactionConfirmationState.SUCCESS;
@@ -450,6 +480,9 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
             hash: undefined,
           },
         });
+        this.makeHash(hash, this.swapData.sourceAsset.asset);
+        // eslint-disable-next-line prettier/prettier
+        this.hashes.push({ asset: this.swapData.targetAsset.asset, copy: '', show: '', url: '' });
         this.getOutboundHash(hash);
         this.txState = TransactionConfirmationState.SUCCESS;
       } catch (error) {
@@ -466,6 +499,8 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
         });
 
         const sourceAsset = this.swapData.sourceAsset.asset;
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
 
         this.hash = hash;
         this.pushTxStatus(hash, sourceAsset);
@@ -518,6 +553,9 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
           feeRate: +matchingPool.gas_rate,
         });
 
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
+
         this.hash = hash;
         this.pushTxStatus(hash, sourceAsset);
         this.txState = TransactionConfirmationState.SUCCESS;
@@ -554,6 +592,9 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
           amount,
           ethClient,
         });
+
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
 
         this.hash = hash.substr(2);
         this.pushTxStatus(hash, this.swapData.sourceAsset.asset);
@@ -607,6 +648,9 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
           feeRate: +matchingPool.gas_rate,
         });
 
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
+
         this.hash = hash;
         this.pushTxStatus(hash, sourceAsset);
         this.txState = TransactionConfirmationState.SUCCESS;
@@ -653,6 +697,9 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
           feeRate: +matchingPool.gas_rate,
         });
 
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
+
         this.hash = hash;
         this.pushTxStatus(hash, sourceAsset);
         this.txState = TransactionConfirmationState.SUCCESS;
@@ -665,26 +712,32 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   }
 
   getOutboundHash(hash) {
-    const outbound$ = this.txStatusService
-      .getOutboundHash(hash)
-      .pipe(retry(2))
-      .subscribe((res: Transaction) => {
-        this.outboundHash = res.out[0]?.txID;
-        console.log(res.out[0]?.coins[0]?.amount);
-        if (
-          assetAmount(res.out[0]?.coins[0]?.amount)
-            .amount()
-            .div(10 ** 8)
-            .toNumber() > 0
-        )
-          this.swapData.outputValue = assetAmount(res.out[0]?.coins[0]?.amount)
-            .amount()
-            .div(10 ** 8);
+    // prettier-ignore
+    const outbound$ = this.txStatusService.getOutboundHash(hash).pipe(retry(2)) .subscribe((res: Transaction) => {
+      if (res.status === 'success') {
+        this.swapSuccessful = true;
 
-        if (!this.outboundHash && res.status == 'success') {
-          this.outboundHash = 'success';
+        const outboundHash = res.out[0]?.txID;
+        const targetAsset = this.swapData.targetAsset.asset;
+        if (outboundHash) {
+          this.hashes.splice(1, 1, {
+            copy: outboundHash,
+            show: `${outboundHash.substring(0, 3)}...${outboundHash.substring(outboundHash.length - 3, outboundHash.length)}`,
+            url: this.mockClientService.getMockClientByChain(targetAsset.chain).getExplorerTxUrl(outboundHash),
+            asset: targetAsset,
+            isPending: false,
+          });
         }
-      });
+        // update the output amount
+        const outAmount = res.out[0]?.coins[0]?.amount;
+        if(outAmount && assetAmount(outAmount).amount().div(10 ** 8).toNumber() > 0)
+          this.swapData.outputValue = assetAmount(outAmount).amount().div(10 ** 8);
+        //update the input amount
+        const inAmount = res.in[0]?.coins[0]?.amount;
+        if(inAmount && assetAmount(inAmount).amount().div(10 ** 8).toNumber() > 0)
+          this.swapData.inputValue = assetAmount(inAmount).amount().div(10 ** 8).toNumber();
+      }
+    });
 
     this.subs.push(outbound$);
   }

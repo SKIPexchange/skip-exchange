@@ -38,6 +38,8 @@ import { ethers } from 'ethers';
 import { Transaction } from 'src/app/_classes/transaction';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
+import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
+import { MockClientService } from 'src/app/_services/mock-client.service';
 
 // assets should be added for asset-input as designed.
 export interface ConfirmDepositData {
@@ -78,6 +80,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   depositSuccess: boolean;
   outboundHash: string;
   currency: Currency;
+  hashes: noticeData[] = [];
 
   //foe this interface it should be imported from despoit page
   @Input() data: ConfirmDepositData;
@@ -93,7 +96,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     private analyticsService: AnalyticsService,
     private keystoreDepositService: KeystoreDepositService,
     private metaMaskService: MetamaskService,
-    private curService: CurrencyService
+    private curService: CurrencyService,
+    private mockClientService: MockClientService
   ) {
     this.depositSuccess = false;
     this.loading = true;
@@ -141,6 +145,31 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     }
   }
 
+  makeHash(hash: string, asset: Asset, isThorchainTx: boolean = false) {
+    if (isThorchainTx === true) {
+      if (asset.chain === Chain.Ethereum) {
+        hash = this.ethUtilsService.strip0x(hash);
+      }
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(Chain.THORChain).getExplorerTxUrl(hash),
+        asset: this.data.rune.asset,
+      });
+    } else {
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(asset.chain).getExplorerTxUrl(hash),
+        asset: asset,
+      });
+    }
+  }
+
   submitTransaction(): void {
     this.txState = TransactionConfirmationState.SUBMITTING;
 
@@ -183,6 +212,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
         if (hash && hash.length > 0) {
           this.hash = hash;
           this.assetDepositSuccess(this.data.asset.asset, hash);
+          this.makeHash(hash, this.data.asset.asset);
+          this.makeHash(hash, this.data.asset.asset, true);
           this.txState = TransactionConfirmationState.SUCCESS;
         } else {
           this.assetDepositError('Deposit Unsuccessful');
@@ -206,6 +237,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
           try {
             assetHash = await this.keystoreDepositAsset(pools);
             console.log('asset hash is: ', assetHash);
+            this.makeHash(assetHash, this.data.asset.asset);
           } catch (error) {
             console.error('error making token transfer: ', error);
             this.txState = TransactionConfirmationState.ERROR;
@@ -226,6 +258,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
               this.data.asset.asset
             );
             console.log('rune hash is: ', runeHash);
+            this.makeHash(assetHash, this.data.rune.asset);
             this.runeDepositSuccess(runeHash);
           } catch (error) {
             console.error('error making RUNE transfer: ', error);
@@ -246,6 +279,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
             }
 
             console.log('asset hash is: ', assetHash);
+            this.makeHash(assetHash, this.data.asset.asset);
+            this.makeHash(assetHash, this.data.asset.asset, true);
             this.assetDepositSuccess(this.data.asset.asset, assetHash);
             this.txState = TransactionConfirmationState.SUCCESS;
           } catch (error) {
@@ -264,6 +299,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
               this.data.asset.asset
             );
             console.log('rune hash is: ', runeHash);
+            this.makeHash(runeHash, this.data.rune.asset);
             this.runeDepositSuccess(runeHash);
             break;
           } catch (error) {
@@ -452,10 +488,12 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   }
 
   getOutboundSuccess(hash: string) {
+    // see if midgard gets the tx success
     this.txStatusService.getOutboundHash(hash).subscribe((res: Transaction) => {
       if (res.status === 'success') {
         this.depositSuccess = true;
 
+        //updates amount
         this.data.runeAmount = bn(
           res.in
             .find((inTX) =>
@@ -474,6 +512,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
           .div(10 ** 8)
           .toNumber();
 
+        //updates asset amount
         this.data.assetAmount = bn(
           res.in
             .find((inTX) =>
@@ -487,13 +526,6 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
         )
           .div(10 ** 8)
           .toNumber();
-
-        this.outboundHash =
-          res.in.find((inTX) =>
-            inTX.coins.find(
-              (c) => c.asset === assetToString(this.data.asset.asset)
-            )
-          )?.txID || '';
       }
     });
   }

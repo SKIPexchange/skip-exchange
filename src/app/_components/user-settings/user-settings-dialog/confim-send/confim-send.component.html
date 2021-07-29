@@ -137,9 +137,9 @@
   modalType="SEND"
   [label]="['Sent']"
   [asset]="[asset]"
-  [chain]="asset.asset.chain"
   [amount]="[amount]"
-  [hash]="hash"
+  [balances]="balances"
+  [hashes]="hashes"
   (closeDialog)="close.emit()"
   [recipientAddress]="recipientAddress"
 >

@@ -23,11 +23,10 @@
   [label]="['Sent', 'Received']"
   [asset]="[swapData.sourceAsset, swapData.targetAsset]"
   [amount]="[swapData.inputValue, swapData.outputValue]"
-  [chain]="swapData.sourceAsset.asset.chain"
+  [balances]="balances"
+  [hashes]="hashes"
+  [isPending]="!swapSuccessful"
   [targetAddress]="swapData.targetAddress"
-  [hash]="hash"
-  [hasOutbound]="isDoubleSwap"
-  [hashOutbound]="outboundHash"
   (closeDialog)="closeDialog(true)"
   modalType="SWAP"
 >
@@ -39,7 +38,7 @@
       },
       { name: 'Swap', call: 'swap' }
     ]"
-    [message]="outboundHash ? 'SUCCESS' : 'Waiting for Confirmation'"
+    [message]="swapSuccessful ? 'SUCCESS' : 'Waiting for Confirmation'"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

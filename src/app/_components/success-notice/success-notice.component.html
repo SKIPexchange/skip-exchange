@@ -1,0 +1,26 @@
+<div class="notice-container">
+    <div class="notice" [ngClass]="{multi: data.length > 1, gray: !item.show || item.isPending}" *ngFor="let item of data">
+      <div class="text-content">
+        <span style="font-family: 'Roboto'">{{ item.asset.chain }}: </span>
+        <span *ngIf="!!item.show">{{item.show}}</span>
+        <span *ngIf="!item.show">Waiting for TXID</span>
+      </div>
+      <div class="tags">
+        <app-tag *ngIf="item.copy" (click)="copyClipboard(item.copy)">
+            <span>Copy</span>
+        </app-tag>
+        <div *ngIf="item.copy && item.url" style="width: 5px;"></div>
+        <a *ngIf="item.url" class="tag-container outline" [href]="item.url" target="_blank">
+            <div class="tag-field">
+                <span>Explore</span>
+            </div>
+        </a>
+        <div *ngIf="item.copy && item.thorUrl" style="width: 5px;"></div>
+        <a *ngIf="item.thorUrl" class="tag-container outline" [href]="item.thorUrl" target="_blank">
+            <div class="tag-field">
+                <span>Thor Tx</span>
+            </div>
+        </a>
+      </div>
+    </div>
+</div>

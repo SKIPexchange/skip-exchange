@@ -147,19 +147,16 @@
 <app-transaction-success-modal
   *ngIf="txState === 'SUCCESS'"
   modalType="WITHDRAW"
-  chain="THOR"
-  [hash]="hash"
+  [label]="['Withdrawn', data.poolShareMessage]"
   [asset]="[
-    { asset: data.asset, balance: 0, assetPriceUSD: 0 },
-    { asset: data.rune, balance: 0, assetPriceUSD: 0 }
+  { asset: data.asset, balance: 0, assetPriceUSD: 0 },
+  { asset: data.rune, balance: 0, assetPriceUSD: 0 }
   ]"
   [amount]="[data.assetAmount, data.runeAmount]"
   [percentage]="data.unstakePercent"
-  [label]="['Withdrawn', data.poolShareMessage]"
-  (closeDialog)="closeToPool()"
-  [hashOutbound]="outboundHash"
-  [hasOutbound]="data.withdrawType !== 'ASYM_RUNE'"
   [disabledAsset]="disabledAsset()"
+  [hashes]="hashes"
+  (closeDialog)="closeToPool()"
 >
   <app-breadcrumb
     [path]="[

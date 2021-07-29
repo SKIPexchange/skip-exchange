@@ -163,6 +163,10 @@ export class PendingTxsModalComponent implements OnDestroy {
         inboundAsset = new Asset(transaction.pools[0]);
       }
 
+      if (transaction.type == 'refund') {
+        inboundAsset = new Asset(transaction?.in[0]?.coins[0]?.asset);
+      }
+
       // ignore upgarde txs because of midgard bug (temp)
       if (action == TxActions.UPGRADE_RUNE) {
         return;

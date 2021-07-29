@@ -10,9 +10,10 @@ import { NoticeModule } from '../notice/notice.module';
 import { DoubleAssetFieldModule } from '../double-asset-field/double-asset-field.module';
 import { MatSliderModule } from '@angular/material/slider';
 import { TagModule } from '../tag/tag.module';
+import { SuccessNoticeComponent } from '../success-notice/success-notice.component';
 
 @NgModule({
-  declarations: [TransactionSuccessModalComponent],
+  declarations: [TransactionSuccessModalComponent, SuccessNoticeComponent],
   imports: [
     CommonModule,
     MatIconModule,

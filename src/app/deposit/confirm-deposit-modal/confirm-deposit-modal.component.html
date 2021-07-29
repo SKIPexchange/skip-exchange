@@ -175,18 +175,15 @@
 
   <app-transaction-success-modal
     *ngIf="txState === 'SUCCESS'"
-    [chain]="data.asset.asset.chain"
-    [hash]="hash"
+    modalType="DEPOSIT"
+    [poolType]="data.poolTypeOption"
     [asset]="[data.asset, data.rune]"
     [label]="['Deposited', 'Deposited']"
     [amount]="[data.assetAmount, data.runeAmount]"
-    (closeDialog)="closeToPool()"
-    [externalTx]="true"
+    [balances]="balances"
+    [hashes]="hashes"
     [isPlus]="true"
-    modalType="DEPOSIT"
-    [poolType]="data.poolTypeOption"
-    [hasOutbound]="data.poolTypeOption === 'SYM'"
-    [hashOutbound]="outboundHash"
+    (closeDialog)="closeToPool()"
   >
     <app-breadcrumb
       [path]="[

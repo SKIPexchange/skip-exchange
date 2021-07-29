@@ -40,6 +40,8 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
+import { MockClientService } from 'src/app/_services/mock-client.service';
 
 @Component({
   selector: 'app-confim-send',
@@ -93,12 +95,14 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
   error: string;
   insufficientChainBalance: boolean;
   balances: Balance[];
+  hashes: noticeData[];
 
   constructor(
     private userService: UserService,
     private txStatusService: TransactionStatusService,
     private overlaysService: OverlaysService,
     private ethUtilsService: EthUtilsService,
+    private mockClientService: MockClientService,
     private midgardService: MidgardService,
     private txUtilsService: TransactionUtilsService,
     private analytics: AnalyticsService
@@ -241,6 +245,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           });
           this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, true);
+          this.makeHashes(this.asset.asset);
           this.transactionSuccessful.next();
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
@@ -263,6 +268,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           });
           this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
           this.transactionSuccessful.next();
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
@@ -313,6 +319,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           });
           this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
           this.transactionSuccessful.next();
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
@@ -363,6 +370,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           });
           this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
           this.transactionSuccessful.next();
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
@@ -414,8 +422,9 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
                 : BigNumber.from(100000), // ERC20
             gasPrice,
           });
-          this.hash = hash.substr(2);
+          this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
           this.transactionSuccessful.next();
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
@@ -466,6 +475,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           });
           this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
           this.transactionSuccessful.next();
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
@@ -478,6 +488,19 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  makeHashes(asset: Asset) {
+    this.hashes = [
+      {
+        copy: this.hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${this.hash.substring(0, 6)}...${this.hash.substring( this.hash.length - 6, this.hash.length )}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(asset.chain).getExplorerTxUrl(this.hash),
+        asset: asset,
+      },
+    ];
   }
 
   pushTxStatus(hash: string, asset: Asset, isThorchainTx: boolean) {
