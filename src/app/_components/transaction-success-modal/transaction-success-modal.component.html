@@ -8,24 +8,25 @@
     <div mat-dialog-content>
       <!-- first structure -->
       <app-asset-input
-        *ngIf="modalType !== 'WITHDRAW'"
-        [label]="label[0]"
-        [(selectedAsset)]="asset[0].asset"
-        [(assetUnit)]="amount[0]"
+        *ngIf="data.modalType !== 'WITHDRAW'"
+        [label]="data.label[0]"
+        [(selectedAsset)]="data.asset[0].asset"
+        [(assetUnit)]="data.amount[0]"
         [balance]="firstBalance"
-        [disabledAssetSymbol]="asset[0].asset.symbol"
+        [disabledAssetSymbol]="data.asset[0].asset.symbol"
         [disabledMarketSelect]="true"
         [disableInput]="true"
         [hideMax]="true"
         [showPrice]="false"
         [disableUser]="false"
         [isWallet]="true"
-        [eventTags]="getEventTags(0)">
+        [eventTags]="getEventTags(0)"
+        [processing]="data.isPending[1]">
       </app-asset-input>
 
-      <div class="percent-container" *ngIf="modalType === 'WITHDRAW'">
+      <div class="percent-container" *ngIf="data.modalType === 'WITHDRAW'">
         <span class="percent-label">Percentage</span>
-        <span class="unstake-percent">{{ percentage }}%</span>
+        <span class="unstake-percent" [ngClass]="{disabled: this.data.isPending[0]}">{{ percentage }}%</span>
         <mat-slider
           class="slider"
           [disabled]="true"
@@ -39,29 +40,30 @@
       </div>
       <!-- end first structure -->
 
-      <app-arrow [isPlus]="isPlus"></app-arrow>
+      <app-arrow [isPlus]="data.isPlus"></app-arrow>
 
       <!-- second structure -->
       <app-asset-input
-        *ngIf="modalType !== 'WITHDRAW' && asset[1]"
-        [label]="label[1]"
-        [(selectedAsset)]="asset[1].asset"
-        [(assetUnit)]="amount[1]"
+        *ngIf="data.modalType !== 'WITHDRAW' && data.asset[1]"
+        [label]="data.label[1]"
+        [(selectedAsset)]="data.asset[1].asset"
+        [(assetUnit)]="data.amount[1]"
         [balance]="secondBalance"
-        [disabledAssetSymbol]="asset[1].asset.symbol"
+        [disabledAssetSymbol]="data.asset[1].asset.symbol"
         [disabledMarketSelect]="true"
         [disableInput]="true"
         [hideMax]="true"
         [showPrice]="false"
         [disableUser]="false"
-        [isWallet]="balances[1] ? true : false"
+        [isWallet]="data.balances[1] ? true : false"
         [targetAddress]="targetAddress"
         targetLabel="Received at"
         [eventTags]="getEventTags(1)"
-      ></app-asset-input>
+        [processing]="data.isPending[1]">
+      </app-asset-input>
 
       <app-text-field
-        *ngIf="modalType === 'SEND'"
+        *ngIf="data.modalType === 'SEND'"
         selectedType="Text"
         mode="Single"
         label="Recipient Address"
@@ -70,21 +72,22 @@
       ></app-text-field>
 
       <app-double-asset-field
-        *ngIf="modalType === 'WITHDRAW'"
-        [label]="label[0]"
-        [selectedAssets]="[asset[0].asset, asset[1].asset]"
-        [assetUnits]="[amount[0], amount[1]]"
-        [bottomLabel]="label[1]"
+        *ngIf="data.modalType === 'WITHDRAW'"
+        [label]="data.label[0]"
+        [selectedAssets]="[data.asset[0].asset, data.asset[1].asset]"
+        [assetUnits]="[data.amount[0], data.amount[1]]"
+        [bottomLabel]="data.label[1]"
         [isWallet]="true"
         [disabledAsset]="disabledAsset"
         [assetEvents]="getEventTags(0)"
+        [processing]="data.isPending[0]"
       ></app-double-asset-field>
       <!-- end second structure -->
 
       <app-arrow></app-arrow>
 
       <!-- notice structure -->
-      <app-success-notice [data]="hashes" [isPending]="isPending"></app-success-notice>
+      <app-success-notice [data]="data.hashes"></app-success-notice>
     </div>
 
     <!-- close button -->

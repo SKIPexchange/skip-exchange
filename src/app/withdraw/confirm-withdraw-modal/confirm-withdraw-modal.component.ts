@@ -11,7 +11,7 @@ import { Subject, Subscription } from 'rxjs';
 import { User } from '../../_classes/user';
 import { TransactionConfirmationState } from '../../_const/transaction-confirmation-state';
 import { UserService } from '../../_services/user.service';
-import { assetToString, baseAmount, Chain, bn } from '@xchainjs/xchain-util';
+import { assetToString, baseAmount, Chain, bn, assetAmount } from '@xchainjs/xchain-util';
 import {
   TransactionStatusService,
   TxActions,
@@ -36,6 +36,7 @@ import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 
 // TODO: this is the same as ConfirmStakeData in confirm stake modal
 export interface ConfirmWithdrawData {
@@ -491,6 +492,18 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
           });
         }
       });
+  }
+
+  getSuccessData(): SuccessModal {
+    // prettier-ignore
+    return {
+      modalType: 'WITHDRAW',
+      asset: [{ asset: this.data.asset, balance: assetAmount(0), assetPriceUSD: 0 }, { asset: this.data.rune, balance: assetAmount(0), assetPriceUSD: 0 }], 
+      label: this.hashSuccess ? ['Withdrawn', this.data.poolShareMessage] : ['Withdrawing', this.data.poolShareMessage],
+      isPending: [!this.hashSuccess],
+      amount: [this.data.assetAmount, this.data.runeAmount], 
+      hashes: this.hashes,
+    };
   }
 
   closeDialog(transactionSucess?: boolean) {

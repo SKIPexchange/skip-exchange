@@ -42,6 +42,7 @@ import {
 } from 'src/app/_services/analytics.service';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 
 @Component({
   selector: 'app-confim-send',
@@ -126,6 +127,19 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
       this.balances = balances;
     });
     this.subs.push(balances$);
+  }
+
+  getSuccessData(): SuccessModal {
+    // prettier-ignore
+    return {
+      modalType: 'SEND',
+      asset: [this.asset], 
+      label: ['Sent'],
+      amount: [this.amount], 
+      balances: this.balances,
+      hashes: this.hashes,
+      isPlus: true,
+    };
   }
 
   submitTransaction() {

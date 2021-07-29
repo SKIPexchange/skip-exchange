@@ -1348,6 +1348,10 @@ main {
     font-size: 22px;
     font-weight: 500;
     line-height: 30px;
+
+    &.disabled {
+      color: var(--primary-grey-color);
+    }
   }
 
   .slider {

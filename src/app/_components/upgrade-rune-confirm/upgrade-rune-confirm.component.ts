@@ -36,6 +36,7 @@ import { TransactionUtilsService } from 'src/app/_services/transaction-utils.ser
 import { UserService } from 'src/app/_services/user.service';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
 import { noticeData } from '../success-notice/success-notice.component';
+import { SuccessModal } from '../transaction-success-modal/transaction-success-modal.component';
 
 @Component({
   selector: 'app-upgrade-rune-confirm',
@@ -141,6 +142,19 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
         'INBOUND'
       );
     }
+  }
+
+  getSuccessData(): SuccessModal {
+    // prettier-ignore
+    return {
+      modalType: 'UPGRADE',
+      asset: [this.asset, this.nativeRune], 
+      label: ['Upgraded', 'Received'],
+      amount: [this.amount, this.amount], 
+      balances: this.balances,
+      hashes: this.hashes,
+      isPlus: true,
+    };
   }
 
   checkSufficientFunds() {

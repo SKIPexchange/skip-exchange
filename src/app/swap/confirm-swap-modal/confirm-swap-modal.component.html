@@ -20,12 +20,7 @@
 
 <app-transaction-success-modal
   *ngIf="txState === 'SUCCESS'"
-  [label]="['Sent', 'Received']"
-  [asset]="[swapData.sourceAsset, swapData.targetAsset]"
-  [amount]="[swapData.inputValue, swapData.outputValue]"
-  [balances]="balances"
-  [hashes]="hashes"
-  [isPending]="!swapSuccessful"
+  [data]="getSuccessData()"
   [targetAddress]="swapData.targetAddress"
   (closeDialog)="closeDialog(true)"
   modalType="SWAP"

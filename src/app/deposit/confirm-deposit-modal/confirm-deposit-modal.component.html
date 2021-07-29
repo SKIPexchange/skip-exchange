@@ -175,14 +175,7 @@
 
   <app-transaction-success-modal
     *ngIf="txState === 'SUCCESS'"
-    modalType="DEPOSIT"
-    [poolType]="data.poolTypeOption"
-    [asset]="[data.asset, data.rune]"
-    [label]="['Deposited', 'Deposited']"
-    [amount]="[data.assetAmount, data.runeAmount]"
-    [balances]="balances"
-    [hashes]="hashes"
-    [isPlus]="true"
+    [data]="getSuccessData()"
     (closeDialog)="closeToPool()"
   >
     <app-breadcrumb

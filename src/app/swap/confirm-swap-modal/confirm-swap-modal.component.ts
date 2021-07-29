@@ -51,6 +51,7 @@ import { ethers } from 'ethers';
 import { retry } from 'rxjs/operators';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
+import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 export interface SwapData {
   sourceAsset: AssetAndBalance;
   targetAsset: AssetAndBalance;
@@ -816,6 +817,20 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     } else {
       return `=:${chain}.${symbol}:${addr}:${sliplimit}`;
     }
+  }
+
+  getSuccessData(): SuccessModal {
+    // prettier-ignore
+    return {
+      modalType: 'SWAP',
+      asset: [this.swapData.sourceAsset, this.swapData.targetAsset], 
+      label: this.swapSuccessful ? ['Sent', 'Recevied'] : ['Sent', 'Receiving'],
+      amount: [this.swapData.inputValue, this.swapData.outputValue], 
+      balances: this.balances,
+      hashes: this.hashes,
+      isPlus: true,
+      isPending: [false, !this.swapSuccessful]
+    };
   }
 
   ngOnDestroy(): void {

@@ -147,15 +147,9 @@
 <app-transaction-success-modal
   *ngIf="txState === 'SUCCESS'"
   modalType="WITHDRAW"
-  [label]="['Withdrawn', data.poolShareMessage]"
-  [asset]="[
-  { asset: data.asset, balance: 0, assetPriceUSD: 0 },
-  { asset: data.rune, balance: 0, assetPriceUSD: 0 }
-  ]"
-  [amount]="[data.assetAmount, data.runeAmount]"
+  [data]="getSuccessData()"
   [percentage]="data.unstakePercent"
   [disabledAsset]="disabledAsset()"
-  [hashes]="hashes"
   (closeDialog)="closeToPool()"
 >
   <app-breadcrumb

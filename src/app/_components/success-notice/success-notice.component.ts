@@ -18,7 +18,6 @@ export type noticeData = {
 })
 export class SuccessNoticeComponent implements OnInit {
   @Input() data: noticeData[];
-  @Input() isPending?: boolean;
 
   constructor(private copyService: CopyService) {}
 

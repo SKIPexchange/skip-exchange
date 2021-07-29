@@ -40,6 +40,7 @@ import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 
 // assets should be added for asset-input as designed.
 export interface ConfirmDepositData {
@@ -635,6 +636,32 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     } else {
       return 'confirm';
     }
+  }
+
+  getSuccessData(): SuccessModal {
+    let assets = [];
+    let amounts = [];
+    if (this.data.poolTypeOption === 'ASYM_ASSET') {
+      assets = [this.data.asset];
+      amounts = [this.data.assetAmount];
+    } else if (this.data.poolTypeOption === 'ASYM_RUNE') {
+      assets = [this.data.rune];
+      amounts = [this.data.runeAmount];
+    } else {
+      assets = [this.data.asset, this.data.rune];
+      amounts = [this.data.assetAmount, this.data.runeAmount];
+    }
+    // prettier-ignore
+    return {
+      modalType: 'DEPOSIT',
+      poolType: this.data.poolTypeOption,
+      asset: assets, 
+      label: ['Deposited', 'Deposited'],
+      amount: amounts, 
+      balances: this.balances,
+      hashes: this.hashes,
+      isPlus: true,
+    };
   }
 
   closeDialog(transactionSucess?: boolean) {
