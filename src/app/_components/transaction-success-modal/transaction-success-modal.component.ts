@@ -44,7 +44,21 @@ export class TransactionSuccessModalComponent implements OnInit {
   @Output() closeDialog: EventEmitter<null>;
 
   //added by the new reskin
-  @Input() data: SuccessModal;
+  _data: SuccessModal;
+  @Input() set data(data: SuccessModal) {
+    this._data = data;
+    if (data.balances) {
+      this.firstBalance =
+        // eslint-disable-next-line prettier/prettier
+        this.userService.findBalance(data.balances, data.asset[0]?.asset) ?? 0;
+      this.secondBalance =
+        // eslint-disable-next-line prettier/prettier
+        this.userService.findBalance(data.balances, data.asset[1]?.asset) ?? 0;
+    }
+  }
+  get data() {
+    return this._data;
+  }
   @Input() recipientAddress?: string;
   @Input() percentage?: number;
   @Input() disabledAsset?: Asset;
@@ -119,14 +133,6 @@ export class TransactionSuccessModalComponent implements OnInit {
   ngOnInit(): void {
     if (this.data.amount[1] && !(this.data.amount[1] instanceof Number)) {
       this.data.amount[1] = Number(this.data.amount[1].toPrecision());
-    }
-    if (this.data.balances) {
-      this.firstBalance =
-        // eslint-disable-next-line prettier/prettier
-        this.userService.findBalance(this.data.balances, this.data.asset[0].asset) ?? 0;
-      this.secondBalance =
-        // eslint-disable-next-line prettier/prettier
-        this.userService.findBalance(this.data.balances, this.data.asset[1].asset) ?? 0;
     }
   }
 

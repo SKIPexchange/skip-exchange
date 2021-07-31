@@ -826,6 +826,11 @@ export class DepositComponent implements OnInit, OnDestroy {
               pool.asset.chain === 'BCH'
           )
 
+          // filter out avaiable chains
+          .filter((pool) =>
+            this.userService.clientAvailableChains().includes(pool.asset.chain)
+          )
+
           // filter out non-native RUNE tokens
           .filter((pool) => !isNonNativeRuneToken(pool.asset))
 

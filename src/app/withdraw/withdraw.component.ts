@@ -34,7 +34,7 @@ import { MetamaskService } from '../_services/metamask.service';
 import { environment } from 'src/environments/environment';
 import { CurrencyService } from '../_services/currency.service';
 import { Currency } from '../_components/account-settings/currency-converter/currency-converter.component';
-import { AnalyticsService } from '../_services/analytics.service';
+import { AnalyticsService, assetString } from '../_services/analytics.service';
 import {
   AvailablePoolTypeOptions,
   PoolTypeOption,
@@ -428,6 +428,10 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       let chainAssetPool: MemberPool;
       let thorAssetPool: MemberPool;
       let symPool: MemberPool;
+
+      if (!this.poolData) {
+        await this.getPoolDetail(assetString(this.asset));
+      }
 
       if (thorAddress) {
         try {
@@ -937,46 +941,48 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       .getInboundAddresses()
       .toPromise();
 
-    this.midgardService.getPool(asset).subscribe(
-      (res) => {
-        if (res) {
-          this.assetPoolData = {
-            assetBalance: baseAmount(res.assetDepth),
-            runeBalance: baseAmount(res.runeDepth),
-          };
-          this.poolData = res;
-          this.poolUnits = +res.units;
-          this.poolStatus = res.status;
-          this.assetPrice = parseFloat(res.assetPriceUSD);
-          this.runePrice =
-            parseFloat(res.assetPriceUSD) / parseFloat(res.assetPrice);
-          this.runeBasePrice = getValueOfAssetInRune(
-            assetToBase(assetAmount(1)),
-            this.assetPoolData
-          )
-            .amount()
-            .div(10 ** 8)
-            .toNumber();
-          this.assetBasePrice = getValueOfRuneInAsset(
-            assetToBase(assetAmount(1)),
-            this.assetPoolData
-          )
-            .amount()
-            .div(10 ** 8)
-            .toNumber();
+    let res = await this.midgardService
+      .getPool(asset)
+      .toPromise()
+      .catch((error) => {
+        console.error('error getting pool detail:', error);
+      });
 
-          this.networkFee = this.txUtilsService.calculateNetworkFee(
-            this.asset,
-            inboundAddresses,
-            'OUTBOUND',
-            res
-          );
+    if (res) {
+      this.assetPoolData = {
+        assetBalance: baseAmount(res.assetDepth),
+        runeBalance: baseAmount(res.runeDepth),
+      };
+      this.poolData = res;
+      this.poolUnits = +res.units;
+      this.poolStatus = res.status;
+      this.assetPrice = parseFloat(res.assetPriceUSD);
+      this.runePrice =
+        parseFloat(res.assetPriceUSD) / parseFloat(res.assetPrice);
+      this.runeBasePrice = getValueOfAssetInRune(
+        assetToBase(assetAmount(1)),
+        this.assetPoolData
+      )
+        .amount()
+        .div(10 ** 8)
+        .toNumber();
+      this.assetBasePrice = getValueOfRuneInAsset(
+        assetToBase(assetAmount(1)),
+        this.assetPoolData
+      )
+        .amount()
+        .div(10 ** 8)
+        .toNumber();
 
-          this.calculate();
-        }
-      },
-      (err) => console.error('error getting pool detail: ', err)
-    );
+      this.networkFee = this.txUtilsService.calculateNetworkFee(
+        this.asset,
+        inboundAddresses,
+        'OUTBOUND',
+        res
+      );
+
+      this.calculate();
+    }
   }
 
   disabledAsset() {

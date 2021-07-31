@@ -259,7 +259,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
               this.data.asset.asset
             );
             console.log('rune hash is: ', runeHash);
-            this.makeHash(assetHash, this.data.rune.asset);
+            this.makeHash(runeHash, this.data.rune.asset);
             this.runeDepositSuccess(runeHash);
           } catch (error) {
             console.error('error making RUNE transfer: ', error);
@@ -656,11 +656,12 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       modalType: 'DEPOSIT',
       poolType: this.data.poolTypeOption,
       asset: assets, 
-      label: ['Deposited', 'Deposited'],
+      label: this.depositSuccess ? ['Deposited', 'Deposited'] : ['Depositing', 'Depositing'],
       amount: amounts, 
       balances: this.balances,
       hashes: this.hashes,
       isPlus: true,
+      isPending: this.depositSuccess ? [false, false] : [true, true]
     };
   }
 

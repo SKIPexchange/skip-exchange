@@ -21,7 +21,7 @@
         [disableUser]="false"
         [isWallet]="true"
         [eventTags]="getEventTags(0)"
-        [processing]="data.isPending[1]">
+        [processing]="data.isPending && data.isPending[0]">
       </app-asset-input>
 
       <div class="percent-container" *ngIf="data.modalType === 'WITHDRAW'">
@@ -40,7 +40,7 @@
       </div>
       <!-- end first structure -->
 
-      <app-arrow [isPlus]="data.isPlus"></app-arrow>
+      <app-arrow *ngIf="data.asset[1] || data.modalType === 'SEND'" [isPlus]="data.isPlus"></app-arrow>
 
       <!-- second structure -->
       <app-asset-input
@@ -59,7 +59,7 @@
         [targetAddress]="targetAddress"
         targetLabel="Received at"
         [eventTags]="getEventTags(1)"
-        [processing]="data.isPending[1]">
+        [processing]="data.isPending && data.isPending[1]">
       </app-asset-input>
 
       <app-text-field
@@ -80,7 +80,7 @@
         [isWallet]="true"
         [disabledAsset]="disabledAsset"
         [assetEvents]="getEventTags(0)"
-        [processing]="data.isPending[0]"
+        [processing]="data.isPending && data.isPending[0]"
       ></app-double-asset-field>
       <!-- end second structure -->
 
