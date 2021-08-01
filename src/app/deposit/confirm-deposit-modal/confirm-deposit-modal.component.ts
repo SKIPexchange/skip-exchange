@@ -82,6 +82,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   outboundHash: string;
   currency: Currency;
   hashes: noticeData[] = [];
+  successMessage: string = 'processing';
 
   //foe this interface it should be imported from despoit page
   @Input() data: ConfirmDepositData;
@@ -492,7 +493,11 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     // see if midgard gets the tx success
     this.txStatusService.getOutboundHash(hash).subscribe((res: Transaction) => {
       if (res.status === 'success') {
-        this.depositSuccess = true;
+        this.successMessage = 'loading balance';
+        this.userService.fetchBalances(() => {
+          this.depositSuccess = true;
+          this.successMessage = 'success';
+        });
 
         //updates amount
         this.data.runeAmount = bn(

@@ -102,6 +102,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   isDoubleSwap: boolean = false;
   metaMaskProvider: ethers.providers.Web3Provider;
   swapSuccessful: boolean;
+  successMessage: string = 'Processing';
 
   constructor(
     // @Inject(MAT_DIALOG_DATA) public swapData: SwapData,
@@ -726,9 +727,13 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
 
   getOutboundHash(hash) {
     // prettier-ignore
-    const outbound$ = this.txStatusService.getOutboundHash(hash).pipe(retry(2)) .subscribe((res: Transaction) => {
+    const outbound$ = this.txStatusService.getOutboundHash(hash).subscribe((res: Transaction) => {
       if (res.status === 'success') {
-        this.swapSuccessful = true;
+        this.successMessage = "loading balance";
+        this.userService.fetchBalances(() => {
+          this.swapSuccessful = true;
+          this.successMessage = 'success';
+        });
 
         const outboundHash = res.out[0]?.txID;
         const targetAsset = this.swapData.targetAsset.asset;

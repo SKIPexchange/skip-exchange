@@ -33,7 +33,7 @@
       },
       { name: 'Swap', call: 'swap' }
     ]"
-    [message]="swapSuccessful ? 'SUCCESS' : 'Processing'"
+    [message]="successMessage"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

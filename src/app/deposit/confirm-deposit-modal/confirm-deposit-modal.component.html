@@ -186,7 +186,7 @@
         { name: data.asset.asset.chain + '.' + data.asset.asset.ticker, disable: true },
         { name: data.poolTypeOption === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
       ]"
-      [message]="depositSuccess ? 'Success' : 'Processing'"
+      [message]="successMessage"
       (funcCaller)="breadcrumbNav($event, 'success')"
     ></app-breadcrumb>
   </app-transaction-success-modal>

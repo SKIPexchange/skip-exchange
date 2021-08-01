@@ -166,6 +166,12 @@
     >
       {{ balance }} BALANCE  
     </span>
+    <span 
+      class="usd-est processing"
+      *ngIf="selectedAsset && !balance && !disableUser && showBalance && processing"
+    >
+      LOADING BALANCE 
+    </span>
     <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice"> / </span>
     <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue">
       {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
