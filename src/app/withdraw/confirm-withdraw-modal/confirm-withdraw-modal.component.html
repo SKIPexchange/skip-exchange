@@ -160,7 +160,7 @@
       { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
     ]"
     [isError]=""
-    [message]="hashSuccess ? 'SUCCESS' : 'Waiting for Confirmation'"
+    [message]="hashSuccess ? 'SUCCESS' : 'Processing'"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

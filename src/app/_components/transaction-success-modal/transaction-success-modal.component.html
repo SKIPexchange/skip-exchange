@@ -57,7 +57,7 @@
         [disableUser]="false"
         [isWallet]="data.balances[1] ? true : false"
         [targetAddress]="targetAddress"
-        targetLabel="Received at"
+        [targetLabel]="data.isPending && data.isPending[1] ? 'Receiving at' : 'Received at'"
         [eventTags]="getEventTags(1)"
         [processing]="data.isPending && data.isPending[1]">
       </app-asset-input>

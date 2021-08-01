@@ -844,7 +844,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     return {
       modalType: 'SWAP',
       asset: [this.swapData.sourceAsset, this.swapData.targetAsset], 
-      label: this.swapSuccessful ? ['Sent', 'Recevied'] : ['Sent', 'Receiving'],
+      label: this.swapSuccessful ? ['Sent', 'Received'] : ['Sent', 'Receiving'],
       amount: [this.swapData.inputValue, this.swapData.outputValue], 
       balances: this.balances,
       hashes: this.hashes,
