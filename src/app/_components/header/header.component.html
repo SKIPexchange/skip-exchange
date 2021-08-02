@@ -29,7 +29,8 @@
       />
     </a>
   </h1>
-  <ng-container *ngIf="user && isUnderstood">
+  <!-- Commenting out for now while the network is down -->
+  <ng-container *ngIf="user && isUnderstood && isTestnet">
     <app-native-rune-prompt *ngIf="user.type === 'keystore' || user.type === 'XDEFI' || walletConnectUpgrade()"></app-native-rune-prompt>
   </ng-container>
   <div class="header-right">
