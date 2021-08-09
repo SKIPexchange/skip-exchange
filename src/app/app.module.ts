@@ -98,6 +98,8 @@ import { ShortNumberPipe } from './_pipes/short-number.pipe';
 import { RuneYieldService } from './_services/rune-yield.service';
 import { ShortPipeModule } from './_pipes/short-number.module';
 import { AnalyticsService } from './_services/analytics.service';
+import { LayoutObserverService } from './_services/layout-observer.service';
+import { FooterMenuComponent } from './_components/footer-menu/footer-menu.component';
 
 @NgModule({
   declarations: [
@@ -128,6 +130,7 @@ import { AnalyticsService } from './_services/analytics.service';
     AccountSettingsComponent,
     SeedPhraseComponent,
     CurrencyConverterComponent,
+    FooterMenuComponent,
     // KeystoreCreateStorePhraseComponent,
   ],
   imports: [
@@ -188,6 +191,7 @@ import { AnalyticsService } from './_services/analytics.service';
     AnalyticsService,
     MetamaskService,
     MockClientService,
+    LayoutObserverService,
   ],
   bootstrap: [AppComponent],
 })

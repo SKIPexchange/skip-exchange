@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, timer, of, Subscription, combineLatest } from 'rxjs';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { LastBlock } from 'src/app/_classes/last-block';
@@ -20,6 +21,7 @@ import { AnalyticsService } from './_services/analytics.service';
 import { User } from './_classes/user';
 import { MetamaskService } from './_services/metamask.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LayoutObserverService } from './_services/layout-observer.service';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
   appLocked: boolean;
   mainnetUrl: string;
   user: User;
+  isMobile: boolean = false;
 
   constructor(
     private midgardService: MidgardService,
@@ -52,8 +55,11 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
-    private userService: UserService
+    private userService: UserService,
+    private layout: LayoutObserverService
   ) {
+    this.layout.isMobile.subscribe((res) => (this.isMobile = res));
+
     this.isTestnet = environment.network === 'testnet';
     this.mainnetUrl = this.isTestnet ? links.mainnetUrl : links.testnetUrl;
     this.overlaysService.setViews(MainViewsEnum.Swap, 'Swap');

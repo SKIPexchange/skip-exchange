@@ -1111,6 +1111,24 @@ a.mat-primary {
   text-align: center;
 }
 
+.graident-text {
+  background: linear-gradient(
+    to right,
+    #fffd00 0%,
+    #f625f0 49.98%,
+    #01f6ee 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+
+  &.disabled, &.disconnect {
+    background: initial;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+  }
+}
+
 main {
   display: flex;
   flex-flow: column;
@@ -1157,6 +1175,7 @@ main {
     height: 100%;
     display: flex;
     flex-flow: column;
+    max-width: initial;
     // border: 2px solid var(--primary-default);
 
     .content-top {
@@ -1165,14 +1184,6 @@ main {
       justify-content: space-between;
       margin-bottom: 30px;
       height: 48px;
-      overflow: auto;
-
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-    
-      &::-webkit-scrollbar {
-        display: none;
-      }
     }
 
     .bottom-actions {
@@ -1418,3 +1429,5 @@ input:focus {
   from, to { background-color: transparent }
   50% { background-color: var(--primary-grey-color); }
 }
+
+@import "./mobile-layout";

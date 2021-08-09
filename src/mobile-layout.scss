@@ -1,0 +1,152 @@
+@media (max-width: 600px) {
+  .background-container {
+    position: relative;
+    min-width: initial !important;   
+  }
+
+  main {
+    display: block;
+    width: 100%;
+    min-height: auto;
+
+    .container-wrapper {
+      width: 100%;
+      height: 100vh;
+      background-color: var(--primary-grey-background);
+
+      .container {
+        width: 100%;
+        padding: 15px;
+
+        .main-content {
+          height: calc(100vh - 214.25px); /* this is the initial calculation */
+          overflow: auto;
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+        }
+
+        .content-top {
+          height: 30px;
+          margin-bottom: 18.25px;
+        }
+
+        .arrow-container {
+          height: 55px;
+        }
+
+        .swap-details {
+          padding: 0 15px;
+        }
+
+        .content-middle-lower {
+          flex-direction: column-reverse;
+
+          .right-content,
+          .left-content {
+            display: block;
+          }
+        }
+
+      }
+
+      .bottom-actions {
+        padding: 15px;
+        bottom: 65px !important;
+        background-color: #000b12;
+      }
+
+      .overlay-container {
+        &.overlay-connect-wallet {
+          position: absolute;
+          border-radius: 20px;
+          width: 100%;
+          padding: 15px;
+
+          .bottom-actions {
+            padding: 15px;
+          }
+        }
+
+        .inner-container, .container-wrapper, .container-wrapper .container {
+          top: 0;
+          left: 0;
+          position: absolute;
+          border-radius: 20px;
+          width: 100%;
+          padding: 15px;
+        }
+
+        .bottom-actions {
+          bottom: 65px !important;
+          background-color: #000b12;
+        }
+
+        .keystore-content {
+          height: 100%;
+          overflow: auto;
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+        }
+      }
+
+      .uni-input.swap-input {
+        height: 140px;
+        padding: 10px;
+
+        .usd-est {
+          font-size: 11px;
+        }
+
+        .priceInput {
+          font-size: 30px !important;
+        }
+
+        .middle-bar {
+          margin-top: 6px;
+          margin-bottom: 16px;
+        }
+
+        .target-address {
+          right: 10px;
+          height: 30px;
+          bottom: 10px;
+        }
+      }
+    }
+  }
+
+  .wallets,
+  .transactions,
+  .lists {
+    height: 520px;
+  }
+
+  .asset-list-container {
+    &.safari-full {
+      height: 520px !important;
+    }
+
+    &.safari-semi {
+      height: 444px !important;
+    }
+  }
+  
+
+  .lists-wrapper {
+    .short {
+      height: 470px;
+
+      &--pool {
+        height: 360px !important;
+      }
+    }
+  }
+}
