@@ -1,7 +1,35 @@
+.breadcumber-wrapper {
+  display: flex; 
+
+  .skip-logo {
+    position: absolute;
+    background-color: #000b12;
+    box-shadow: 0 2px 7px 7px #000b12;
+    padding-right: 5px;
+  }
+
+  .isMobile {
+    padding-left: 30px;
+  }
+
+  .shadow {
+    box-shadow: 0 -2px 7px 4px #000b12;
+    z-index: 2;
+  }
+}
+
 .breadcumber-container {
   display: flex;
   align-items: center;
   white-space: nowrap;
+  width: 470px;
+  overflow: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .path {
     font-family: "Roboto";
@@ -10,6 +38,10 @@
     margin: 0 2px;
     font-size: 14px;
     padding: 2px;
+
+    &.wider {
+      margin: 0 5px;
+    }
 
     &:hover:not(.disable, &--active) {
       border-radius: 2px;
@@ -30,6 +62,8 @@
 
   .cursor {
     background: var(--primary-default);
+    margin-right: 8px;
+    min-width: 8px;
     width: 8px;
     height: 16px;
     animation: blink 1s step-end infinite;
