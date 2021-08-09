@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 @Component({
   selector: 'app-notice',
@@ -12,8 +13,11 @@ export class NoticeComponent implements OnInit {
   @Input() isMono: boolean = false;
   @Input() isGray: boolean = false;
   @Input() isDisabled: boolean = false;
+  isMobile: boolean = false;
 
-  constructor() {}
+  constructor(private layout: LayoutObserverService) {
+    layout.isMobile.subscribe((res) => (this.isMobile = res));
+  }
 
   ngOnInit(): void {}
 }
