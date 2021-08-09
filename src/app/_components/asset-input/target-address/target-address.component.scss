@@ -1,0 +1,39 @@
+.target-address {
+  align-items: center;
+  position: absolute;
+  right: 0px;
+  height: 24px;
+
+  .expand-more {
+    margin-left: 5px;
+    font-size: 30px;
+    height: 28px;
+    color: var(--primary-default);
+    fill: var(--primary-default);
+  }
+  
+  > span {
+    color: var(--primary-grey-color); 
+    font-size: 15px;
+    
+  }
+  
+  .address {
+    color: #fff;
+  }
+}
+
+.clickable-span {
+  padding: 2px 5px;
+  height: 24px;
+
+  &:not(.disabled):hover {
+    .address {
+      color: var(--primary-dark-color);
+    }
+
+    .expand-more {
+      fill: var(--primary-dark-color);
+    }
+  }
+}
