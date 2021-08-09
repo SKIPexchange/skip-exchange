@@ -15,6 +15,7 @@ import { TagModule } from '../_components/tag/tag.module';
 import { PoolListItemComponent } from './pool-list-item/pool-list-item.component';
 import { ShortPipeModule } from '../_pipes/short-number.module';
 import { ConnectModule } from '../_components/connect/connect.module';
+import { LayoutObserverService } from '../_services/layout-observer.service';
 
 @NgModule({
   declarations: [
