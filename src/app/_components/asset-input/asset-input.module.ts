@@ -10,9 +10,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { IconTickerModule } from '../icon-ticker/icon-ticker.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TagModule } from '../tag/tag.module';
+import { TargetAddressComponent } from './target-address/target-address.component';
+import { SelectAssetComponent } from './select-asset/select-asset.component';
 
 @NgModule({
-  declarations: [AssetInputComponent],
+  declarations: [AssetInputComponent, TargetAddressComponent, SelectAssetComponent],
   imports: [
     CommonModule,
     FormsModule,

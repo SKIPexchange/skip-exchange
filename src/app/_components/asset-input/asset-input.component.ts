@@ -28,6 +28,7 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 export type assetInputEventTags = {
   event_category: string;
@@ -116,7 +117,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
   @Input() type: string;
   @Input() isError: boolean;
   @Input() targetAddress?: string;
-  @Input() targetLabel?: string;
+  @Input() targetLabel: string = 'Receive at';
   @Output() launchEditTargetAsset = new EventEmitter<null>();
 
   usdValue: number;
@@ -126,15 +127,16 @@ export class AssetInputComponent implements OnInit, OnDestroy {
   currency: Currency;
   inboundAddresses: PoolAddressDTO[];
   hasWallet: boolean;
+  isMobile: boolean = false;
 
   constructor(
     private userService: UserService,
-    private ethUtilsService: EthUtilsService,
     public overlayService: OverlaysService,
     private midgardService: MidgardService,
     private thorchainPricesService: ThorchainPricesService,
     private currencyService: CurrencyService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     const user$ = this.userService.user$.subscribe(
       (user) => (this.user = user)
@@ -143,7 +145,12 @@ export class AssetInputComponent implements OnInit, OnDestroy {
     const curs$ = this.currencyService.cur$.subscribe((currency) => {
       this.currency = currency;
     });
-    this.subs = [user$];
+
+    const layout$ = this.layout.isMobile.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
+    this.subs = [user$, curs$, layout$];
   }
 
   ngOnInit() {
