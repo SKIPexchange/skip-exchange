@@ -100,8 +100,8 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
     const poolDetail$ = this.poolDetailService.activatedAsset$.subscribe(
       (asset) => {
         if (asset && this.asset && this.asset == asset) {
-          this.getPoolShare();
           this.activate = true;
+          this.getPoolShare();
         } else {
           this.activate = false;
         }
