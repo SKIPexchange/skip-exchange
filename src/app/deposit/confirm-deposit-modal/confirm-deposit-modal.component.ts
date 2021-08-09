@@ -38,6 +38,7 @@ import { ethers } from 'ethers';
 import { Transaction } from 'src/app/_classes/transaction';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 // assets should be added for asset-input as designed.
 export interface ConfirmDepositData {
@@ -78,6 +79,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   depositSuccess: boolean;
   outboundHash: string;
   currency: Currency;
+  isMobile: boolean;
 
   //foe this interface it should be imported from despoit page
   @Input() data: ConfirmDepositData;
@@ -93,7 +95,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     private analyticsService: AnalyticsService,
     private keystoreDepositService: KeystoreDepositService,
     private metaMaskService: MetamaskService,
-    private curService: CurrencyService
+    private curService: CurrencyService,
+    private layout: LayoutObserverService
   ) {
     this.depositSuccess = false;
     this.loading = true;
@@ -116,7 +119,11 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       this.currency = cur;
     });
 
-    this.subs = [user$, balances$, metaMaskProvider$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [user$, balances$, metaMaskProvider$, cur$, layout$];
   }
 
   ngOnInit(): void {
