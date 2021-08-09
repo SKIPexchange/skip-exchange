@@ -50,6 +50,7 @@ import { Asset } from 'src/app/_classes/asset';
 import { ethers } from 'ethers';
 import { retry } from 'rxjs/operators';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 export interface SwapData {
   sourceAsset: AssetAndBalance;
   targetAsset: AssetAndBalance;
@@ -100,6 +101,8 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   isDoubleSwap: boolean = false;
   metaMaskProvider: ethers.providers.Web3Provider;
 
+  isMobile: boolean = false;
+
   constructor(
     // @Inject(MAT_DIALOG_DATA) public swapData: SwapData,
     // public dialogRef: MatDialogRef<ConfirmSwapModalComponent>,
@@ -114,10 +117,15 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     private currencyService: CurrencyService,
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    private layout: LayoutObserverService
   ) {
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
     this.insufficientChainBalance = false;
+
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
 
     const user$ = this.userService.user$.subscribe((user) => {
       if (!user) {
@@ -148,6 +156,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
       balances$,
       curs$,
       metaMaskProvider$,
+      layout$,
     ];
   }
 

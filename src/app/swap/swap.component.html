@@ -12,7 +12,7 @@
             [message]="formValidation.message"
             (funcCaller)="breadcrumbNav($event)"
           ></app-breadcrumb>
-          <div class="top-right">
+          <div class="top-right" *ngIf="!isMobile">
             <app-right-option
               [switchField]="{
                 right: { text: 'Pool', tag: '', disable: false },
@@ -23,143 +23,145 @@
           </div>
         </nav>
 
-        <!-- SOURCE -->
-        <app-asset-input
-          label="Send"
-          type="swap"
-          [(selectedAsset)]="selectedSourceAsset"
-          [(assetUnit)]="sourceAssetUnit"
-          [balance]="sourceBalance"
-          [disabledAssetSymbol]="
-            selectedTargetAsset ? selectedTargetAsset.symbol : null
-          "
-          [selectableMarkets]="selectableSourceMarkets"
-          (lunchMarket)="marketModal('source')"
-          (maxError)="setMaxError($event)"
-          [eventTags]="{
-            event_category: 'swap_prepare',
-            event_label_max: 'tag_send_container_max'
-          }"
-        >
-        </app-asset-input>
+        <div class="main-content">
+          <!-- SOURCE -->
+          <app-asset-input
+            label="Send"
+            type="swap"
+            [(selectedAsset)]="selectedSourceAsset"
+            [(assetUnit)]="sourceAssetUnit"
+            [balance]="sourceBalance"
+            [disabledAssetSymbol]="
+              selectedTargetAsset ? selectedTargetAsset.symbol : null
+            "
+            [selectableMarkets]="selectableSourceMarkets"
+            (lunchMarket)="marketModal('source')"
+            (maxError)="setMaxError($event)"
+            [eventTags]="{
+              event_category: 'swap_prepare',
+              event_label_max: 'tag_send_container_max'
+            }"
+          >
+          </app-asset-input>
 
-        <app-arrow
-          [isGrey]="(user && !balances) || reverseTransactionDisabled()"
-          [seperator]="reverseTransactionDisabled()"
-          (onClick)="reverseTransaction()"
-        ></app-arrow>
+          <app-arrow
+            [isGrey]="(user && !balances) || reverseTransactionDisabled()"
+            [seperator]="reverseTransactionDisabled()"
+            (onClick)="reverseTransaction()"
+          ></app-arrow>
 
-        <!-- TARGET -->
-        <app-asset-input
-          label="Receive"
-          [extraLabel]="selectedTargetAsset ? '(estimated)' : undefined"
-          [(selectedAsset)]="selectedTargetAsset"
-          [(assetUnit)]="targetAssetUnitDisplay"
-          [balance]="targetBalance"
-          [disableInput]="true"
-          (lunchMarket)="marketModal('target')"
-          [disabledAssetSymbol]="
-            selectedSourceAsset ? selectedSourceAsset.symbol : null
-          "
-          [targetAddress]="targetAddress"
-          (launchEditTargetAsset)="launchEditTargetAddressModal()"
-          [loading]="calculatingTargetAsset"
-          [hideMax]="true"
-          [error]="poolDetailTargetError || poolDetailSourceError"
-          [selectableMarkets]="selectableTargetMarkets"
-          [hasAddress]="user ? true : false"
-        >
-        </app-asset-input>
+          <!-- TARGET -->
+          <app-asset-input
+            label="Receive"
+            [extraLabel]="selectedTargetAsset ? '(estimated)' : undefined"
+            [(selectedAsset)]="selectedTargetAsset"
+            [(assetUnit)]="targetAssetUnitDisplay"
+            [balance]="targetBalance"
+            [disableInput]="true"
+            (lunchMarket)="marketModal('target')"
+            [disabledAssetSymbol]="
+              selectedSourceAsset ? selectedSourceAsset.symbol : null
+            "
+            [targetAddress]="targetAddress"
+            (launchEditTargetAsset)="launchEditTargetAddressModal()"
+            [loading]="calculatingTargetAsset"
+            [hideMax]="true"
+            [error]="poolDetailTargetError || poolDetailSourceError"
+            [selectableMarkets]="selectableTargetMarkets"
+            [hasAddress]="user ? true : false"
+          >
+          </app-asset-input>
 
-        <!-- THIS IS THE TARGET ADDRESS -->
-        <!-- <div class="flex justify-between swap-details h-7">
-          <span *ngIf="selectedTargetAsset">To {{selectedTargetAsset.chain}} Address:</span>
-          <span *ngIf="!selectedTargetAsset">To - Address:</span>
-          <div class="flex items-center" *ngIf="targetAddress.length > 0">
-            {{targetAddress.substring(0, 8)}}...{{targetAddress.substring(targetAddress.length - 4, targetAddress.length)}}
-            <div class="w-4">
-              <mat-icon style="transform: scale(0.7);" class="cursor-pointer text-white" (click)="launchEditTargetAddressModal()">edit</mat-icon>
+          <!-- THIS IS THE TARGET ADDRESS -->
+          <!-- <div class="flex justify-between swap-details h-7">
+            <span *ngIf="selectedTargetAsset">To {{selectedTargetAsset.chain}} Address:</span>
+            <span *ngIf="!selectedTargetAsset">To - Address:</span>
+            <div class="flex items-center" *ngIf="targetAddress.length > 0">
+              {{targetAddress.substring(0, 8)}}...{{targetAddress.substring(targetAddress.length - 4, targetAddress.length)}}
+              <div class="w-4">
+                <mat-icon style="transform: scale(0.7);" class="cursor-pointer text-white" (click)="launchEditTargetAddressModal()">edit</mat-icon>
+              </div>
             </div>
-          </div>
-          <div *ngIf="!targetAddress || targetAddress.length <= 0" class="flex justify-center"> -
-            <div class="w-4">
-              <mat-icon style="transform: scale(0.7);" [ngClass]="{user: 'text-white cursor-pointer'}" (click)="launchEditTargetAddressModal()">edit</mat-icon>
+            <div *ngIf="!targetAddress || targetAddress.length <= 0" class="flex justify-center"> -
+              <div class="w-4">
+                <mat-icon style="transform: scale(0.7);" [ngClass]="{user: 'text-white cursor-pointer'}" (click)="launchEditTargetAddressModal()">edit</mat-icon>
+              </div>
             </div>
-          </div>
-        </div> -->
+          </div> -->
 
-        <div class="swap-details">
-          <div class="flex justify-between" *ngIf="basePrice && selectedTargetAsset && selectedSourceAsset">
-            <span class="tx-detail-label">Price:</span>
-            <span>
-              1 {{ selectedTargetAsset.ticker }} = {{ basePrice | number: "1.2-4" }} {{ selectedSourceAsset.ticker }}
-              <span
-                *ngIf="sourceAssetPrice"
-                class="mono"
-                style="margin-left: 5px"
-                >({{
-                  sourceAssetPrice * currency.value * basePrice
-                    | number: "0.2-2"
-                }}
-                {{ currency.code }})</span
-              ></span
-            >
-          </div>
-          <div *ngIf="selectedSourceAsset && networkFeeInSource" class="flex justify-between text-white">
-            <span class="tx-detail-label">Network Fee:</span>
-            <span>
-              {{ networkFeeInSource | number: "1.0-8" }} {{ selectedSourceAsset.ticker }}
-              <span
-                *ngIf="sourceAssetPrice"
-                class="mono"
-                style="margin-left: 5px"
-                >({{
-                  sourceAssetPrice * currency.value * networkFeeInSource
-                    | number: "0.2-2"
-                }}
-                {{ currency.code }})</span
-              ></span
-            >
-          </div>
-          <div class="flex justify-between" *ngIf="slip">
-            <span class="tx-detail-label">Slip:</span>
-            <span
-              [ngStyle]="{
-                color:
-                  slip * 100 > slippageTolerance
-                    ? '#FF4954'
-                    : 'var(--primary-default)'
-              }"
-              >{{ slip | percent: "0.2-4"
-              }}<span
-                *ngIf="sourceAssetPrice"
-                class="mono"
-                style="margin-left: 5px"
-                >({{
-                  sourceAssetPrice * sourceAssetUnit * currency.value * slip
-                    | number: "1.2-2"
-                }}
-                {{ currency.code }})</span
-              ></span
-            >
-          </div>
-          <div *ngIf="user && slip" class="flex justify-between">
-            <span>Settings:</span>
-            <span (click)="goToSettings()" class="hoverable-item">
-              {{ slippageTolerance }}% slip tolerance
-              <svg
-                class="expand-more"
-                [ngClass]="{ disable: !user }"
-                width="10"
-                height="5"
-                viewBox="0 0 15 9"
-                xmlns="http://www.w3.org/2000/svg"
+          <div class="swap-details">
+            <div class="flex justify-between" *ngIf="basePrice && selectedTargetAsset && selectedSourceAsset">
+              <span class="tx-detail-label">Price:</span>
+              <span>
+                1 {{ selectedTargetAsset.ticker }} = {{ basePrice | number: "1.2-4" }} {{ selectedSourceAsset.ticker }}
+                <span
+                  *ngIf="sourceAssetPrice"
+                  class="mono"
+                  style="margin-left: 5px"
+                  >({{
+                    sourceAssetPrice * currency.value * basePrice
+                      | number: "0.2-2"
+                  }}
+                  {{ currency.code }})</span
+                ></span
               >
-                <path
-                  d="M7.50071 8.69094C7.23188 8.69094 6.96308 8.5883 6.75812 8.38344L0.308445 1.9337C-0.101838 1.52341 -0.101838 0.858209 0.308445 0.448091C0.718563 0.0379736 1.38363 0.0379736 1.79395 0.448091L7.50071 6.15518L13.2075 0.44829C13.6178 0.0381727 14.2828 0.0381727 14.6929 0.44829C15.1034 0.858408 15.1034 1.52361 14.6929 1.9339L8.24329 8.38364C8.03824 8.58853 7.76944 8.69094 7.50071 8.69094Z"
-                />
-              </svg>
-            </span>
+            </div>
+            <div *ngIf="selectedSourceAsset && networkFeeInSource" class="flex justify-between text-white">
+              <span class="tx-detail-label">Network Fee:</span>
+              <span>
+                {{ networkFeeInSource | number: "1.0-8" }} {{ selectedSourceAsset.ticker }}
+                <span
+                  *ngIf="sourceAssetPrice"
+                  class="mono"
+                  style="margin-left: 5px"
+                  >({{
+                    sourceAssetPrice * currency.value * networkFeeInSource
+                      | number: "0.2-2"
+                  }}
+                  {{ currency.code }})</span
+                ></span
+              >
+            </div>
+            <div class="flex justify-between" *ngIf="slip">
+              <span class="tx-detail-label">Slip:</span>
+              <span
+                [ngStyle]="{
+                  color:
+                    slip * 100 > slippageTolerance
+                      ? '#FF4954'
+                      : 'var(--primary-default)'
+                }"
+                >{{ slip | percent: "0.2-4"
+                }}<span
+                  *ngIf="sourceAssetPrice"
+                  class="mono"
+                  style="margin-left: 5px"
+                  >({{
+                    sourceAssetPrice * sourceAssetUnit * currency.value * slip
+                      | number: "1.2-2"
+                  }}
+                  {{ currency.code }})</span
+                ></span
+              >
+            </div>
+            <div *ngIf="user && slip" class="flex justify-between">
+              <span>Settings:</span>
+              <span (click)="goToSettings()" class="hoverable-item">
+                {{ slippageTolerance }}% slip tolerance
+                <svg
+                  class="expand-more"
+                  [ngClass]="{ disable: !user }"
+                  width="10"
+                  height="5"
+                  viewBox="0 0 15 9"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M7.50071 8.69094C7.23188 8.69094 6.96308 8.5883 6.75812 8.38344L0.308445 1.9337C-0.101838 1.52341 -0.101838 0.858209 0.308445 0.448091C0.718563 0.0379736 1.38363 0.0379736 1.79395 0.448091L7.50071 6.15518L13.2075 0.44829C13.6178 0.0381727 14.2828 0.0381727 14.6929 0.44829C15.1034 0.858408 15.1034 1.52361 14.6929 1.9339L8.24329 8.38364C8.03824 8.58853 7.76944 8.69094 7.50071 8.69094Z"
+                  />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -268,7 +270,7 @@
     </div>
 
     <div
-      class="overlay-container"
+      class="overlay-container overlay-connect-wallet"
       *ngIf="overlaysService.getCurrentSwapView() == 'Confirm'"
     >
       <app-confirm-swap-modal
