@@ -161,13 +161,18 @@ export class FooterMenuComponent implements OnInit {
     };
   }
 
-  getIcon(iconName: string, active: boolean = false) {
+  getIcon(
+    iconName: string,
+    active: boolean = false,
+    available: boolean = true
+  ) {
     let icon = this.icons[iconName].icon;
+
     if (active) {
       return icon.active;
     }
 
-    if (!this.user) {
+    if (!this.user || !available) {
       return icon.disconnected ?? icon.default;
     }
 

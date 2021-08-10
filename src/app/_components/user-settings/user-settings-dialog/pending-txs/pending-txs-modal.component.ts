@@ -23,6 +23,7 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 @Component({
   selector: 'app-pending-txs-modal',
@@ -43,6 +44,7 @@ export class PendingTxsModalComponent implements OnDestroy {
   transactions: TransactionDTO;
   activeIndex: number;
   loading: boolean;
+  isMobile: boolean = false;
 
   constructor(
     // public dialogRef: MatDialogRef<PendingTxsModalComponent>,
@@ -51,7 +53,8 @@ export class PendingTxsModalComponent implements OnDestroy {
     private overlaysService: OverlaysService,
     private userService: UserService,
     private midgardService: MidgardService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.back = new EventEmitter<null>();
     this.txs = [];
@@ -71,7 +74,11 @@ export class PendingTxsModalComponent implements OnDestroy {
       this.user = user;
     });
 
-    this.subs = [pendingTxs$, user$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [pendingTxs$, user$, layout$];
   }
 
   ngOnInit(): void {

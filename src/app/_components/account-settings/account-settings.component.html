@@ -12,41 +12,39 @@
       <div class="top-right"></div>
     </div>
     <div>
-      <div mat-dialog-content>
-        <div>
-          <div class="lists">
-            <div class="list-item" (click)="setSettingView('SLIP')">
-              <div class="left-sec">
-                <span>slippage tolerance</span>
-              </div>
-              <div class="right-sec">
-                <span class="p-0">{{ slippageTolerance }}%</span>
-              </div>
+      <div class="main-content long-content">
+        <div class="lists flex-grow">
+          <div class="list-item" (click)="setSettingView('SLIP')">
+            <div class="left-sec">
+              <span>slippage tolerance</span>
             </div>
-            <div
-              *ngIf="user?.type == 'keystore'"
-              class="list-item"
-              (click)="setSettingView('PHRASE')"
-            >
-              <div class="left-sec">
-                <span>seed phrase</span>
-              </div>
-              <div class="right-sec"></div>
+            <div class="right-sec">
+              <span class="p-0">{{ slippageTolerance }}%</span>
             </div>
-            <div class="list-item" (click)="setSettingView('CURRENCY')">
-              <div class="left-sec">
-                <span>conversion currency</span>
-              </div>
-              <div class="right-sec">
-                <span class="p-0">{{ currency.code }}</span>
-              </div>
+          </div>
+          <div
+            *ngIf="user?.type == 'keystore'"
+            class="list-item"
+            (click)="setSettingView('PHRASE')"
+          >
+            <div class="left-sec">
+              <span>seed phrase</span>
+            </div>
+            <div class="right-sec"></div>
+          </div>
+          <div class="list-item" (click)="setSettingView('CURRENCY')">
+            <div class="left-sec">
+              <span>conversion currency</span>
+            </div>
+            <div class="right-sec">
+              <span class="p-0">{{ currency.code }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- close dialog -->
-      <div class="bottom-actions">
+      <div class="bottom-actions" *ngIf="!isMobile">
         <div>
           <button class="close-btn" (click)="close()">
             <span>close</span>

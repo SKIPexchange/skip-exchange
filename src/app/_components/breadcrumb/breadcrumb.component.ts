@@ -16,6 +16,7 @@ import {
   SwapViews,
 } from 'src/app/_services/overlays.service';
 import { environment } from 'src/environments/environment';
+import { string } from 'yargs';
 
 export type Path = {
   name: string;
@@ -36,7 +37,26 @@ export class BreadcrumbComponent implements OnInit, AfterViewInit {
   @Input() path: Array<Object> = [
     { name: 'TEXT', mainView: 'Swap', swapView: 'Swap', disable: false },
   ];
-  @Input() message;
+  _message;
+  @Input() get message() {
+    return this._message;
+  }
+  set message(data) {
+    if (!this._message) {
+      this._message = data;
+    }
+    if (typeof data === 'string' && data !== this._message) {
+      this._message = data;
+      this.scrollLeft();
+    } else if (
+      typeof data !== 'string' &&
+      (data.text !== this._message.text ||
+        data.isError !== this._message.isError)
+    ) {
+      this._message = data;
+      this.scrollLeft();
+    }
+  }
   @Input() isError;
   @Input() backName?: string = null;
   @Output() backFunc: EventEmitter<null>;
@@ -55,10 +75,13 @@ export class BreadcrumbComponent implements OnInit, AfterViewInit {
     this.layout.isMobile.subscribe((res) => (this.isMobile = res));
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit() {
+    this.scrollLeft();
+  }
+
+  scrollLeft() {
     let scrolls = document.getElementsByClassName('scroll');
     Array.prototype.forEach.call(scrolls, (scroll) => {
       scroll.scrollLeft = scroll.scrollWidth;

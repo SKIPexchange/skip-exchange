@@ -14,10 +14,9 @@
         ></app-breadcrumb>
         <div class="top-right"></div>
       </div>
-      <div class="lists-wrapper">
+      <div class="lists-wrapper long-content" *ngIf="txs && txs.length > 0">
         <div
           class="wallets"
-          *ngIf="txs && txs.length > 0"
           [ngClass]="{ short: txs && txs.length > 6 }"
         >
           <!-- TODO: Refund tx might need to be added to the txs -->
@@ -147,7 +146,7 @@
         >
       </div>
 
-      <div class="bottom-actions">
+      <div class="bottom-actions" *ngIf="!isMobile">
         <button class="close-btn" (click)="close()">
           <span>close</span>
         </button>

@@ -19,9 +19,9 @@
     </div>
     <div class="menu-item">
         <div class="menu-item-icon" (click)="upgrade()">
-            <img [src]="getIcon('upgrade', active === 'upgrade')" [alt]="">
+            <img [src]="getIcon('upgrade', active === 'upgrade', hasRune)" alt="upgrade">
         </div>
-        <span class="menu-item-text graident-text" [ngClass]="{disconnect: !user && !hasRune, active: active === 'upgrade'}">Upgrade</span>
+        <span class="menu-item-text " [ngClass]="{disconnect: !user || !hasRune, active: active === 'upgrade', 'graident-text': user}">Upgrade</span>
     </div>
     <div class="menu-item">
         <div class="menu-item-icon" (click)="tranasactions()">

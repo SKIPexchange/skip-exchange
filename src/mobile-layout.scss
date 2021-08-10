@@ -18,7 +18,7 @@
         width: 100%;
         padding: 15px;
 
-        .main-content {
+        .main-content, .long-content {
           height: calc(100vh - 214.25px); /* this is the initial calculation */
           overflow: auto;
           -ms-overflow-style: none; /* IE and Edge */
@@ -26,6 +26,17 @@
 
           &::-webkit-scrollbar {
             display: none;
+          }
+        }
+
+        .long-content {
+          height: calc(100vh - 151.25px); /* this is the initial calculation */
+          flex-direction: column;
+          display: flex;
+
+          .wallets {
+            height: auto;
+            flex: 1 1 0px;
           }
         }
 
@@ -60,18 +71,28 @@
       }
 
       .overlay-container {
+        position: fixed;
+        border-radius: 20px;
+        width: 100%;
+        top: 0;
+        left: 0;
+
+        .bottom-actions {
+          padding: 15px;
+        }
+
+        .overlay-container-wrapper {
+          height: 100vh;
+        }
+        
         &.overlay-connect-wallet {
           position: absolute;
           border-radius: 20px;
           width: 100%;
           padding: 15px;
-
-          .bottom-actions {
-            padding: 15px;
-          }
         }
 
-        .inner-container, .container-wrapper, .container-wrapper .container {
+        .inner-container {
           top: 0;
           left: 0;
           position: absolute;
@@ -127,6 +148,16 @@
   .transactions,
   .lists {
     height: 520px;
+
+    .w-address {
+      .addr, .icon-addr {
+        min-width: auto !important;
+      }
+    }
+
+    &.disable {
+      
+    }
   }
 
   .asset-list-container {

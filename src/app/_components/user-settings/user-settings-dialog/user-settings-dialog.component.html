@@ -12,7 +12,7 @@
       <div class="top-right"></div>
     </div>
     <div>
-      <div mat-dialog-content>
+      <div class="main-content">
         <div>
           <div *ngIf="loading" class="icon-container">
             <span>Loading</span>
@@ -126,9 +126,14 @@
 
       <!-- close dialog -->
       <div class="bottom-actions">
-        <div>
+        <div *ngIf="!isMobile">
           <button class="close-btn" (click)="close()">
             <span>close</span>
+          </button>
+        </div>
+        <div *ngIf="isMobile">
+          <button class="close-btn" (click)="disconnect()">
+            <span>Disconnect</span>
           </button>
         </div>
       </div>
