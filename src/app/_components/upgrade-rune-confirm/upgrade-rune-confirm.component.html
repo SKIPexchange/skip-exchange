@@ -20,12 +20,7 @@
 
   <app-transaction-success-modal
     *ngIf="txState === 'SUCCESS'"
-    [label]="['Upgraded', 'Received']"
-    [asset]="[asset, nativeRune]"
-    [amount]="[amount, amount]"
-    [chain]="asset.asset.chain"
-    [hash]="hash"
-    modalType="UPGRADE"
+    [data]="getSuccessData()"
     (closeDialog)="close()"
   >
     <app-breadcrumb

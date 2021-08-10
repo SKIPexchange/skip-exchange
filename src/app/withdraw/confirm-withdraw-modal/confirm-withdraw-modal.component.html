@@ -147,19 +147,10 @@
 <app-transaction-success-modal
   *ngIf="txState === 'SUCCESS'"
   modalType="WITHDRAW"
-  chain="THOR"
-  [hash]="hash"
-  [asset]="[
-    { asset: data.asset, balance: 0, assetPriceUSD: 0 },
-    { asset: data.rune, balance: 0, assetPriceUSD: 0 }
-  ]"
-  [amount]="[data.assetAmount, data.runeAmount]"
+  [data]="getSuccessData()"
   [percentage]="data.unstakePercent"
-  [label]="['Withdrawn', data.poolShareMessage]"
-  (closeDialog)="closeToPool()"
-  [hashOutbound]="outboundHash"
-  [hasOutbound]="data.withdrawType !== 'ASYM_RUNE'"
   [disabledAsset]="disabledAsset()"
+  (closeDialog)="closeToPool()"
 >
   <app-breadcrumb
     [path]="[
@@ -169,7 +160,7 @@
       { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
     ]"
     [isError]=""
-    [message]="hashSuccess ? 'SUCCESS' : 'Waiting for Confirmation'"
+    [message]="hashSuccess ? 'SUCCESS' : 'Processing'"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

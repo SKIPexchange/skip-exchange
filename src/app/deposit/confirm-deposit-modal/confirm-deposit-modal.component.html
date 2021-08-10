@@ -177,18 +177,8 @@
 
   <app-transaction-success-modal
     *ngIf="txState === 'SUCCESS'"
-    [chain]="data.asset.asset.chain"
-    [hash]="hash"
-    [asset]="[data.asset, data.rune]"
-    [label]="['Deposited', 'Deposited']"
-    [amount]="[data.assetAmount, data.runeAmount]"
+    [data]="getSuccessData()"
     (closeDialog)="closeToPool()"
-    [externalTx]="true"
-    [isPlus]="true"
-    modalType="DEPOSIT"
-    [poolType]="data.poolTypeOption"
-    [hasOutbound]="data.poolTypeOption === 'SYM'"
-    [hashOutbound]="outboundHash"
   >
     <app-breadcrumb
       [path]="[
@@ -198,7 +188,7 @@
         { name: data.asset.asset.chain + '.' + data.asset.asset.ticker, disable: true },
         { name: data.poolTypeOption === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
       ]"
-      [message]="depositSuccess ? 'Success' : 'Waiting for Confirmation'"
+      [message]="successMessage"
       (funcCaller)="breadcrumbNav($event, 'success')"
     ></app-breadcrumb>
   </app-transaction-success-modal>

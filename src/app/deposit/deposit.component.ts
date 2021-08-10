@@ -194,7 +194,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     this.poolType = 'SYM';
     this.userSelectedPoolType = false;
     this.formValidation = {
-      message: '',
+      message: 'Loading',
       isValid: false,
       isError: false,
     };
@@ -346,6 +346,8 @@ export class DepositComponent implements OnInit, OnDestroy {
         ) {
           this.checkContractApproved(this.asset);
         }
+
+        this.validate();
       }
     );
 
@@ -832,6 +834,11 @@ export class DepositComponent implements OnInit, OnDestroy {
               pool.asset.chain === 'BCH'
           )
 
+          // filter out avaiable chains
+          .filter((pool) =>
+            this.userService.clientAvailableChains().includes(pool.asset.chain)
+          )
+
           // filter out non-native RUNE tokens
           .filter((pool) => !isNonNativeRuneToken(pool.asset))
 
@@ -875,13 +882,21 @@ export class DepositComponent implements OnInit, OnDestroy {
     }
 
     /** Wallet not connected */
-    if (!this.balances) {
+    if (!this.user) {
       this.formValidation = {
         message: 'connect wallet',
         isValid: false,
         isError: false,
       };
       return;
+    }
+
+    if (!this.balances) {
+      this.formValidation = {
+        message: 'loading balances',
+        isValid: false,
+        isError: false,
+      };
     }
 
     if (this.depositsDisabled) {

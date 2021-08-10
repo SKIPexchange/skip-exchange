@@ -117,7 +117,7 @@ export class UserService {
     }
   }
 
-  async fetchBalances(): Promise<void> {
+  async fetchBalances(callback?: () => void): Promise<void> {
     this._balances = [];
     this._chainBalanceErrors = [];
     this.chainBalanceErrorsSource.next([]);
@@ -173,6 +173,9 @@ export class UserService {
     (Promise as any).allSettled(promises).then((_) => {
       this._pendingBalances = false;
       this.pendingBalancesSource.next(this._pendingBalances);
+      if (callback) {
+        callback();
+      }
     });
   }
 
@@ -206,15 +209,34 @@ export class UserService {
     if (this.clientAvailableChains().includes(chain)) {
       let key = this.getClientByChain(chain);
       if (key === 'binance') {
-        this.getBinanceBalances();
+        await this.getBinanceBalances();
       } else if (key === 'ethereum') {
-        const client = this._user.clients.ethereum;
-        const address = client.getAddress();
-        this.getEthereumBalances(client, address);
-      } else if (key === 'bitcoin') {
-        this.getBitcoinBalances();
+        if (this._user.wallet !== 'metamask') {
+          const client = this._user.clients.ethereum;
+          const address = client.getAddress();
+          await this.getEthereumBalances(client, address);
+        } else {
+          const network =
+            environment.network === 'testnet'
+              ? Network.Testnet
+              : Network.Mainnet;
+          const MOCK_PHRASE =
+            'image rally need wedding health address purse army antenna leopard sea gain';
+          const phrase = MOCK_PHRASE;
+          const userEthereumClient = new EthClient({
+            network,
+            phrase,
+            etherscanApiKey: environment.etherscanKey,
+            infuraCreds: { projectId: environment.infuraProjectId },
+          });
+          userEthereumClient.getAddress = () => this._user.wallet;
+          this._user.clients = {
+            ethereum: userEthereumClient,
+          };
+          await this.getEthereumBalances(userEthereumClient, this._user.wallet);
+        }
       } else {
-        this.getGeneralBalance(key);
+        await this.getGeneralBalance(key);
       }
     }
   }

@@ -13,6 +13,7 @@ import { PoolDetailService } from 'src/app/_services/pool-detail.service';
 import {
   TransactionStatusService,
   Tx,
+  TxActions,
 } from 'src/app/_services/transaction-status.service';
 import { UserService } from 'src/app/_services/user.service';
 import { environment } from 'src/environments/environment';
@@ -171,6 +172,10 @@ export class PoolListItemComponent implements OnChanges {
         );
       }
     });
+  }
+
+  isWithdraw(action: TxActions): boolean {
+    return action == TxActions.WITHDRAW;
   }
 
   ngOnDestroy(): void {

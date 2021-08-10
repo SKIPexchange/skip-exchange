@@ -96,16 +96,7 @@
 
   <app-transaction-success-modal
     *ngIf="txState === 'SUCCESS'"
-    [chain]="data.asset.chain"
-    [hash]="hash"
-    [asset]="[
-      { asset: data.asset, balance: data.assetBalance, assetPriceUSD: 0 },
-      { asset: data.rune, balance: data.runeBalance, assetPriceUSD: 0 }
-    ]"
-    [label]="['Deposited', 'Deposited']"
-    [amount]="[data.assetAmount, data.runeAmount]"
     (closeDialog)="closeDialog(true)"
-    [externalTx]="true"
     modalType="CREATE"
   >
     <app-breadcrumb

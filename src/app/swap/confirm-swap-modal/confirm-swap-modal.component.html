@@ -20,14 +20,8 @@
 
 <app-transaction-success-modal
   *ngIf="txState === 'SUCCESS'"
-  [label]="['Sent', 'Received']"
-  [asset]="[swapData.sourceAsset, swapData.targetAsset]"
-  [amount]="[swapData.inputValue, swapData.outputValue]"
-  [chain]="swapData.sourceAsset.asset.chain"
+  [data]="getSuccessData()"
   [targetAddress]="swapData.targetAddress"
-  [hash]="hash"
-  [hasOutbound]="isDoubleSwap"
-  [hashOutbound]="outboundHash"
   (closeDialog)="closeDialog(true)"
   modalType="SWAP"
 >
@@ -39,16 +33,17 @@
       },
       { name: 'Swap', call: 'swap' }
     ]"
-    [message]="outboundHash ? 'SUCCESS' : 'Waiting for Confirmation'"
+    [message]="successMessage"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>
 
 
 <div
-  class="overlay-of-content"
+  class="overlay-container-wrapper"
   *ngIf="txState === 'PENDING_CONFIRMATION' || txState === 'ERROR'"
 >
+  <div class="container" *ngIf="swapData">
   <div class="content-top">
     <div *ngIf="txState === 'PENDING_CONFIRMATION'">
       <app-breadcrumb
@@ -121,16 +116,26 @@
           <span>
             1 {{ swapData.targetAsset.asset.ticker }} = {{ swapData.basePrice | number: "1.2-4" }} {{ swapData.sourceAsset.asset.ticker }}
             <span
-              *ngIf="swapData.sourceAsset.assetPriceUSD"
-              class="mono"
-              style="margin-left: 5px"
+              [ngStyle]="{
+                color:
+                  swapData.slip * 100 > slippageTolerance
+                    ? '#FF4954'
+                    : 'var(--primary-default)'
+              }"
             >
-              ({{
-                swapData.sourceAsset.assetPriceUSD *
-                  currency.value *
-                  swapData.basePrice | number: "0.2-2"
-              }}
-              {{ currency.code }})
+              {{ swapData.slip | percent: "0.2-4" }}
+              <span
+                *ngIf="swapData.sourceAsset.assetPriceUSD"
+                class="mono"
+                style="margin-left: 5px"
+                >({{
+                  swapData.sourceAsset.assetPriceUSD *
+                    currency.value *
+                    swapData.inputValue *
+                    swapData.slip | number: "1.2-2"
+                }}
+                {{ currency.code }})
+              </span>
             </span>
           </span>
         </div>
@@ -223,5 +228,6 @@
         </div>
       </ng-container>
     </div>
+  </div>
   </div>
 </div>

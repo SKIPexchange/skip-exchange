@@ -6,439 +6,91 @@
     </div>
 
     <div mat-dialog-content>
-      <div
-        class="modal-head confirm-modal-head"
-        *ngIf="modalType === 'SEND'"
-      >
-        <app-asset-input
-          [label]="label[0]"
-          [(selectedAsset)]="asset[0].asset"
-          [(assetUnit)]="amount[0]"
-          [balance]="sourceBalance"
-          [disabledAssetSymbol]="asset[0].asset.symbol"
-          [disabledMarketSelect]="true"
-          [disableInput]="true"
-          [hideMax]="true"
-          [showPrice]="false"
-          [disableUser]="false"
-          [isWallet]="true"
-          [eventTags]="{event_category: 'wallet_asset_send_success', event_label_wallet: 'tag_wallet_*ASSET*'}"
+      <!-- first structure -->
+      <app-asset-input
+        *ngIf="data.modalType !== 'WITHDRAW'"
+        [label]="data.label[0]"
+        [(selectedAsset)]="data.asset[0].asset"
+        [(assetUnit)]="data.amount[0]"
+        [balance]="firstBalance"
+        [disabledAssetSymbol]="data.asset[0].asset.symbol"
+        [disabledMarketSelect]="true"
+        [disableInput]="true"
+        [hideMax]="true"
+        [showPrice]="false"
+        [disableUser]="false"
+        [isWallet]="true"
+        [eventTags]="getEventTags(0)"
+        [processing]="data.isPending && data.isPending[0]">
+      </app-asset-input>
+
+      <div class="percent-container" *ngIf="data.modalType === 'WITHDRAW'">
+        <span class="percent-label">Percentage</span>
+        <span class="unstake-percent" [ngClass]="{disabled: this.data.isPending[0]}">{{ percentage }}%</span>
+        <mat-slider
+          class="slider"
+          [disabled]="true"
+          [max]="100"
+          [min]="0"
+          step="1"
+          [tickInterval]="25"
+          [value]="percentage"
         >
-        </app-asset-input>
-
-        <app-arrow [isGrey]="true"></app-arrow>
-
-        <app-text-field
-          selectedType="Text"
-          mode="Single"
-          label="Recipient Address"
-          [(textOfField)]="recipientAddress"
-          [disable]="true"
-        ></app-text-field>
-
-        <app-arrow></app-arrow>
-
-        <app-notice [isMono]="true">
-          <span class="no-wrap" text style="font-family: inherit" *ngIf="hash">{{
-            hash.substring(0, 16) +
-              "..." +
-              hash.substring(hash.length - 16, hash.length)
-          }}</span>
-          <ng-container tags>
-            <app-tag>
-              <div (click)="copyToClipboard()">
-                <span *ngIf="!copied">COPY</span>
-                <span *ngIf="copied">COPIED</span>
-              </div>
-            </app-tag>
-            <div style="width: 5px"></div>
-            <app-tag>
-              <div>
-                <a
-                  target="_blank"
-                  style="text-decoration: none; color: inherit"
-                  [href]="explorerPath()"
-                  (click)="txEventClick()"
-                  >Explore</a
-                >
-              </div>
-            </app-tag>
-          </ng-container>
-        </app-notice>
+        </mat-slider>
       </div>
+      <!-- end first structure -->
 
-      <div *ngIf="modalType === 'SWAP' || modalType === 'DEPOSIT' || modalType === 'UPGRADE' || modalType === 'CREATE'">
-        <app-asset-input
-          *ngIf="!poolType || poolType === 'SYM' || poolType === 'ASYM_ASSET'"
-          [label]="label[0]"
-          [(selectedAsset)]="asset[0].asset"
-          [(assetUnit)]="amount[0]"
-          [balance]="sourceBalance"
-          [disabledAssetSymbol]="asset[0].asset.symbol"
-          [disabledMarketSelect]="true"
-          [disableInput]="true"
-          [hideMax]="true"
-          [showPrice]="false"
-          [disableUser]="false"
-          [isWallet]="sourceBalance ? true : false"
-          [eventTags]="getEventTags(0)"
-        >
-        </app-asset-input>
+      <app-arrow *ngIf="data.asset[1] || data.modalType === 'SEND'" [isPlus]="data.isPlus"></app-arrow>
 
-        <app-arrow *ngIf="!poolType || poolType === 'SYM'" [isGrey]="true" [isPlus]="isPlus"></app-arrow>
+      <!-- second structure -->
+      <app-asset-input
+        *ngIf="data.modalType !== 'WITHDRAW' && data.asset[1]"
+        [label]="data.label[1]"
+        [(selectedAsset)]="data.asset[1].asset"
+        [(assetUnit)]="data.amount[1]"
+        [balance]="secondBalance"
+        [disabledAssetSymbol]="data.asset[1].asset.symbol"
+        [disabledMarketSelect]="true"
+        [disableInput]="true"
+        [hideMax]="true"
+        [showPrice]="false"
+        [disableUser]="false"
+        [isWallet]="data.balances[1] ? true : false"
+        [targetAddress]="targetAddress"
+        [targetLabel]="data.isPending && data.isPending[1] ? 'Receiving at' : 'Received at'"
+        [eventTags]="getEventTags(1)"
+        [processing]="data.isPending && data.isPending[1]">
+      </app-asset-input>
 
-        <app-asset-input
-          *ngIf="!poolType || poolType === 'SYM' || poolType === 'ASYM_RUNE'"
-          [label]="label[1]"
-          [(selectedAsset)]="asset[1].asset"
-          [(assetUnit)]="amount[1]"
-          [extraLabel]="
-            (hasOutbound && hashOutbound) || !hasOutbound
-              ? undefined
-              : '(Pending)'
-          "
-          [balance]="
-            (hasOutbound && hashOutbound) || !hasOutbound
-              ? targetBalance
-              : undefined
-          "
-          [disabledAssetSymbol]="asset[1].asset.symbol"
-          [disabledMarketSelect]="true"
-          [disableInput]="true"
-          [hideMax]="true"
-          [showPrice]="false"
-          [disableUser]="false"
-          [isWallet]="sourceBalance ? true : false"
-          [targetAddress]="targetAddress"
-          targetLabel="Received at"
-          [eventTags]="getEventTags(1)"
-        >
-        </app-asset-input>
+      <app-text-field
+        *ngIf="data.modalType === 'SEND'"
+        selectedType="Text"
+        mode="Single"
+        label="Recipient Address"
+        [(textOfField)]="recipientAddress"
+        [disable]="true"
+      ></app-text-field>
 
-        <app-arrow></app-arrow>
+      <app-double-asset-field
+        *ngIf="data.modalType === 'WITHDRAW'"
+        [label]="data.label[0]"
+        [selectedAssets]="[data.asset[0].asset, data.asset[1].asset]"
+        [assetUnits]="[data.amount[0], data.amount[1]]"
+        [bottomLabel]="data.label[1]"
+        [isWallet]="true"
+        [disabledAsset]="disabledAsset"
+        [assetEvents]="getEventTags(0)"
+        [processing]="data.isPending && data.isPending[0]"
+      ></app-double-asset-field>
+      <!-- end second structure -->
 
-        <ng-container *ngIf="!hasOutbound">
-          <app-notice [isMono]="true">
-            <span class="no-wrap" text style="font-family: inherit">{{
-              hash.substring(0, 12) +
-                "..." +
-                hash.substring(hash.length - 12, hash.length)
-            }}</span>
-            <ng-container tags>
-              <app-tag>
-                <div (click)="copyToClipboard()">
-                  <span *ngIf="!copied">COPY</span>
-                  <span *ngIf="copied">COPIED</span>
-                </div>
-              </app-tag>
-              <div style="width: 5px"></div>
-              <app-tag>
-                <div>
-                  <a
-                    *ngIf="modalType === 'SWAP'"
-                    target="_blank"
-                    style="text-decoration: none; color: inherit"
-                    (click)="txEventClick('none_inbound')"
-                    [href]="explorerPath(hash, asset[0].asset.chain)"
-                    >{{asset[0].asset.chain}} TX</a
-                  >
-                  <a
-                    *ngIf="modalType !== 'SWAP'"
-                    target="_blank"
-                    style="text-decoration: none; color: inherit"
-                    (click)="txEventClick('none')"
-                    [href]="explorerPath()"
-                    >EXPLORE</a
-                  >
-                </div>
-              </app-tag>
-              <ng-container *ngIf="modalType === 'SWAP'">
-                <div style="width: 5px"></div>
-                <app-tag>
-                  <div>
-                    <a
-                      *ngIf="hashOutbound"
-                      target="_blank"
-                      style="text-decoration: none; color: inherit"
-                      [href]="explorerPath(hash, asset[1].asset.chain)"
-                      (click)="txEventClick('none_outbound')"
-                      >{{asset[1].asset.chain}} TX</a
-                    >
-                    <a
-                      *ngIf="!hashOutbound"
-                      tyle="text-decoration: none; color: inherit"
-                    >WAITING
-                    </a>
-                  </div>
-                </app-tag>
-              </ng-container>
-            </ng-container>
-          </app-notice>
-        </ng-container>
+      <app-arrow></app-arrow>
 
-        <ng-container *ngIf="hasOutbound">
-          <div style="display: flex">
-            <app-notice style="width: calc(50% - 5px)" [isMono]="true">
-              <span class="no-wrap" text style="font-family: inherit"
-                ><span style="font-family: 'Roboto'"
-                  >{{ modalType === 'DEPOSIT' ? asset[1].asset.ticker : asset[0].asset.ticker }}: </span
-                >{{
-                  hash.substring(0, 3) +
-                    "..." +
-                    hash.substring(hash.length - 3, hash.length)
-                }}</span
-              >
-              <ng-container tags>
-                <app-tag>
-                  <div (click)="copyToClipboard()">
-                    <span *ngIf="!copied">COPY</span>
-                    <span *ngIf="copied">COPIED</span>
-                  </div>
-                </app-tag>
-                <div style="width: 5px"></div>
-                <app-tag>
-                  <div>
-                    <a
-                      target="_blank"
-                      style="text-decoration: none; color: inherit"
-                      [href]="explorerPath()"
-                      (click)="txEventClick('inbound')"
-                      >Explore</a
-                    >
-                  </div>
-                </app-tag>
-              </ng-container>
-            </app-notice>
-
-            <div style="width: 10px"></div>
-
-            <app-notice
-              [isDisabled]="!hashOutbound"
-              [isTag]="hashOutbound"
-              style="width: calc(50% - 5px)"
-              [isMono]="true"
-            >
-              <span class="no-wrap" *ngIf="hashOutbound" text style="font-family: inherit">
-                <ng-container *ngIf="hashOutbound !== 'success'">
-                  <span style="font-family: 'Roboto'"
-                    >{{ modalType === 'DEPOSIT' ? asset[0].asset.ticker : asset[1].asset.ticker }}: </span
-                  >{{
-                    hashOutbound.substring(0, 3) +
-                      "..." +
-                      hashOutbound.substring(
-                        hashOutbound.length - 3,
-                        hashOutbound.length
-                      )
-                  }}
-                </ng-container>
-                <ng-container *ngIf="hashOutbound === 'success'">
-                  <span style="font-family: 'Roboto'"
-                    >{{ modalType === 'DEPOSIT' ? asset[0].asset.ticker : asset[1].asset.ticker }}: </span
-                  >NO TXID!
-                </ng-container>
-              </span>
-              <span
-                *ngIf="!hashOutbound"
-                text
-                style="font-family: 'Roboto'; color: #fff"
-                >WAITING FOR {{ modalType === 'DEPOSIT' ? asset[0].asset.ticker : asset[1].asset.ticker }} TX...</span
-              >
-              <ng-container tags>
-                <app-tag *ngIf="hashOutbound && hashOutbound !== 'success'">
-                  <div (click)="copyToClipboard(hashOutbound, true)">
-                    <span *ngIf="!copiedOutbound">COPY</span>
-                    <span *ngIf="copiedOutbound">COPIED</span>
-                  </div>
-                </app-tag>
-                <div style="width: 5px"></div>
-                <app-tag>
-                  <div>
-                    <a
-                      target="_blank"
-                      style="text-decoration: none; color: inherit"
-                      (click)="txEventClick('outbound')"
-                      [href]="
-                        hashOutbound !== 'success'
-                          ? explorerPath(hashOutbound, modalType === 'DEPOSIT' ? asset[0].asset.chain : asset[1].asset.chain)
-                          : viewBlockPath(hash)
-                      "
-                      >Explore</a
-                    >
-                  </div>
-                </app-tag>
-              </ng-container>
-            </app-notice>
-          </div>
-        </ng-container>
-      </div>
-
-      <div *ngIf="modalType == 'WITHDRAW'">
-        <div class="percent-container">
-          <span class="percent-label">Percentage</span>
-          <span class="unstake-percent">{{ percentage }}%</span>
-          <mat-slider
-            class="slider"
-            [disabled]="true"
-            [max]="100"
-            [min]="0"
-            step="1"
-            [tickInterval]="25"
-            [value]="percentage"
-          >
-          </mat-slider>
-        </div>
-
-        <app-arrow [isGrey]="true"></app-arrow>
-
-        <app-double-asset-field
-          [label]="label[0]"
-          [selectedAssets]="[asset[0].asset, asset[1].asset]"
-          [assetUnits]="[amount[0], amount[1]]"
-          [bottomLabel]="label[1]"
-          [isWallet]="true"
-          [disabledAsset]="disabledAsset"
-          [assetEvents]="{
-              event_category: 'pool_withdraw_symmetrical_success',
-              event_tag_wallet: 'tag_withdrawn_wallet_*POOL_ASSET*'
-            }"
-        ></app-double-asset-field>
-
-        <app-arrow></app-arrow>
-
-        <ng-container *ngIf="!hasOutbound">
-          <app-notice [isMono]="true">
-            <span class="no-wrap" text style="font-family: inherit">{{
-              hash.substring(0, 16) +
-                "..." +
-                hash.substring(hash.length - 16, hash.length)
-            }}</span>
-            <ng-container tags>
-              <app-tag>
-                <div (click)="copyToClipboard()">
-                  <span *ngIf="!copied">COPY</span>
-                  <span *ngIf="copied">COPIED</span>
-                </div>
-              </app-tag>
-              <div style="width: 5px"></div>
-              <app-tag>
-                <div>
-                  <a
-                    target="_blank"
-                    style="text-decoration: none; color: inherit"
-                    [href]="explorerPath()"
-                    (click)="txEventClick()"
-                    >Explore</a
-                  >
-                </div>
-              </app-tag>
-            </ng-container>
-          </app-notice>
-        </ng-container>
-
-        <ng-container *ngIf="hasOutbound">
-          <div style="display: flex">
-            <app-notice style="width: calc(50% - 5px)" [isMono]="true">
-              <span class="no-wrap" text style="font-family: inherit">
-                <span style="font-family: 'Roboto'">
-                  {{ asset[1].asset.chain }}: 
-                </span>
-                {{
-                  hash.substring(0, 3) +
-                    "..." +
-                    hash.substring(hash.length - 3, hash.length)
-                }}
-              </span>
-              <ng-container tags>
-                <app-tag>
-                  <div (click)="copyToClipboard()">
-                    <span *ngIf="!copied">COPY</span>
-                    <span *ngIf="copied">COPIED</span>
-                  </div>
-                </app-tag>
-                <div style="width: 5px"></div>
-                <app-tag>
-                  <div>
-                    <a
-                      target="_blank"
-                      style="text-decoration: none; color: inherit"
-                      [href]="explorerPath()"
-                    >
-                    Explore
-                    </a>
-                  </div>
-                </app-tag>
-              </ng-container>
-            </app-notice>
-
-            <div style="width: 10px"></div>
-
-            <app-notice
-              [isDisabled]="!hashOutbound"
-              [isTag]="hashOutbound"
-              style="width: calc(50% - 5px)"
-              [isMono]="true"
-            >
-              <span class="no-wrap" *ngIf="hashOutbound" text style="font-family: inherit;">
-                <ng-container>
-                  <span style="font-family: 'Roboto'">
-                    {{ asset[0].asset.ticker }}: 
-                  </span>
-                  {{
-                    hashOutbound.substring(0, 3) +
-                      "..." +
-                      hashOutbound.substring(
-                        hashOutbound.length - 3,
-                        hashOutbound.length
-                      )
-                  }}
-                </ng-container>
-              </span>
-              <span
-                *ngIf="hashOutbound === undefined"
-                text
-                class="no-wrap"
-                style="font-family: 'Roboto'; color: #fff"
-              >
-                WAITING FOR {{ asset[0].asset.ticker }} TX...
-              </span>
-              <span
-                *ngIf="hashOutbound === ''"
-                text
-                class="no-wrap"
-                style="font-family: 'Roboto'; color: #fff"
-              >
-                NO TXID!
-              </span>
-              <ng-container *ngIf="hashOutbound" tags>
-                <app-tag>
-                  <div (click)="copyToClipboard(hashOutbound, true)">
-                    <span *ngIf="!copiedOutbound">COPY</span>
-                    <span *ngIf="copiedOutbound">COPIED</span>
-                  </div>
-                </app-tag>
-                <div style="width: 5px"></div>
-                <app-tag>
-                  <div>
-                  <a
-                    target="_blank"
-                    style="text-decoration: none; color: inherit"
-                    [href]="
-                      hashOutbound !== 'success'
-                        ? explorerPath(hashOutbound, asset[0].asset.chain)
-                        : viewBlockPath(hash)
-                    "
-                  >
-                    Explore
-                  </a>
-                  </div>
-                </app-tag>
-              </ng-container>
-            </app-notice>
-          </div>
-        </ng-container>
-      </div>
+      <!-- notice structure -->
+      <app-success-notice [data]="data.hashes"></app-success-notice>
     </div>
 
+    <!-- close button -->
     <div class="bottom-actions">
       <div style="width: 100%">
         <button
