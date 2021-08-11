@@ -12,13 +12,12 @@
       <div class="top-right"></div>
     </div>
     <div>
-      <div class="main-content">
-        <div>
-          <div *ngIf="loading" class="icon-container">
+      <div>
+          <div *ngIf="loading" class="icon-container main-content">
             <span>Loading</span>
           </div>
 
-          <div class="wallets" *ngIf="!loading">
+          <div class="wallets main-content" *ngIf="!loading">
             <!-- THORChain -->
             <div class="w-address" *ngIf="thorAddress" (click)="selectAddress(thorAddress, 'THOR')">
               <div class="icon-addr flex-grow">
@@ -121,7 +120,6 @@
               </div>
             </div>
           </div>
-        </div>
       </div>
 
       <!-- close dialog -->

@@ -19,10 +19,21 @@
         padding: 15px;
 
         .main-content, .long-content {
-          height: calc(100vh - 214.25px); /* this is the initial calculation */
+          height: calc(100vh - 218.25px); /* this is the initial calculation */
           overflow: auto;
           -ms-overflow-style: none; /* IE and Edge */
           scrollbar-width: none; /* Firefox */
+
+          .uni-input {
+            &--file {
+              justify-content: flex-start;
+              padding-left: 15px;
+            }
+
+            span {
+              text-align: left;
+            }
+          }
 
           &::-webkit-scrollbar {
             display: none;
@@ -152,11 +163,12 @@
     .w-address {
       .addr, .icon-addr {
         min-width: auto !important;
-      }
-    }
 
-    &.disable {
-      
+      }
+
+      .addr span {
+        font-size: 14px;
+      }
     }
   }
 
