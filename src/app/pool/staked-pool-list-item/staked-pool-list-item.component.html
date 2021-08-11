@@ -14,8 +14,8 @@
         [ticker]="asset.ticker"
       ></app-icon-ticker>
       <span class="extra-info" *ngIf="poolData && !activate">
-        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% APY /
-        {{ assetDepth | shortNumber }} {{ currency.code }} DEPTH)
+        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% APY<span *ngIf="!isMobile"> /
+        {{ assetDepth | shortNumber }} {{ currency.code }} DEPTH</span>)
       </span>
     </div>
 
@@ -24,7 +24,7 @@
         <span style="color: inherit">{{ isPending.action + 'ING' }}</span>
       </app-tag>
       <ng-container *ngIf="activate && !isPending">
-        <app-tag *ngIf="!isTestnet">
+        <app-tag *ngIf="!isTestnet && !isMobile">
           <a
             [href]="runeyieldAddress()"
             target="_blank"

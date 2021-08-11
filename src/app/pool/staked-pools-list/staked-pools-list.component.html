@@ -13,6 +13,7 @@
       [poolData]="pool.poolData"
       [runeYieldPool]="runeYieldPools"
       [currency]="currency"
+      [isMobile]="isMobile"
       [depositsDisabled]="depositsDisabled"
       (click)="activePool = pool"
     ></app-staked-pool-list-item>
@@ -21,6 +22,7 @@
       [poolData]="pool"
       [depositsDisabled]="depositsDisabled || !chainAvaiable(pool.asset)"
       [currency]="currency"
+      [isMobile]="isMobile"
       (click)="activePool = pool"
     ></app-pool-list-item>
   </div>

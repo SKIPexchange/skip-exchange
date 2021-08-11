@@ -28,6 +28,7 @@ export class PoolListItemComponent implements OnChanges {
 
   @Input() activate: boolean;
   @Input() currency: Currency;
+  @Input() isMobile: boolean;
 
   /**
    * Pool Data
