@@ -115,15 +115,7 @@
           <span class="tx-detail-label">Price:</span>
           <span>
             1 {{ swapData.targetAsset.asset.ticker }} = {{ swapData.basePrice | number: "1.2-4" }} {{ swapData.sourceAsset.asset.ticker }}
-            <span
-              [ngStyle]="{
-                color:
-                  swapData.slip * 100 > slippageTolerance
-                    ? '#FF4954'
-                    : 'var(--primary-default)'
-              }"
-            >
-              {{ swapData.slip | percent: "0.2-4" }}
+            <span>
               <span
                 *ngIf="swapData.sourceAsset.assetPriceUSD"
                 class="mono"
@@ -131,8 +123,7 @@
                 >({{
                   swapData.sourceAsset.assetPriceUSD *
                     currency.value *
-                    swapData.inputValue *
-                    swapData.slip | number: "1.2-2"
+                    swapData.basePrice | number: "0.2-2"
                 }}
                 {{ currency.code }})
               </span>
