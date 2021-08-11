@@ -284,12 +284,20 @@ button {
 /** XDEFI checkmarks */
 .notice-check {
   display: flex;
+  overflow: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   img {
     margin-right: 10px;
   }
 
   .not-checked {
+    flex: 0 0 24px;
     width: 24px;
     height: 24px;
     background: var(--primary-dark-color);

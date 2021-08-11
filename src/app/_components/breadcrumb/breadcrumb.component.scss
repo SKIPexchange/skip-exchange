@@ -4,8 +4,10 @@
 
 .breadcumber-wrapper {
   display: flex; 
+  align-items: center;
 
   .skip-logo {
+    flex: 0 0 23px;
     position: relative;
     background-color: #000b12;
     box-shadow: 0 2px 7px 7px #000b12;
