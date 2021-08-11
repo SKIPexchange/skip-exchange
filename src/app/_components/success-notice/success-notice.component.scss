@@ -18,6 +18,13 @@
 			margin: 0 2.5px;
 		}
 
+		&.isMobile {
+			height: auto;
+			flex-direction: column;
+			padding: 15px;
+			align-items: flex-end;
+		}
+
 		&.gray {
 			background: var(--primary-grey-background);
 			color: #fff;
