@@ -1,5 +1,5 @@
-@media (max-width: 768px) {
-  .background-container {
+.isMobile {
+  &.background-container {
     position: relative;
     min-width: initial !important;   
   }

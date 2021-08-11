@@ -1,4 +1,4 @@
-<div class="background-container">
+<div class="background-container" [ngClass]="{isMobile: isMobile}">
   <app-header *ngIf="!isMobile"></app-header>
 
   <main *ngIf="currentView == currentViewType.Swap">

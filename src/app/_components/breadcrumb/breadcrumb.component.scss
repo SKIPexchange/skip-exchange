@@ -1,15 +1,19 @@
+:host {
+  width: 100%;
+}
+
 .breadcumber-wrapper {
   display: flex; 
 
   .skip-logo {
-    position: absolute;
+    position: relative;
     background-color: #000b12;
     box-shadow: 0 2px 7px 7px #000b12;
     padding-right: 5px;
   }
 
   .isMobile {
-    padding-left: 30px;
+    padding-left: 5px;
   }
 
   .shadow {
@@ -22,7 +26,6 @@
   display: flex;
   align-items: center;
   white-space: nowrap;
-  width: 470px;
   overflow: auto;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
