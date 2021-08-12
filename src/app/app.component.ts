@@ -47,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
   mainnetUrl: string;
   user: User;
   isMobile: boolean = false;
+  screenHeight: string;
 
   constructor(
     private midgardService: MidgardService,
@@ -175,6 +176,11 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         this.overlaysService.setMenu(false);
       }
+    });
+
+    this.screenHeight = `${window.innerHeight}px`;
+    window.addEventListener('resize', () => {
+      this.screenHeight = `${window.innerHeight}px`;
     });
   }
 

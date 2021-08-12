@@ -1,9 +1,15 @@
+:host {
+	position: relative;
+}
+
 .footer-menu-container {
 	display: flex;
-	position: absolute;
+	position: fixed;
 	width: calc(100% - 4px);
 	height: 65px;
 	bottom: 2px;
+	right: 0px;
+	left: 0px;
 	justify-content: center;
 	align-items: center;
 
