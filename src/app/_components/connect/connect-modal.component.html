@@ -31,7 +31,7 @@
     </div>
 
     <div class="main-content">
-      <div class="keystore-content" mat-dialog-content>
+      <div class="keystore-content" [ngClass]="{'is-mobile': isMobileDevice}" mat-dialog-content>
         <!-- Connect Options -->
 
         <!-- <button class="connect-option" (click)="connectWalletConnect()" [disabled]="true">

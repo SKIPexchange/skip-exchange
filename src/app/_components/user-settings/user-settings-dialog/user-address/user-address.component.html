@@ -12,7 +12,7 @@
       ></app-breadcrumb>
       <div class="top-right"></div>
     </div>
-    <div class="content-middle">
+    <div class="content-middle main-content">
       <div class="modal-head" style="margin-bottom: 20px">
         <app-notice [isMono]="true" [isCenter]="true">
           <span text style="font-family: inherit; text-align: center">{{
@@ -58,7 +58,6 @@
         <div
           *ngIf="error"
           class="lists"
-          style="height: 289px; justify-content: center; align-items: center"
         >
           <div class="info">
             <span>{{ error }}</span>

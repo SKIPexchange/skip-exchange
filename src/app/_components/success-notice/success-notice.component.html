@@ -7,7 +7,7 @@
       </div>
       <div class="tags">
         <app-tag *ngIf="item.copy" (click)="copyClipboard(item.copy)">
-            <span>Copy</span>
+            <span>{{copyText}}</span>
         </app-tag>
         <div *ngIf="item.copy && item.url" style="width: 5px;"></div>
         <a *ngIf="item.url" class="tag-container outline" [href]="item.url" target="_blank">

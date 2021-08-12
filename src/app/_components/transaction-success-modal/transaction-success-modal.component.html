@@ -40,7 +40,7 @@
       </div>
       <!-- end first structure -->
 
-      <app-arrow *ngIf="data.asset[1] || data.modalType === 'SEND'" [isPlus]="data.isPlus"></app-arrow>
+      <app-arrow *ngIf="data.asset[1] || data.modalType === 'SEND'" [isPlus]="data.isPlus" [isGrey]="true"></app-arrow>
 
       <!-- second structure -->
       <app-asset-input

@@ -8,13 +8,8 @@
     display: block;
     width: 100%;
 
-    > * {
-      min-height: inherit;
-    }
-
     .container-wrapper {
       width: 100%;
-      min-height: inherit;
       background-color: var(--primary-grey-background);
 
       .container {
@@ -42,6 +37,11 @@
           &::-webkit-scrollbar {
             display: none;
           }
+        }
+
+        /* Withdraw section */
+        .percent-container {
+          padding: 15px;
         }
 
         .long-content {
@@ -80,9 +80,7 @@
       }
 
       .bottom-actions {
-        position: fixed;
-        width: calc(100% - 4px);
-        right: 2px;
+        position: absolute;
         padding: 15px;
         bottom: 65px !important;
         background-color: #000b12;
@@ -120,7 +118,7 @@
         }
 
         .bottom-actions {
-          position: fixed;
+          position: absolute;
           bottom: 65px !important;
           background-color: #000b12;
         }
@@ -182,11 +180,11 @@
 
   .asset-list-container {
     &.safari-full {
-      height: 520px !important;
+      height: 100% !important;
     }
 
     &.safari-semi {
-      height: 444px !important;
+      height: 100% !important;
     }
   }
   

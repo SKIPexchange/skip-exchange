@@ -178,10 +178,30 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.screenHeight = `${window.innerHeight}px`;
+    this.setHeight();
     window.addEventListener('resize', () => {
-      this.screenHeight = `${window.innerHeight}px`;
+      this.setHeight();
+      console.log('resized', this.screenHeight);
     });
+  }
+
+  setHeight() {
+    this.screenHeight = `${window.innerHeight}px`;
+    let sheet = window.document.styleSheets[4];
+    sheet.insertRule(
+      `.isMobile main .container-wrapper { min-height: ${this.screenHeight}; }`,
+      sheet.cssRules.length
+    );
+    sheet.insertRule(
+      `.isMobile main .container-wrapper .container .main-content { 
+        height: ${window.innerHeight - 218.25}px; }`,
+      sheet.cssRules.length
+    );
+    sheet.insertRule(
+      `.isMobile main .container-wrapper .container .long-content { 
+        height: ${window.innerHeight - 151.25}px; }`,
+      sheet.cssRules.length
+    );
   }
 
   openReconnectDialog(keystore?) {

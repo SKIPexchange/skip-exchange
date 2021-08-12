@@ -1,7 +1,7 @@
 <div class="flex target-address" (click)="openTargetAddress.emit()">
 	<span>{{targetLabel}}</span>
 	<div class=" flex clickable-span items-center" [ngClass]="{'disabled': disabledMarketSelect}">
-		<span *ngIf="targetAddress" class="address mono">{{targetAddress.substring(0,7)}}...{{targetAddress.substring(targetAddress.length - 7, targetAddress.length)}}</span>
+		<span *ngIf="targetAddress" class="address mono">{{targetAddress.substring(0,5)}}...{{targetAddress.substring(targetAddress.length - 5, targetAddress.length)}}</span>
 		<span *ngIf="!targetAddress">No Address</span>
 		<svg
 			*ngIf="!disabledMarketSelect"

@@ -21,6 +21,7 @@ export type noticeData = {
 export class SuccessNoticeComponent implements OnInit {
   @Input() data: noticeData[];
   isMobile: boolean;
+  copyText: string = 'Copy';
 
   constructor(
     private copyService: CopyService,
@@ -32,7 +33,11 @@ export class SuccessNoticeComponent implements OnInit {
   }
 
   copyClipboard(clip: string) {
+    this.copyText = 'Copied';
     this.copyService.copyToClipboard(clip);
+    setTimeout(() => {
+      this.copyText = 'Copy';
+    }, 3000);
   }
 
   ngOnInit(): void {
