@@ -41,7 +41,15 @@
 
         /* Withdraw section */
         .percent-container {
-          padding: 15px;
+          padding: 10px;
+
+          .percent-label {
+            left: 10px;
+          }
+
+          .unstake-percent {
+            margin-right: 30px;
+          } 
         }
 
         .long-content {
