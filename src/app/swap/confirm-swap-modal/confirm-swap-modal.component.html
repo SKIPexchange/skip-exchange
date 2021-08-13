@@ -119,7 +119,6 @@
               <span
                 *ngIf="swapData.sourceAsset.assetPriceUSD"
                 class="mono"
-                style="margin-left: 5px"
                 >({{
                   swapData.sourceAsset.assetPriceUSD *
                     currency.value *
@@ -138,7 +137,6 @@
             <span
               *ngIf="swapData.sourceAsset.assetPriceUSD"
               class="mono"
-              style="margin-left: 5px"
               >({{
                 swapData.sourceAsset.assetPriceUSD *
                   currency.value *
@@ -158,11 +156,9 @@
                   ? '#FF4954'
                   : 'var(--primary-default)'
             }"
-            >{{ swapData.slip | percent: "0.2-4"
-            }}<span
+            >{{ swapData.slip | percent: "0.2-4" }} <span
               *ngIf="swapData.sourceAsset.assetPriceUSD"
               class="mono"
-              style="margin-left: 5px"
               >({{
                 swapData.sourceAsset.assetPriceUSD *
                   currency.value *

@@ -97,7 +97,6 @@
                 <span
                   *ngIf="sourceAssetPrice"
                   class="mono"
-                  style="margin-left: 5px"
                   >({{
                     sourceAssetPrice * currency.value * basePrice
                       | number: "0.2-2"
@@ -113,7 +112,6 @@
                 <span
                   *ngIf="sourceAssetPrice"
                   class="mono"
-                  style="margin-left: 5px"
                   >({{
                     sourceAssetPrice * currency.value * networkFeeInSource
                       | number: "0.2-2"
@@ -131,10 +129,10 @@
                       ? '#FF4954'
                       : 'var(--primary-default)'
                 }"
-              >{{ slip | percent: "0.2-4" }}<span 
+              >{{ slip | percent: "0.2-4" }}
+                <span 
                   *ngIf="sourceAssetPrice" 
                   class="mono" 
-                  style="margin-left: 5px"
                 >({{ sourceAssetPrice * sourceAssetUnit * currency.value * slip | number: "1.2-2" }} {{ currency.code }})
                 </span>
               </span>
