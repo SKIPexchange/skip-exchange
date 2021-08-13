@@ -25,10 +25,15 @@ export class LayoutObserverService {
         for (const query of Object.keys(result.breakpoints)) {
           console.log(result);
           // eslint-disable-next-line prettier/prettier
-          if (result.breakpoints[query] && query === Breakpoints.XSmall) {
+          if (result.breakpoints[query] && query === Breakpoints.XSmall && window.screen.availWidth <= 576) {
             this.isMobileSource.next(true);
+            let meta = document.head.querySelector('meta[name="viewport"]');
+            // eslint-disable-next-line prettier/prettier
+            meta.setAttribute('content', 'width=428,maximum-scale=1,user-scalable=0,viewport-fit=cover');
           } else if (result.breakpoints[query]) {
             this.isMobileSource.next(false);
+            let meta = document.head.querySelector('meta[name="viewport"]');
+            meta.setAttribute('content', 'width=device-width');
           }
         }
       });
