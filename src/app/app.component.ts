@@ -179,29 +179,31 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.setHeight();
+    console.log('set height', this.screenHeight);
     window.addEventListener('resize', () => {
-      this.setHeight();
+      this.setHeight('height-container');
       console.log('resized', this.screenHeight);
     });
   }
 
-  setHeight() {
+  setHeight(id?: string) {
     this.screenHeight = `${window.innerHeight}px`;
-    let sheet = window.document.styleSheets[4];
-    sheet.insertRule(
-      `.isMobile main .container-wrapper { min-height: ${this.screenHeight}; }`,
-      sheet.cssRules.length
-    );
-    sheet.insertRule(
-      `.isMobile main .container-wrapper .container .main-content { 
-        height: ${window.innerHeight - 218.25}px; }`,
-      sheet.cssRules.length
-    );
-    sheet.insertRule(
-      `.isMobile main .container-wrapper .container .long-content { 
-        height: ${window.innerHeight - 151.25}px; }`,
-      sheet.cssRules.length
-    );
+    const styles = `.isMobile main .container-wrapper { min-height: ${
+      this.screenHeight
+    }; } .isMobile main .container-wrapper .container .main-content { height: ${
+      window.innerHeight - 218.25
+    }px; } .isMobile main .container-wrapper .container .long-content { height: ${
+      window.innerHeight - 151.25
+    }px; } `;
+    if (id) {
+      let styleSheet = document.getElementById(id);
+      styleSheet.innerText = styles;
+    } else {
+      let styleSheet = document.createElement('style');
+      styleSheet.setAttribute('id', 'height-container');
+      styleSheet.innerText = styles;
+      document.head.appendChild(styleSheet);
+    }
   }
 
   openReconnectDialog(keystore?) {
