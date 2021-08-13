@@ -207,11 +207,13 @@ export class FooterMenuComponent implements OnInit {
 
   swap() {
     this.oveService.setCurrentView(MainViewsEnum.Swap);
+    this.oveService.setCurrentSwapView('Swap');
     this.router.navigate(['/', 'swap']);
   }
 
   pool() {
     this.oveService.setCurrentView(MainViewsEnum.Swap);
+    this.oveService.setCurrentPoolView('Pool');
     this.router.navigate(['/', 'pool']);
   }
 
