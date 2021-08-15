@@ -1,5 +1,5 @@
 <div class="notice-container">
-    <div class="notice" [ngClass]="{multi: data.length > 1, gray: !item.show || item.isPending, isMobile: isMobile }" [ngStyle]="{'align-items': isMobile && i > 0 ? 'flex-start': ''}" *ngFor="let item of data; let i = index">
+    <div class="notice" [ngClass]="{multi: data.length > 1, gray: !item.show || item.isPending, isMobile: isMobile && data.length > 1}" [ngStyle]="{'align-items': isMobile && i > 0 ? 'flex-start': ''}" *ngFor="let item of data; let i = index">
       <div class="text-content">
         <span style="font-family: 'Roboto'">{{ item.asset.chain }}: </span>
         <span *ngIf="!!item.show">{{item.show}}</span>
