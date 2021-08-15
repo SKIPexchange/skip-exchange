@@ -27,6 +27,10 @@
   padding: 2px 5px;
   height: 24px;
 
+  span {
+    margin-bottom: 3px;
+  }
+
   &:not(.disabled):hover {
     .address {
       color: var(--primary-dark-color);
