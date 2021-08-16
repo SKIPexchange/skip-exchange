@@ -26,7 +26,7 @@
         [disabledAssetSymbol]="disabledAssetSymbol"
         (selectAsset)="selectItem($event)"
         [showApy]="showApy"
-        [showPrice]="true"
+        [showPrice]="isMobile ? false : true"
         noAssets="NOT FOUND"
       >
       </app-assets-list>

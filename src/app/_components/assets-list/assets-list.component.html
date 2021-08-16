@@ -87,7 +87,7 @@
             class="flex text-right"
             style="text-align: right"
           >
-          <span class="market-list-item__balance">{{item.balance.amount().toNumber() | number: "1.2-6"}}<span *ngIf="item.assetPriceUSD && showPrice" class="small-1 ml-0.5">({{item.assetPriceUSD * item.balance.amount().toNumber() * currency.value | shortNumber: showApy ? false : true}} {{currency.code}})</span>
+          <span class="market-list-item__balance" [ngClass]="{'small-2': isMobile}">{{item.balance.amount().toNumber() | number: "1.2-6"}}<span *ngIf="item.assetPriceUSD && showPrice" class="small-1 ml-0.5">({{item.assetPriceUSD * item.balance.amount().toNumber() * currency.value | shortNumber: showApy ? false : true}} {{currency.code}})</span>
           </span>
           </div>
 
