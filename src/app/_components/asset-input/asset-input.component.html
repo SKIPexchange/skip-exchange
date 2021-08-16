@@ -96,7 +96,7 @@
           [ngClass]="{ processing: processing }"
           *ngIf="selectedAsset && balance && !disableUser && showBalance"
         >
-          {{ balance }} BALANCE  
+          {{ balance | number: '0.0-8' }} BALANCE  
         </span>
         <span 
           class="usd-est processing"
