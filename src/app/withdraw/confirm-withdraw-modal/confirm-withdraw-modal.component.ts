@@ -11,7 +11,13 @@ import { Subject, Subscription } from 'rxjs';
 import { User } from '../../_classes/user';
 import { TransactionConfirmationState } from '../../_const/transaction-confirmation-state';
 import { UserService } from '../../_services/user.service';
-import { assetToString, baseAmount, Chain, bn, assetAmount } from '@xchainjs/xchain-util';
+import {
+  assetToString,
+  baseAmount,
+  Chain,
+  bn,
+  assetAmount,
+} from '@xchainjs/xchain-util';
 import {
   TransactionStatusService,
   TxActions,
@@ -158,13 +164,16 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
       });
     }
 
-    // also add the second outbound hash
-    this.hashes.splice(1, 1, {
-      copy: '',
-      show: '',
-      url: '',
-      asset: this.data.asset,
-    });
+    // for asym_rune withdraw there is no second txid because the transaction is done internal
+    if (this.data.withdrawType !== 'ASYM_RUNE') {
+      // also add the second outbound hash
+      this.hashes.splice(1, 1, {
+        copy: '',
+        show: '',
+        url: '',
+        asset: this.data.asset,
+      });
+    }
   }
 
   async submitTransaction(): Promise<void> {
@@ -461,35 +470,38 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
               )
               ?.coins.find(
                 (c) => c.asset === `${this.rune.chain}.${this.rune.ticker}`
-              ).amount
+              )?.amount
           )
-            .div(10 ** 8)
-            .toNumber();
+            ?.div(10 ** 8)
+            ?.toNumber();
 
           // assetamount update from midgard
-          this.data.assetAmount = bn(
-            res.out
-              .find((outTx) =>
-                outTx.coins.find(
-                  (c) => c.asset === assetToString(this.data.asset)
+          this.data.assetAmount =
+            bn(
+              res.out
+                .find((outTx) =>
+                  outTx.coins.find(
+                    (c) => c.asset === assetToString(this.data.asset)
+                  )
                 )
-              )
-              ?.coins.find((c) => c.asset === assetString(this.data.asset))
-              .amount
-          )
-            .div(10 ** 8)
-            .toNumber();
+                ?.coins.find((c) => c.asset === assetToString(this.data.asset))
+                ?.amount
+            )
+              ?.div(10 ** 8)
+              ?.toNumber() || this.data.assetAmount;
 
           // the outbound hash
           // prettier-ignore
           const outboundHash = res.out.find((outTx) => outTx.coins.find((c) => c.asset === assetToString(this.data.asset)) )?.txID || '';
-          // prettier-ignore
-          this.hashes.splice(1, 1, {
-            copy: outboundHash,
-            show: `${outboundHash.substring(0, 3)}...${outboundHash.substring(outboundHash.length - 3, outboundHash.length)}`,
-            url: this.mockClientService.getMockClientByChain(this.data.asset.chain).getExplorerTxUrl(outboundHash),
-            asset: this.data.asset
-          });
+          if (outboundHash) {
+            // prettier-ignore
+            this.hashes.splice(1, 1, {
+              copy: outboundHash,
+              show: `${outboundHash.substring(0, 3)}...${outboundHash.substring(outboundHash.length - 3, outboundHash.length)}`,
+              url: this.mockClientService.getMockClientByChain(this.data.asset.chain).getExplorerTxUrl(outboundHash),
+              asset: this.data.asset
+            });
+          }
         }
       });
   }
