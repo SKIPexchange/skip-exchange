@@ -4,7 +4,7 @@
       <app-breadcrumb
         [path]="[
           { name: 'skip', call: 'swap' },
-          { name: 'wallet', disable: true }
+          { name: 'wallet', disable: !isMobile }
         ]"
         message="select"
         (funcCaller)="breadcrumbNav($event)"
@@ -31,7 +31,7 @@
                 <span class="chain-address">({{thorAddress.substring(0, 5) + '...' + thorAddress.substring(thorAddress.length - 5, thorAddress.length)}})</span>
               </div>
               <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['THOR'] && chainUsdValue['THOR'].value !== 0">{{chainUsdValue['THOR'].value * currecny.value | shortNumber: true}} {{currecny.code}}</span>
+                <span class="chain-usd" *ngIf="chainUsdValue['THOR'] && chainUsdValue['THOR'].value !== 0">{{chainUsdValue['THOR'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
 
@@ -48,7 +48,7 @@
                 <span class="chain-address">({{bitcoinAddress.substring(0, 5) + '...' + bitcoinAddress.substring(bitcoinAddress.length - 5, bitcoinAddress.length)}})</span>
               </div>
               <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['BTC'] && chainUsdValue['BTC'].value !== 0">{{chainUsdValue['BTC'].value * currecny.value | shortNumber: true}} {{currecny.code}}</span>
+                <span class="chain-usd" *ngIf="chainUsdValue['BTC'] && chainUsdValue['BTC'].value !== 0">{{chainUsdValue['BTC'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
 
@@ -65,7 +65,7 @@
                 <span class="chain-address">({{ethereumAddress.substring(0, 5) + '...' + ethereumAddress.substring(ethereumAddress.length - 5, ethereumAddress.length)}})</span>
               </div>
               <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['ETH'] && chainUsdValue['ETH'].value !== 0">{{chainUsdValue['ETH'].value * currecny.value | shortNumber: true}} {{currecny.code}}</span>
+                <span class="chain-usd" *ngIf="chainUsdValue['ETH'] && chainUsdValue['ETH'].value !== 0">{{chainUsdValue['ETH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
 
@@ -82,7 +82,7 @@
                 <span class="chain-address">({{binanceAddress.substring(0, 5) + '...' + binanceAddress.substring(binanceAddress.length - 5, binanceAddress.length)}})</span>
               </div>
               <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['BNB'] && chainUsdValue['BNB'].value !== 0">{{chainUsdValue['BNB'].value * currecny.value | shortNumber: true}} {{currecny.code}}</span>
+                <span class="chain-usd" *ngIf="chainUsdValue['BNB'] && chainUsdValue['BNB'].value !== 0">{{chainUsdValue['BNB'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
 
@@ -99,7 +99,7 @@
                 <span class="chain-address">({{litecoinAddress.substring(0, 5) + '...' + litecoinAddress.substring(litecoinAddress.length - 5, litecoinAddress.length)}})</span>
               </div>
               <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['LTC'] && chainUsdValue['LTC'].value !== 0">{{chainUsdValue['LTC'].value * currecny.value | shortNumber: true}} {{currecny.code}}</span>
+                <span class="chain-usd" *ngIf="chainUsdValue['LTC'] && chainUsdValue['LTC'].value !== 0">{{chainUsdValue['LTC'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
 
@@ -116,7 +116,7 @@
                 <span class="chain-address">({{bchAddress.substring(0, 5) + '...' + bchAddress.substring(bchAddress.length - 5, bchAddress.length)}})</span>
               </div>
               <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['BCH'] && chainUsdValue['BCH'].value !== 0">{{chainUsdValue['BCH'].value * currecny.value | shortNumber: true}} {{currecny.code}}</span>
+                <span class="chain-usd" *ngIf="chainUsdValue['BCH'] && chainUsdValue['BCH'].value !== 0">{{chainUsdValue['BCH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
           </div>
