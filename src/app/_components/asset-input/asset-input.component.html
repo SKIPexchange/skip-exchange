@@ -52,6 +52,7 @@
         name="fromUnit"
         placeholder="0.0"
         type="number"
+        pattern="\d*"
         [disabled]="disableInput"
         [ngClass]="{ disable: disableUser, processing: processing }"
         [ngStyle]="{ color: inputColor }"
@@ -96,7 +97,8 @@
           [ngClass]="{ processing: processing }"
           *ngIf="selectedAsset && balance && !disableUser && showBalance"
         >
-          {{ balance | number: '0.0-8' }} BALANCE  
+          <ng-container *ngIf="(hasAddress || targetAddress) && (!disableUser && selectedAsset) && isMobile; else elseBlock">{{ balance | balanceNumber }} BALANCE</ng-container>
+          <ng-template #elseBlock>{{ balance }} BALANCE</ng-template>
         </span>
         <span 
           class="usd-est processing"

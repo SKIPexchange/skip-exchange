@@ -16,10 +16,10 @@
     [ngStyle]="{
       'border-radius':
         assetListItems &&
-        ((expandable === 'full' && assetListItems.length > 6) ||
-          (expandable === 'semi' && assetListItems.length > 5) ||
+        ((expandable === 'full' && assetListItems.length >= itemsInView + 1) ||
+          (expandable === 'semi' && assetListItems.length > itemsInView) ||
           (expandable === 'semi' &&
-            assetListItems.length > 4 &&
+            assetListItems.length > itemsInView - 1 &&
             displayAddTokenButton))
           ? '6px 6px 0 0'
           : '6px'
@@ -67,12 +67,6 @@
         (click)="selectAsset.emit(item.asset)"
         [class.disabled]="item.asset.symbol == disabledAssetSymbol"
       >
-        <!-- <div class="asset-icon-container" *ngIf="showIcons">
-          <app-icon-ticker [chain]="item.asset.chain" [ticker]="item.asset.ticker" [iconPath]="item.asset.iconPath"></app-icon-ticker>
-          <img *ngIf="item.asset.iconPath" class="asset-icon" [src]="item.asset.iconPath" appImgFallback />
-          <mat-icon *ngIf="!item.asset.iconPath">help_outline</mat-icon>
-        </div> -->
-
         <div class="flex flex-grow justify-between" style="width: 100%">
           <div class="flex items-center">
             <app-icon-ticker
@@ -87,24 +81,19 @@
             class="flex text-right"
             style="text-align: right"
           >
-          <span class="market-list-item__balance" [ngClass]="{'small-2': isMobile}">{{item.balance.amount().toNumber() | number: "1.2-6"}}<span *ngIf="item.assetPriceUSD && showPrice" class="small-1 ml-0.5">({{item.assetPriceUSD * item.balance.amount().toNumber() * currency.value | shortNumber: showApy ? false : true}} {{currency.code}})</span>
+          <span class="market-list-item__balance" [ngClass]="{'small-2': isMobile,'line-height': isMobile}">{{item.balance.amount().toNumber() | number: "1.2-6"}}<span *ngIf="item.assetPriceUSD && showPrice" class="small-1 ml-0.5">({{item.assetPriceUSD * item.balance.amount().toNumber() * currency.value | shortNumber: showApy ? false : true}} {{currency.code}})</span>
           </span>
           </div>
 
-          <!-- <span *ngIf="item.asset.chain === 'ETH' && item.asset.ticker !== 'ETH'" class="text-xs text-gray-400">{{item.asset.symbol.split('-')[1]}}</span> -->
-          <!-- <span class="text-xs text-gray-400">{{item.asset.chain}}</span> -->
         </div>
       </li>
-      <!-- <li *ngIf="displayAddTokenButton" class="flex justify-center items-center py-4">
-        <button mat-flat-button color="accent" (click)="addToken.emit()">Add Token</button>
-      </li> -->
     </ul>
   </div>
   <div
     class="scroll-for-more"
     *ngIf="
-      (assetListItems && assetListItems.length > 5) ||
-      (assetListItems && assetListItems.length > 4 && displayAddTokenButton)
+      (assetListItems && assetListItems.length > itemsInView) ||
+      (assetListItems && assetListItems.length > itemsInView - 1 && displayAddTokenButton)
     "
   >
     <img

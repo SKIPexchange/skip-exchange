@@ -33,6 +33,7 @@ export class AssetsListComponent {
   currency: Currency;
   isMobile: boolean;
   subs: Subscription[] = [];
+  itemsInView: number = 5;
 
   constructor(
     private midgardService: MidgardService,
@@ -90,6 +91,10 @@ export class AssetsListComponent {
       : false;
 
     if (this.showApy) this.addApy();
+
+    let container = document.querySelector('.asset-list-container');
+    this.itemsInView = Math.floor((container.clientHeight - 20) / 49);
+    console.log(this.itemsInView);
   }
 
   ngOnDestroy() {
