@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
@@ -31,7 +31,7 @@ import { MockClientService } from 'src/app/_services/mock-client.service';
   templateUrl: './pending-txs-modal.component.html',
   styleUrls: ['./pending-txs-modal.component.scss'],
 })
-export class PendingTxsModalComponent implements OnDestroy {
+export class PendingTxsModalComponent implements OnInit, OnDestroy {
   txs: Tx[];
   subs: Subscription[];
   bitcoinExplorerUrl: string;
@@ -46,6 +46,7 @@ export class PendingTxsModalComponent implements OnDestroy {
   activeIndex: number;
   loading: boolean;
   isMobile: boolean = false;
+  itemsInView: number = 6;
 
   constructor(
     private txStatusService: TransactionStatusService,
@@ -76,6 +77,10 @@ export class PendingTxsModalComponent implements OnDestroy {
 
   ngOnInit(): void {
     this.getThorchainTxs(this.user.wallet);
+
+    let container = document.querySelector('.long-content');
+    this.itemsInView = Math.floor((container.clientHeight - 20) / 49);
+    console.log(this.itemsInView);
   }
 
   getStatus(status: string): TxStatus {
