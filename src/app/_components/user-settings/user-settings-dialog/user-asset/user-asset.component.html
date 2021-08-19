@@ -17,11 +17,10 @@
     <div class="main-content">
       <div class="modal-head" style="margin-bottom: 20px">
         <app-notice [isMono]="true" [isCenter]="true">
-          <span text style="font-family: inherit; text-align: center">{{
-            address.substring(0, 10) +
-              "..." +
-              address.substring(address.length - 10, address.length)
-          }}</span>
+          <span text style="font-family: inherit; text-align: center">
+            <ng-container *ngIf="!isMobile; else elseBlock">{{ address.substring(0, 10) + "..." + address.substring(address.length - 10, address.length) }}</ng-container>
+            <ng-template #elseBlock>{{ address.substring(0, 2) + "..." + address.substring(address.length - 2, address.length) }}</ng-template>
+          </span>
           <ng-container tags>
             <app-tag>
               <div (click)="copyToClipboard()">
@@ -56,7 +55,7 @@
           />
           <div class="amount">
             <span class="mono">{{
-              asset.balance.amount().toNumber() | number: "0.2-6"
+              asset.balance.amount().toNumber()
             }}</span>
             <div class="usd-val" *ngIf="usdValue">
               <span class="mono"
