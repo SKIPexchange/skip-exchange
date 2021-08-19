@@ -13,7 +13,7 @@
         <div class="top-right"></div>
       </div>
 
-      <div class="content-middle main-content">
+      <div class="content-middle long-content">
         <div class="expandable">
           <app-assets-list
             [assetListItems]="assets"
@@ -26,7 +26,7 @@
     </div>
 
     <!-- close dialog -->
-    <div class="bottom-actions two-btn">
+    <div *ngIf="!isMobile" class="bottom-actions two-btn">
       <button class="close-btn" aria-label="close the prompt" (click)="close()">
         <span>close</span>
       </button>
