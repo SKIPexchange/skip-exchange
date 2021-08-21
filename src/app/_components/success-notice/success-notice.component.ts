@@ -43,6 +43,19 @@ export class SuccessNoticeComponent implements OnDestroy {
     }, 3000);
   }
 
+  ngDoCheck() {
+    for (let index in this.data) {
+      if (
+        this.data[index] &&
+        this.data[index].copy.length >= 14 &&
+        this.isMobile
+      ) {
+        let copy = this.data[index].copy;
+        this.data[index].show = copy.substring(0, 5) + '...' + copy.substring(copy.length - 5, copy.length);
+      }
+    }
+  }
+
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
