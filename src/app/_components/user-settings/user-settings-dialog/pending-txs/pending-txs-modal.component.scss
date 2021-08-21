@@ -16,3 +16,13 @@
 .lists-wrapper {
 	height: 100%;
 }
+
+.arrow-right {
+	width: 18px;
+	height: 10px;
+	fill: #fff;
+
+	&.isMobile {
+		width: 10px;
+	}
+}
