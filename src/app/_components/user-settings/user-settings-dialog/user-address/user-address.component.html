@@ -17,7 +17,7 @@
         <app-notice [isMono]="true" [isCenter]="true">
           <span text style="font-family: inherit; text-align: center">
           <ng-container *ngIf="!isMobile; else elseBlock">{{ address.substring(0, 10) + "..." + address.substring(address.length - 10, address.length) }}</ng-container>
-          <ng-template #elseBlock>{{ address.substring(0, 2) + "..." + address.substring(address.length - 2, address.length) }}</ng-template>
+          <ng-template #elseBlock>{{ address.substring(0, 8) + "..." + address.substring(address.length - 8, address.length) }}</ng-template>
           </span>
           <ng-container tags>
             <app-tag>
