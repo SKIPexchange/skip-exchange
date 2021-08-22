@@ -5,7 +5,6 @@ import {
   Output,
   ViewChild,
   EventEmitter,
-  ElementRef,
   AfterViewInit,
 } from '@angular/core';
 import { Network } from '@xchainjs/xchain-client';
@@ -16,7 +15,6 @@ import {
   SwapViews,
 } from 'src/app/_services/overlays.service';
 import { environment } from 'src/environments/environment';
-import { string } from 'yargs';
 
 export type Path = {
   name: string;
@@ -86,6 +84,7 @@ export class BreadcrumbComponent implements OnInit, AfterViewInit {
     Array.prototype.forEach.call(scrolls, (scroll) => {
       scroll.scrollLeft = scroll.scrollWidth;
     });
+    console.log('scroll left called');
   }
 
   changePath(path: Path) {

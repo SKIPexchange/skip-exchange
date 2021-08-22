@@ -23,7 +23,6 @@ export class LayoutObserverService {
       .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
       .subscribe((result) => {
         for (const query of Object.keys(result.breakpoints)) {
-          console.log(result);
           // eslint-disable-next-line prettier/prettier
           if (result.breakpoints[query] && query === Breakpoints.XSmall && window.screen.availWidth <= 576) {
             this.isMobileSource.next(true);
