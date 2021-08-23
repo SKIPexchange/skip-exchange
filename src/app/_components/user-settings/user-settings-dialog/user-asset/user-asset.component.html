@@ -13,38 +13,59 @@
       ></app-breadcrumb>
       <div class="top-right"></div>
     </div>
-    <div class="modal-head" style="margin-bottom: 20px">
-      <app-notice [isMono]="true" [isCenter]="true">
-        <span text style="font-family: inherit; text-align: center">{{
-          address.substring(0, 10) +
-            "..." +
-            address.substring(address.length - 10, address.length)
-        }}</span>
-        <ng-container tags>
-          <app-tag>
-            <div (click)="copyToClipboard()">
-              <span *ngIf="!copied">COPY</span>
-              <span *ngIf="copied">COPIED</span>
-            </div>
-          </app-tag>
-          <div style="width: 5px"></div>
-          <app-tag>
-            <div>
-              <a
-                target="_blank"
-                style="text-decoration: none; color: inherit"
-                [href]="explorerPath"
-                (click)="eventClick()"
-                >Explore</a
-              >
-            </div>
-          </app-tag>
-        </ng-container>
-      </app-notice>
-    </div>
 
-    <div mat-dialog-content class="content-middle-lower">
-      <div class="left-content">
+    <div class="main-content">
+      <div class="modal-head" style="margin-bottom: 20px">
+        <app-notice [isMono]="true" [isCenter]="true">
+          <span text style="font-family: inherit; text-align: center">
+            <ng-container *ngIf="!isMobile; else elseBlock">{{ address.substring(0, 10) + "..." + address.substring(address.length - 10, address.length) }}</ng-container>
+            <ng-template #elseBlock>{{ address.substring(0, 8) + "..." + address.substring(address.length - 8, address.length) }}</ng-template>
+          </span>
+          <ng-container tags>
+            <app-tag>
+              <div (click)="copyToClipboard()">
+                <span *ngIf="!copied">COPY</span>
+                <span *ngIf="copied">COPIED</span>
+              </div>
+            </app-tag>
+            <div style="width: 5px"></div>
+            <app-tag>
+              <div>
+                <a
+                  target="_blank"
+                  style="text-decoration: none; color: inherit"
+                  [href]="explorerPath"
+                  (click)="eventClick()"
+                  >Explore</a
+                >
+              </div>
+            </app-tag>
+          </ng-container>
+        </app-notice>
+      </div>
+
+
+      <div *ngIf="isMobile" mat-dialog-content class="flex flex-col">
+        <div class="balance">
+          <img
+            *ngIf="asset && asset.asset && asset.asset.iconPath"
+            class="asset-icon"
+            [src]="asset && asset.asset && asset.asset.iconPath"
+            appImgFallback
+          />
+          <div class="amount">
+            <span class="mono">{{
+              asset.balance.amount().toNumber()
+            }}</span>
+            <div class="usd-val" *ngIf="usdValue">
+              <span class="mono"
+                >~{{ usdValue * currency.value | number: "0.2-3" }}</span
+              >
+              {{ currency.code }}
+            </div>
+          </div>
+        </div>
+
         <div
           *ngIf="address"
           style="
@@ -58,171 +79,194 @@
         >
           <qrcode
             [qrdata]="address"
-            [width]="288"
+            [width]="354"
             [errorCorrectionLevel]="'M'"
             [elementType]="'svg'"
           ></qrcode>
         </div>
-      </div>
+      </div> 
 
-      <div class="divider"></div>
-
-      <div class="right-content">
-        <div class="balance">
-          <img
-            *ngIf="asset && asset.asset && asset.asset.iconPath"
-            class="asset-icon"
-            [src]="asset && asset.asset && asset.asset.iconPath"
-            appImgFallback
-          />
-          <div class="amount">
-            <span class="mono">{{
-              asset.balance.amount().toNumber() | number: "0.2-6"
-            }}</span>
-            <div class="usd-val" *ngIf="usdValue">
-              <span class="mono"
-                >~{{ usdValue * currency.value | number: "0.2-3" }}</span
-              >
-              {{ currency.code }}
-            </div>
+      <div *ngIf="!isMobile" mat-dialog-content class="content-middle-lower">
+        <div class="left-content">
+          <div
+            *ngIf="address"
+            style="
+              display: flex;
+              background: #fff;
+              justify-content: center;
+              align-items: center;
+              border-radius: 6px;
+              overflow: hidden;
+            "
+          >
+            <qrcode
+              [qrdata]="address"
+              [width]="288"
+              [errorCorrectionLevel]="'M'"
+              [elementType]="'svg'"
+            ></qrcode>
           </div>
         </div>
-        <div class="tx-history lists-wrapper" style="height: 202px">
-          <div
-            *ngIf="!txs"
-            style="
-              justify-content: center;
-              display: flex;
-              align-items: center;
-              height: 100%;
-            "
-          >
-            <span style="color: var(--primary-grey-color); font-size: 18px"
-              >LOADING</span
-            >
-          </div>
-          <div
-            *ngIf="txs && txs.length === 0"
-            style="
-              justify-content: center;
-              display: flex;
-              align-items: center;
-              height: 100%;
-            "
-          >
-            <span style="color: var(--primary-grey-color); font-size: 18px"
-              >NO TRANSACTIONS</span
-            >
-          </div>
-          <div
-            class="wallets"
-            *ngIf="txs && txs.length > 0"
-            [ngClass]="{ short: txs && txs.length > 3 }"
-            style="height: 157px"
-          >
-            <div
-              class="w-address"
-              *ngFor="let tx of txs; let i = index"
-              (click)="activeIndex = i"
-              [ngClass]="{ active: i == activeIndex }"
-            >
-              <div class="icon-addr flex-grow flex-shrink-0">
-                <label style="text-transform: uppercase">{{
-                  tx.date | date: "dd/MM/yy"
-                }}</label>
-              </div>
-              <div
-                *ngIf="i !== activeIndex"
-                class="addr"
-                style="min-width: initial; margin-left: 0; overflow: hidden"
-              >
-                <span>{{ tx.date | date: "hh:mm a" }}</span>
-              </div>
-              <div
-                *ngIf="i === activeIndex"
-                class="addr"
-                style="min-width: initial; margin-left: 0; overflow: hidden"
-              >
-                <app-tag *ngIf="tx.hash" type="dark">
-                  <a
-                    style="text-decoration: none; color: #fff"
-                    target="_blank"
-                    [href]="getExplorerUrl(tx.hash)"
-                    (click)="getExplorerEvent()"
-                    >Explore</a
-                  >
-                </app-tag>
-              </div>
-            </div>
-          </div>
-          <div
-            class="scroll-for-more"
-            style="height: 45px"
-            *ngIf="txs && txs.length > 3"
-          >
+
+        <div class="divider"></div>
+
+        <div class="right-content">
+          <div class="balance">
             <img
-              style="padding: 12px 0"
-              src="assets/images/mouse-scroll.svg"
-              alt="scroll for more"
+              *ngIf="asset && asset.asset && asset.asset.iconPath"
+              class="asset-icon"
+              [src]="asset && asset.asset && asset.asset.iconPath"
+              appImgFallback
             />
+            <div class="amount">
+              <span class="mono">{{
+                asset.balance.amount().toNumber() | number: "0.2-6"
+              }}</span>
+              <div class="usd-val" *ngIf="usdValue">
+                <span class="mono"
+                  >~{{ usdValue * currency.value | number: "0.2-3" }}</span
+                >
+                {{ currency.code }}
+              </div>
+            </div>
+          </div>
+          <div class="tx-history lists-wrapper" style="height: 202px">
+            <div
+              *ngIf="!txs"
+              style="
+                justify-content: center;
+                display: flex;
+                align-items: center;
+                height: 100%;
+              "
+            >
+              <span style="color: var(--primary-grey-color); font-size: 18px"
+                >LOADING</span
+              >
+            </div>
+            <div
+              *ngIf="txs && txs.length === 0"
+              style="
+                justify-content: center;
+                display: flex;
+                align-items: center;
+                height: 100%;
+              "
+            >
+              <span style="color: var(--primary-grey-color); font-size: 18px"
+                >NO TRANSACTIONS</span
+              >
+            </div>
+            <div
+              class="wallets"
+              *ngIf="txs && txs.length > 0"
+              [ngClass]="{ short: txs && txs.length > 3 }"
+              style="height: 157px"
+            >
+              <div
+                class="w-address"
+                *ngFor="let tx of txs; let i = index"
+                (click)="activeIndex = i"
+                [ngClass]="{ active: i == activeIndex }"
+              >
+                <div class="icon-addr flex-grow flex-shrink-0">
+                  <label style="text-transform: uppercase">{{
+                    tx.date | date: "dd/MM/yy"
+                  }}</label>
+                </div>
+                <div
+                  *ngIf="i !== activeIndex"
+                  class="addr"
+                  style="min-width: initial; margin-left: 0; overflow: hidden"
+                >
+                  <span>{{ tx.date | date: "hh:mm a" }}</span>
+                </div>
+                <div
+                  *ngIf="i === activeIndex"
+                  class="addr"
+                  style="min-width: initial; margin-left: 0; overflow: hidden"
+                >
+                  <app-tag *ngIf="tx.hash" type="dark">
+                    <a
+                      style="text-decoration: none; color: #fff"
+                      target="_blank"
+                      [href]="getExplorerUrl(tx.hash)"
+                      (click)="getExplorerEvent()"
+                      >Explore</a
+                    >
+                  </app-tag>
+                </div>
+              </div>
+            </div>
+            <div
+              class="scroll-for-more"
+              style="height: 45px"
+              *ngIf="txs && txs.length > 3"
+            >
+              <img
+                style="padding: 12px 0"
+                src="assets/images/mouse-scroll.svg"
+                alt="scroll for more"
+              />
+            </div>
           </div>
         </div>
+
+        <!-- <div class="flxr flxr--flow-col flxr--just-center flxr--align-center"> -->
+        <!-- <div style="width: 40px; margin-bottom: 1rem;">
+            <img *ngIf="asset && asset.asset && asset.asset.iconPath" class="asset-icon" [src]="asset && asset.asset && asset.asset.iconPath" style="max-width: 100%;" />
+          </div> -->
+
+        <!-- <div *ngIf="address" style="text-align: left"> -->
+        <!-- <qrcode [qrdata]="address" [width]="288" [errorCorrectionLevel]="'M'" [elementType]="'svg'"></qrcode> -->
+        <!-- <span style="font-size: 0.8rem">{{address}}</span> -->
+        <!-- </div> -->
+
+        <!-- <span *ngIf="asset" class="asset-balance">{{asset.balance.amount().toNumber()}} {{asset.asset.ticker}}</span>
+          <div style="height: 17px">
+            <span class="usd-value" *ngIf="usdValue">≈ ${{usdValue | number:"0.0-2"}}</span>
+          </div> -->
+
+        <!-- </div> -->
+
+        <!-- <ul class="actions flex justify-center">
+          <li class="action flex flex-col">
+            <button mat-mini-fab color="primary" aria-label="Send" (click)="send.emit()">
+              <mat-icon>upgrade</mat-icon>
+            </button>
+            Send
+          </li>
+
+          <li class="action flex flex-col items-center">
+            <button mat-mini-fab color="primary" aria-label="Copy" (click)="copyToClipboard()">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            Copy
+          </li>
+        </ul> -->
+
+        <!-- <ul  class="actions flex justify-center">   -->
+
+        <!-- NATIVE RUNE DEPOSIT -->
+        <!-- <li *ngIf="asset && asset.asset.chain === 'THOR' && asset.asset.ticker === 'RUNE'" class="action flex flex-col items-center">
+            <button mat-mini-fab color="primary" aria-label="Copy" (click)="deposit.emit()">
+              <mat-icon>flash_on</mat-icon>
+            </button>
+            Deposit
+          </li> -->
+
+        <!-- UPGRADE BNB/ETH RUNE TO NATIVE RUNE -->
+        <!-- <li *ngIf="asset && (asset.asset.chain === 'BNB' || asset.asset.chain === 'ETH') && asset.asset.ticker === 'RUNE'" class="action flex flex-col items-center">
+            <button mat-mini-fab color="primary" aria-label="Copy" (click)="upgradeRune.emit()">
+              <mat-icon>upgrade</mat-icon>
+            </button>
+            Native RUNE
+          </li> -->
+
+        <!-- </ul> -->
+
+        <!-- <app-testnet-warning *ngIf="asset && asset.asset && asset.asset.chain" [chain]="asset.asset.chain"></app-testnet-warning> -->
       </div>
-
-      <!-- <div class="flxr flxr--flow-col flxr--just-center flxr--align-center"> -->
-      <!-- <div style="width: 40px; margin-bottom: 1rem;">
-          <img *ngIf="asset && asset.asset && asset.asset.iconPath" class="asset-icon" [src]="asset && asset.asset && asset.asset.iconPath" style="max-width: 100%;" />
-        </div> -->
-
-      <!-- <div *ngIf="address" style="text-align: left"> -->
-      <!-- <qrcode [qrdata]="address" [width]="288" [errorCorrectionLevel]="'M'" [elementType]="'svg'"></qrcode> -->
-      <!-- <span style="font-size: 0.8rem">{{address}}</span> -->
-      <!-- </div> -->
-
-      <!-- <span *ngIf="asset" class="asset-balance">{{asset.balance.amount().toNumber()}} {{asset.asset.ticker}}</span>
-        <div style="height: 17px">
-          <span class="usd-value" *ngIf="usdValue">≈ ${{usdValue | number:"0.0-2"}}</span>
-        </div> -->
-
-      <!-- </div> -->
-
-      <!-- <ul class="actions flex justify-center">
-        <li class="action flex flex-col">
-          <button mat-mini-fab color="primary" aria-label="Send" (click)="send.emit()">
-            <mat-icon>upgrade</mat-icon>
-          </button>
-          Send
-        </li>
-
-        <li class="action flex flex-col items-center">
-          <button mat-mini-fab color="primary" aria-label="Copy" (click)="copyToClipboard()">
-            <mat-icon>content_copy</mat-icon>
-          </button>
-          Copy
-        </li>
-      </ul> -->
-
-      <!-- <ul  class="actions flex justify-center">   -->
-
-      <!-- NATIVE RUNE DEPOSIT -->
-      <!-- <li *ngIf="asset && asset.asset.chain === 'THOR' && asset.asset.ticker === 'RUNE'" class="action flex flex-col items-center">
-          <button mat-mini-fab color="primary" aria-label="Copy" (click)="deposit.emit()">
-            <mat-icon>flash_on</mat-icon>
-          </button>
-          Deposit
-        </li> -->
-
-      <!-- UPGRADE BNB/ETH RUNE TO NATIVE RUNE -->
-      <!-- <li *ngIf="asset && (asset.asset.chain === 'BNB' || asset.asset.chain === 'ETH') && asset.asset.ticker === 'RUNE'" class="action flex flex-col items-center">
-          <button mat-mini-fab color="primary" aria-label="Copy" (click)="upgradeRune.emit()">
-            <mat-icon>upgrade</mat-icon>
-          </button>
-          Native RUNE
-        </li> -->
-
-      <!-- </ul> -->
-
-      <!-- <app-testnet-warning *ngIf="asset && asset.asset && asset.asset.chain" [chain]="asset.asset.chain"></app-testnet-warning> -->
     </div>
 
     <!-- <div mat-dialog-content>

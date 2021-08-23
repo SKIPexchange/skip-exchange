@@ -4,6 +4,7 @@ import { take } from 'rxjs/operators';
 import { currenciesName } from 'src/app/_const/currencies';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import {
   MainViewsEnum,
   OverlaysService,
@@ -28,6 +29,7 @@ export class CurrencyConverterComponent implements OnInit {
   activeIndex: number;
   message: string;
   currency: Currency;
+  isMobile: boolean;
 
   /** Search feature for currency list */
   get searchTerm(): string {
@@ -54,7 +56,8 @@ export class CurrencyConverterComponent implements OnInit {
   constructor(
     private currencyService: CurrencyService,
     private overlaysService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.currencies = [] as Currency[];
 
@@ -76,7 +79,11 @@ export class CurrencyConverterComponent implements OnInit {
       }
     });
 
-    this.subs = [cur$];
+    const layout$ = layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [cur$, layout$];
   }
 
   ngOnInit(): void {

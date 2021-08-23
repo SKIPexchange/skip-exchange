@@ -1,0 +1,38 @@
+<div class="footer-menu-container">
+    <div class="menu-item" (click)="swap()">
+        <div class="menu-item-icon">
+            <img [src]="getIcon('swap', active === 'swap')" alt="swap">
+        </div>
+        <span class="menu-item-text" [ngClass]="{active: active === 'swap'}">Swap</span>
+    </div>
+    <div class="menu-item" (click)="pool()">
+        <div class="menu-item-icon">
+            <img [src]="getIcon('pool', isPoolPage())" alt="pool">
+        </div>
+        <span class="menu-item-text" [ngClass]="{active: isPoolPage()}">Pool</span>
+    </div>
+    <div class="menu-item" (click)="wallet()">
+        <div class="menu-item-icon">
+            <img [src]="getIcon('wallet', active === 'wallet')" alt="wallet">
+        </div>
+        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'wallet'}">{{ walletAddress }}</span>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-icon" (click)="upgrade()">
+            <img [src]="getIcon('upgrade', active === 'upgrade', hasRune)" alt="upgrade">
+        </div>
+        <span class="menu-item-text " [ngClass]="{disconnect: !user || !hasRune, active: active === 'upgrade', 'graident-text': user}">Upgrade</span>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-icon" (click)="tranasactions()">
+            <img [src]="getIcon('transactions', active === 'transactions')" alt="transactions">
+        </div>
+        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'transactions'}">TX's</span>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-icon" (click)="settings()">
+            <img [src]="getIcon('settings', active === 'settings')" alt="settings">
+        </div>
+        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'settings'}">Settings</span>
+    </div>
+</div>

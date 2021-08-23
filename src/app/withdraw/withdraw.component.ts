@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -42,6 +42,7 @@ import {
 import { formatNumber } from '@angular/common';
 import { PoolDTO } from '../_classes/pool';
 import { Liquidity } from '../_classes/liquidiyt';
+import { BreadcrumbComponent } from '../_components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-withdraw',
@@ -119,6 +120,8 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
   poolShare: number;
   isHalted: boolean;
+
+  @ViewChild(BreadcrumbComponent) breadcrumb: BreadcrumbComponent;
 
   constructor(
     private route: ActivatedRoute,
@@ -198,7 +201,9 @@ export class WithdrawComponent implements OnInit, OnDestroy {
         this.isChainHalted();
         this.getPoolDetail(asset);
         this.getAccountStaked();
-        this.getPoolMembership();
+        this.getPoolMembership().then((_) => {
+          this.breadcrumb.scrollLeft();
+        });
 
         if (this.balances) {
           this.assetBalance = this.userService.findBalance(
@@ -513,6 +518,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
   calculate() {
     // slider now can get out of being disabled.
+    this.breadcrumb?.scrollLeft();
     this.sliderDisabled = false;
     switch (this.withdrawType) {
       case 'SYM':

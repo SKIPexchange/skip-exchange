@@ -12,6 +12,7 @@ import { Currency } from 'src/app/_components/account-settings/currency-converte
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { PoolDetailService } from 'src/app/_services/pool-detail.service';
 import {
   RuneYieldPoolResponse,
@@ -63,6 +64,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
 
   @Input() depositsDisabled: boolean;
   @Input() currency: Currency;
+  @Input() isMobile: boolean;
 
   @Input() set runeYieldPool(data: RuneYieldPoolResponse[]) {
     this._runeYieldPool = data;
@@ -101,8 +103,8 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
     const poolDetail$ = this.poolDetailService.activatedAsset$.subscribe(
       (asset) => {
         if (asset && this.asset && this.asset == asset) {
-          this.getPoolShare();
           this.activate = true;
+          this.getPoolShare();
         } else {
           this.activate = false;
         }

@@ -50,6 +50,7 @@ import { Asset } from 'src/app/_classes/asset';
 import { ethers } from 'ethers';
 import { retry } from 'rxjs/operators';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 export interface SwapData {
@@ -104,6 +105,8 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   swapSuccessful: boolean;
   successMessage: string = 'Processing';
 
+  isMobile: boolean = false;
+
   constructor(
     // @Inject(MAT_DIALOG_DATA) public swapData: SwapData,
     // public dialogRef: MatDialogRef<ConfirmSwapModalComponent>,
@@ -118,10 +121,15 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     private currencyService: CurrencyService,
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    private layout: LayoutObserverService
   ) {
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
     this.insufficientChainBalance = false;
+
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
 
     const user$ = this.userService.user$.subscribe((user) => {
       if (!user) {
@@ -152,6 +160,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
       balances$,
       curs$,
       metaMaskProvider$,
+      layout$,
     ];
   }
 
@@ -853,7 +862,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
       amount: [this.swapData.inputValue, this.swapData.outputValue], 
       balances: this.balances,
       hashes: this.hashes,
-      isPlus: true,
+      isPlus: false,
       isPending: [false, !this.swapSuccessful]
     };
   }

@@ -13,6 +13,7 @@ import {
 import { CopyService } from 'src/app/_services/copy.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import {
   MainViewsEnum,
   OverlaysService,
@@ -53,6 +54,7 @@ export class UserAssetComponent {
   txs: Tx[];
   activeIndex: number;
   user: User;
+  isMobile: boolean = false;
 
   constructor(
     private copyService: CopyService,
@@ -60,7 +62,8 @@ export class UserAssetComponent {
     private overlaysService: OverlaysService,
     private currencyService: CurrencyService,
     private userService: UserService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.back = new EventEmitter();
     this.send = new EventEmitter();
@@ -71,7 +74,11 @@ export class UserAssetComponent {
       this.currency = cur;
     });
 
-    this.subs = [curs$];
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
+
+    this.subs = [curs$, layout$];
   }
 
   ngOnInit(): void {

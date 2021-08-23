@@ -29,6 +29,7 @@ import {
   AnalyticsService,
   assetString as assetStringFunc,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 @Component({
   selector: 'app-double-asset-field',
@@ -81,15 +82,16 @@ export class DoubleAssetFieldComponent {
   subs: Subscription[];
   inputUsdValue: number;
   currency: Currency;
+  isMobile: boolean = false;
 
   constructor(
     private userService: UserService,
-    private ethUtilsService: EthUtilsService,
     public overlayService: OverlaysService,
     private midgardService: MidgardService,
     private thorchainPricesService: ThorchainPricesService,
     private currencyService: CurrencyService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     const user$ = this.userService.user$.subscribe(
       (user) => (this.user = user)
@@ -97,7 +99,10 @@ export class DoubleAssetFieldComponent {
     const curs$ = this.currencyService.cur$.subscribe((cur) => {
       this.currency = cur;
     });
-    this.subs = [user$, curs$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+    this.subs = [user$, curs$, layout$];
   }
 
   async gotoWallet(inputAsset: Asset) {

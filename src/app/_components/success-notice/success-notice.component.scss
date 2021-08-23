@@ -18,6 +18,24 @@
 			margin: 0 2.5px;
 		}
 
+		&.isMobile {
+			height: auto;
+			flex-direction: column;
+			padding: 10px;
+			align-items: flex-end;
+			flex: 1 1 190px;
+			
+			.text-content {
+				span {
+					font-size: 16px;
+				}
+			}
+
+			.tags {
+				margin: 0;
+			}
+		}
+
 		&.gray {
 			background: var(--primary-grey-background);
 			color: #fff;
@@ -74,7 +92,8 @@
 					font-size: 11px;
 					line-height: 20px;
 					font-weight: 400;
-	
+					white-space: nowrap;
+
 					a {
 					text-decoration: none;
 					color: inherit;
@@ -86,10 +105,10 @@
 					border: 1px solid var(--primary-default);
 	
 					.tag-field {
-					width: 100%;
-					height: 100%;
-					background: transparent;
-					color: #fff;
+						width: 100%;
+						height: 100%;
+						background: transparent;
+						color: #fff;
 					}
 				}
 	

@@ -59,6 +59,7 @@ import { Liquidity } from '../_classes/liquidiyt';
 import { NetworkQueueService } from '../_services/network-queue.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NetworkSummary } from '../_classes/network';
+import { LayoutObserverService } from '../_services/layout-observer.service';
 
 @Component({
   selector: 'app-deposit',
@@ -162,6 +163,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   slippageTolerance: number;
   queue: ThorchainQueue;
   appLocked: boolean;
+  isMobile: boolean;
 
   constructor(
     private userService: UserService,
@@ -176,7 +178,8 @@ export class DepositComponent implements OnInit, OnDestroy {
     private ethUtilService: EthUtilsService,
     private metaMaskService: MetamaskService,
     private slipLimitService: SlippageToleranceService,
-    private networkQueueService: NetworkQueueService
+    private networkQueueService: NetworkQueueService,
+    private layout: LayoutObserverService
   ) {
     this.appLocked = environment.appLocked;
     this.poolNotFoundErr = false;
@@ -373,6 +376,10 @@ export class DepositComponent implements OnInit, OnDestroy {
       (queue) => (this.queue = queue)
     );
 
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
+
     this.getPools();
     this.getEthRouter();
     this.getPoolCap();
@@ -384,7 +391,8 @@ export class DepositComponent implements OnInit, OnDestroy {
       metaMaskProvider$,
       metaMaskNetwork$,
       slippageTolerange$,
-      queue$
+      queue$,
+      layout$
     );
   }
 

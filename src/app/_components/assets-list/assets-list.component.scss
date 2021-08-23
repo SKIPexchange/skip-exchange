@@ -1,3 +1,7 @@
+:host {
+  height: 100%;
+}
+
 .asset-list-container {
   display: flex;
   flex-direction: column;
@@ -17,7 +21,6 @@
   // height: 325px;
   flex: 1 1 auto;
   width: 100%;
-  overflow: auto;
   will-change: transform;
   direction: ltr;
   // border-top: 1px solid rgb(44, 47, 54);
@@ -27,6 +30,7 @@
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 
+  overflow: auto;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 
@@ -87,6 +91,8 @@
 }
 
 .scroll-for-more {
+  position: relative;
+  bottom: 2px;
   font-size: 25px;
   width: 100%;
   display: flex;

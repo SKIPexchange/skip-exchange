@@ -1,21 +1,29 @@
 .swap-input {
   flex-flow: row;
-  min-height: 112px;
+  min-height: 113px;
   border: 2px solid #0d1b23;
   background-color: transparent;
-  height: 143px;
+  height: auto;
+
+  .middle-bar {
+    height: 60px;
+  }
 
   &.one-asset {
     height: 113px;
+
+    .middle-bar {
+      height: 30px;
+    }
+  }
+
+  .bottom-bar, .top-bar {
+    height: 19px;
   }
 
   &--inner {
     height: 100%;
     width: 100%;
-  }
-
-  .label-wrapper {
-    position: relative;
   }
 
   input {
@@ -25,6 +33,10 @@
     color: var(--primary-default);
     width: 179px;
     line-height: 30px;
+  }
+
+  .second-input {
+    margin-top: 8px;
   }
 
   .expand-more {
@@ -90,6 +102,7 @@
 .asset-selector {
   padding: 3px 5px;
   border-radius: 4px;
+  height: 30px;
 
   &:hover:not(.disabled) {
     background: var(--primary-default);
@@ -135,5 +148,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 30px;
+  }
+
+  .break-point {
+    margin-top: -8px;
+  }
+}
+
+.default-arrow {
+  align-self: flex-start;
+  margin-right: 5px;
+  
+  #components {
+    fill: var(--primary-default);
+  }
+
+  &.down {
+    align-self: flex-end;
+    transform: scaleY(-1);
   }
 }

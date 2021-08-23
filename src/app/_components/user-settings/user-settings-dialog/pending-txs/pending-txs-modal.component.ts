@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
@@ -23,13 +23,15 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
+import { MockClientService } from 'src/app/_services/mock-client.service';
 
 @Component({
   selector: 'app-pending-txs-modal',
   templateUrl: './pending-txs-modal.component.html',
   styleUrls: ['./pending-txs-modal.component.scss'],
 })
-export class PendingTxsModalComponent implements OnDestroy {
+export class PendingTxsModalComponent implements OnInit, OnDestroy {
   txs: Tx[];
   subs: Subscription[];
   bitcoinExplorerUrl: string;
@@ -43,25 +45,20 @@ export class PendingTxsModalComponent implements OnDestroy {
   transactions: TransactionDTO;
   activeIndex: number;
   loading: boolean;
+  isMobile: boolean = false;
+  itemsInView: number = 6;
 
   constructor(
-    // public dialogRef: MatDialogRef<PendingTxsModalComponent>,
-    private explorerPathsService: ExplorerPathsService,
     private txStatusService: TransactionStatusService,
     private overlaysService: OverlaysService,
     private userService: UserService,
     private midgardService: MidgardService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService,
+    private mockClientService: MockClientService
   ) {
     this.back = new EventEmitter<null>();
     this.txs = [];
-
-    this.binanceExplorerUrl = `${this.explorerPathsService.binanceExplorerUrl}/tx`;
-    this.bitcoinExplorerUrl = `${this.explorerPathsService.bitcoinExplorerUrl}/tx`;
-    this.thorchainExplorerUrl = `${this.explorerPathsService.thorchainExplorerUrl}/txs`;
-    this.ethereumExplorerUrl = `${this.explorerPathsService.ethereumExplorerUrl}/tx`;
-    this.litecoinExplorerUrl = `${this.explorerPathsService.litecoinExplorerUrl}`;
-    this.bchExplorerUrl = `${this.explorerPathsService.bchExplorerUrl}/tx`;
 
     const pendingTxs$ = this.txStatusService.txs$.subscribe((txs) => {
       this.txs = txs;
@@ -71,24 +68,29 @@ export class PendingTxsModalComponent implements OnDestroy {
       this.user = user;
     });
 
-    this.subs = [pendingTxs$, user$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [pendingTxs$, user$, layout$];
   }
 
   ngOnInit(): void {
     this.getThorchainTxs(this.user.wallet);
+
+    let container = document.querySelector('.long-content');
+    this.itemsInView = Math.floor((container.clientHeight - 20) / 49);
+    console.log(this.itemsInView);
   }
 
   getStatus(status: string): TxStatus {
     switch (status) {
       case 'success':
         return TxStatus.COMPLETE;
-        break;
       case 'refunded':
         return TxStatus.REFUNDED;
-        break;
       default:
         return TxStatus.PENDING;
-        break;
     }
   }
 
@@ -96,22 +98,16 @@ export class PendingTxsModalComponent implements OnDestroy {
     switch (action) {
       case 'swap':
         return TxActions.SWAP;
-        break;
       case 'withdraw':
         return TxActions.WITHDRAW;
-        break;
       case 'addLiquidity':
         return TxActions.DEPOSIT;
-        break;
       case 'switch':
         return TxActions.UPGRADE_RUNE;
-        break;
       case 'refund':
         return TxActions.REFUND;
-        break;
       default:
         TxActions.SWAP;
-        break;
     }
   }
 
@@ -226,55 +222,10 @@ export class PendingTxsModalComponent implements OnDestroy {
     return asset.iconPath;
   }
 
-  explorerUrl(chain: string): string {
-    switch (chain) {
-      case 'BTC':
-        return this.bitcoinExplorerUrl;
-
-      case 'BNB':
-        return this.binanceExplorerUrl;
-
-      case 'THOR':
-        return this.thorchainExplorerUrl;
-
-      case 'ETH':
-        return this.ethereumExplorerUrl;
-
-      case 'LTC':
-        return this.litecoinExplorerUrl;
-
-      case 'BCH':
-        return this.bchExplorerUrl;
-
-      default:
-        return '';
-    }
-  }
-
-  explorerPath(tx: Tx): string {
-    if (tx.isThorchainTx && tx.chain === 'THOR') {
-      if (tx.pollThornodeDirectly || tx.pollRpc) {
-        return this.getViewBlockPath(tx.hash);
-      } else {
-        return this.thorchainExplorerUrl + '/' + tx.hash;
-      }
-    } else if (tx.chain === 'ETH') {
-      return `${this.ethereumExplorerUrl}/0x${tx.hash}`;
-    } else {
-      return this.explorerUrl(tx.chain) + '/' + tx.hash;
-    }
-  }
-
   explorerPathAlt(hash: string, chain: Chain, externalTx?: boolean): string {
     if (externalTx) chain = Chain.THORChain;
-
-    if (chain === Chain.THORChain) {
-      return this.thorchainExplorerUrl + '/' + hash;
-    } else if (chain === 'ETH') {
-      return `${this.ethereumExplorerUrl}/0x${hash}`;
-    } else {
-      return this.explorerUrl(chain) + '/' + hash;
-    }
+    hash = chain === Chain.Ethereum ? '0x' + hash : hash;
+    return this.mockClientService.getTxByChain(hash, chain);
   }
 
   exploreEvent(tx: Tx, exploreAsset: string = `${tx.chain}.${tx.ticker}`) {
@@ -327,18 +278,6 @@ export class PendingTxsModalComponent implements OnDestroy {
         exploreAsset
       );
     }
-  }
-
-  goToExternal(url: string) {
-    window.open(url, '_blank');
-  }
-
-  getViewBlockPath(hash): string {
-    let path = `https://viewblock.io/thorchain/tx/${hash}`;
-    if (environment.network === 'testnet') {
-      path += '?network=testnet';
-    }
-    return path;
   }
 
   breadcrumbNav(val: string) {

@@ -30,8 +30,8 @@
       ></app-breadcrumb>
     </div>
 
-    <div>
-      <div class="keystore-content" mat-dialog-content>
+    <div class="main-content">
+      <div class="keystore-content" [ngClass]="{'is-mobile': isMobileDevice}" mat-dialog-content>
         <!-- Connect Options -->
 
         <!-- <button class="connect-option" (click)="connectWalletConnect()" [disabled]="true">
@@ -55,7 +55,7 @@
                 alt="add icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Create</span> New Keystore</span>
+            <span class="item-text"><span class="small-1">Create</span><span class="main-color"> New Keystore</span></span>
           </div>
         </button>
 
@@ -74,7 +74,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Create Keystore from </span>Phrase</span>
+            <span class="item-text"><span class="small-1">Create Keystore from </span><span class="main-color">Phrase</span></span>
           </div>
         </button>
 
@@ -90,13 +90,13 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Connect To </span>Existing Keystore</span>
+            <span class="item-text"><span class="small-1">Connect To </span><span class="main-color">Existing Keystore</span></span>
           </div>
         </button>
 
         <button
           class="connect-option focus:outline-none justify-between"
-          [disabled]="!(platform.BLINK && platform.isBrowser)"
+          [disabled]="!(platform.BLINK && platform.isBrowser) || isMobileDevice"
           (click)="connectXDEFI()"
         >
           <div class="flex item items-center">
@@ -111,16 +111,16 @@
               />
             </div>
             <span class="item-text" *ngIf="isXDEFIConnected"
-              ><span class="small-1">Connect with </span>XDEFI</span
+              ><span class="small-1">Connect with </span><span class="main-color">XDEFI</span></span
             >
             <span class="item-text" *ngIf="!isXDEFIConnected">
-              <span class="small-1">Install </span>XDEFI<span class="small-1"> in Chrome/Brave</span>
+              <span class="small-1">Install </span><span class="main-color">XDEFI</span><span class="small-1"> in Chrome/Brave</span>
             </span>
           </div>
         </button>
 
         <button class="connect-option"
-          [disabled]="!(platform.BLINK || platform.FIREFOX || platform.EDGE)"
+          [disabled]="!(platform.BLINK || platform.FIREFOX || platform.EDGE) || isMobileDevice"
           (click)="connectMetaMask()"
         >
           <div class="flex item items-center">
@@ -134,8 +134,8 @@
                 alt="folder icon"
               />
             </div>
-            <span *ngIf="isMetamask" class="item-text"><span class="small-1">Connect with </span>MetaMask</span>
-            <span *ngIf="!isMetamask" class="item-text"><span class="small-1">Install </span>Metamask<span class="small-1"> in Chrome/Brave/Firefox</span></span>
+            <span *ngIf="isMetamask" class="item-text"><span class="small-1">Connect with </span><span class="main-color">MetaMask</span></span>
+            <span *ngIf="!isMetamask" class="item-text"><span class="small-1">Install </span><span class="main-color">Metamask</span><span class="small-1"> in Chrome/Brave/Firefox</span></span>
           </div>
         </button>
 
@@ -151,7 +151,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Connect with </span>Wallet Connect</span>
+            <span class="item-text"><span class="small-1">Connect with </span><span class="main-color">Wallet Connect</span></span>
           </div>
         </button>
 

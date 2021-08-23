@@ -2,7 +2,7 @@
   <button
     class="arrow-btn"
     (click)="onClick.emit()"
-    [ngClass]="{ 'not-btn': seperator, grey: isGrey, red: isError }"
+    [ngClass]="{ 'not-btn': seperator, grey: isGrey, red: isError, isMobile: isMobile }"
     [disabled]="seperator"
   >
     <!-- <span class="arrow-down">⭣</span> -->

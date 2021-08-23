@@ -28,6 +28,7 @@ import { TransactionStatusService } from 'src/app/_services/transaction-status.s
 import { UserService } from 'src/app/_services/user.service';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { MidgardService } from 'src/app/_services/midgard.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 export type ApproveEthContractModalParams = {
   routerAddress: string;
@@ -60,6 +61,7 @@ export class ApproveEthContractModalComponent implements OnInit, OnDestroy {
   path: Path[];
   @Input() mode: 'deposit' | 'swap' | 'create pool' = 'swap';
   metaMaskProvider?: ethers.providers.Web3Provider;
+  isMobile: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -70,7 +72,8 @@ export class ApproveEthContractModalComponent implements OnInit, OnDestroy {
     private overlaysService: OverlaysService,
     private analytics: AnalyticsService,
     private ethUtilService: EthUtilsService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    private layout: LayoutObserverService
   ) {
     this.loading = true;
     this.insufficientEthBalance = false;
@@ -119,7 +122,11 @@ export class ApproveEthContractModalComponent implements OnInit, OnDestroy {
       this.loading = false;
     });
 
-    this.subs.push(sub);
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs.push(sub, layout$);
   }
 
   back(val): void {

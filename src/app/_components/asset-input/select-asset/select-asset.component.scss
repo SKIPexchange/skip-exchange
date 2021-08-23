@@ -1,0 +1,49 @@
+.launch-markets-btn {
+  padding: 0;
+  color: white;
+  background-color: transparent;
+
+  .expand-more {
+    font-size: 30px;
+    height: 28px;
+    color: var(--primary-default);
+    fill: var(--primary-default);
+  }
+
+  &:disabled {
+    cursor: initial;
+  }
+
+  &.disabled {
+    cursor: initial;
+  }
+}
+
+.asset-selector {
+  padding: 3px 5px;
+  border-radius: 4px;
+
+  &:hover:not(.disabled) {
+    background: var(--primary-default);
+    color: var(--primary-dark-color);
+
+    .expand-more {
+      fill: var(--primary-dark-color);
+    }
+  }
+}
+
+.clickable-span {
+  padding: 2px 5px;
+  height: 24px;
+
+  &:not(.disabled):hover {
+    .address {
+      color: var(--primary-dark-color);
+    }
+
+    .expand-more {
+      fill: var(--primary-dark-color);
+    }
+  }
+}

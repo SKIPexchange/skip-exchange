@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Asset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { MidgardService } from 'src/app/_services/midgard.service';
 import { environment } from 'src/environments/environment';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
@@ -29,19 +31,29 @@ export class AssetsListComponent {
   isTestnet: boolean;
   apys;
   currency: Currency;
+  isMobile: boolean;
+  subs: Subscription[] = [];
+  itemsInView: number = 5;
 
   constructor(
     private midgardService: MidgardService,
-    private currencyService: CurrencyService
+    private currencyService: CurrencyService,
+    private layout: LayoutObserverService
   ) {
     this.selectAsset = new EventEmitter<Asset>();
     this.addToken = new EventEmitter<null>();
 
-    this.currencyService.cur$.subscribe((cur) => {
+    const cur$ = this.currencyService.cur$.subscribe((cur) => {
       this.currency = cur;
     });
 
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
     this.isTestnet = environment.network === 'testnet' ? true : false;
+
+    this.subs.push(layout$, cur$);
   }
 
   hasAPY(item: AssetAndBalance) {
@@ -79,5 +91,13 @@ export class AssetsListComponent {
       : false;
 
     if (this.showApy) this.addApy();
+
+    let container = document.querySelector('.asset-list-container');
+    this.itemsInView = Math.floor((container.clientHeight - 20) / 49);
+    console.log(this.itemsInView);
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach((sub) => sub.unsubscribe());
   }
 }

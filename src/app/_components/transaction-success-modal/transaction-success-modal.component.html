@@ -5,7 +5,7 @@
       <div class="top-right"></div>
     </div>
 
-    <div mat-dialog-content>
+    <div class="main-content">
       <!-- first structure -->
       <app-asset-input
         *ngIf="data.modalType !== 'WITHDRAW'"
@@ -40,7 +40,7 @@
       </div>
       <!-- end first structure -->
 
-      <app-arrow *ngIf="data.asset[1] || data.modalType === 'SEND'" [isPlus]="data.isPlus"></app-arrow>
+      <app-arrow *ngIf="data.asset[1] || data.modalType === 'SEND'" [isPlus]="data.isPlus" [isGrey]="true"></app-arrow>
 
       <!-- second structure -->
       <app-asset-input

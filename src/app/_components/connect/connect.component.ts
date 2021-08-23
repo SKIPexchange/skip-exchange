@@ -102,6 +102,7 @@ export class ConnectModal {
   phrase: string;
   writePhraseCategory: string;
   message: string = 'select';
+  isMobileDevice: boolean;
 
   @Output() closeEvent = new EventEmitter<null>();
 
@@ -113,6 +114,11 @@ export class ConnectModal {
     public platform: Platform
   ) {
     this.isTestnet = environment.network === 'testnet' ? true : false;
+
+    this.isMobileDevice =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(
+        navigator.userAgent
+      );
 
     this.isXDEFIConnected = false;
     if ((window as any).xfi) {

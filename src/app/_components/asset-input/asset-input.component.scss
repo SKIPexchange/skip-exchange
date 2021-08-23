@@ -8,6 +8,10 @@
   &--inner {
     height: 100%;
     width: 100%;
+
+    .middle-bar {
+      height: 30px;
+    }
   }
 
   .label-wrapper {

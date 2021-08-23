@@ -22,6 +22,7 @@ import {
   assetString,
   Events,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 @Component({
   selector: 'app-markets-modal',
@@ -52,6 +53,7 @@ export class MarketsModalComponent implements OnInit, OnDestroy {
   subs: Subscription[];
   loading: boolean;
   user: User;
+  isMobile: boolean;
 
   @Input() overlay: boolean;
   @Output() overlayChange = new EventEmitter<boolean>();
@@ -70,7 +72,8 @@ export class MarketsModalComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     public overlaysService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     const user$ = this.userService.user$.subscribe((user) => {
       this.user = user;
@@ -84,6 +87,10 @@ export class MarketsModalComponent implements OnInit, OnDestroy {
       if (this.marketListItems) {
         this.sortMarketsByUserBalance();
       }
+    });
+
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
     });
 
     this.subs = [user$, balances$];

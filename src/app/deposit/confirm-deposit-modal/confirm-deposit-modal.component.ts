@@ -38,6 +38,7 @@ import { ethers } from 'ethers';
 import { Transaction } from 'src/app/_classes/transaction';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
@@ -81,6 +82,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   depositSuccess: boolean;
   outboundHash: string;
   currency: Currency;
+  isMobile: boolean;
   hashes: noticeData[] = [];
   successMessage: string = 'processing';
 
@@ -99,6 +101,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     private keystoreDepositService: KeystoreDepositService,
     private metaMaskService: MetamaskService,
     private curService: CurrencyService,
+    private layout: LayoutObserverService,
     private mockClientService: MockClientService
   ) {
     this.depositSuccess = false;
@@ -122,7 +125,11 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       this.currency = cur;
     });
 
-    this.subs = [user$, balances$, metaMaskProvider$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [user$, balances$, metaMaskProvider$, cur$, layout$];
   }
 
   ngOnInit(): void {

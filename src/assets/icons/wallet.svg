@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="25px" viewBox="0 0 21 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon</title>
+    <g id="⚡-Active---SKIP" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Mobile:-Views" transform="translate(-168.000000, -688.000000)" stroke="#FFFFFF">
+            <g id="Mobile:-Menu" transform="translate(0.500000, 675.164383)">
+                <g id="Upgrade" transform="translate(27.500000, 8.835617)">
+                    <g id="Bag" transform="translate(115.000000, 5.000000)">
+                        <g id="Icon" transform="translate(26.000000, 0.000000)">
+                            <path d="M10.7436433,5.004422 C12.4932921,3.53462823 13.6623946,0.223397919 12.942922,0.0785725218 C11.9869445,-0.113932687 9.91100552,0.730178571 8.9076188,0.878900616 C7.48447655,1.05073195 5.93447678,-0.664334142 5.06444199,0.29164337 C4.35703811,1.0689163 5.57160148,3.89560932 7.47181244,5.12705816 C1.80262334,7.91337758 -6.16580426,21.9009349 7.73553971,22.9158492 C26.9704199,24.3202117 17.3388274,7.71962761 10.7436433,5.004422 Z" fill-rule="nonzero"></path>
+                            <path d="M10.5,18.5000229 C11.7017059,18.4473063 12.7047755,18.052337 13.5092087,17.315115 C14.3136419,16.5778929 14.6439056,15.6395213 14.5,14.5" id="Line" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

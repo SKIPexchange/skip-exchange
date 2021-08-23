@@ -38,87 +38,88 @@
   ></app-breadcrumb>
 </app-transaction-success-modal>
 
+
 <div
   class="overlay-container-wrapper"
   *ngIf="txState === 'PENDING_CONFIRMATION' || txState === 'ERROR'"
 >
   <div class="container" *ngIf="swapData">
+  <div class="content-top">
+    <div *ngIf="txState === 'PENDING_CONFIRMATION'">
+      <app-breadcrumb
+        [path]="[
+          { name: 'skip', call: 'skip' },
+          { name: 'Swap', call: 'swap' }
+        ]"
+        message="confirm"
+        (funcCaller)="breadcrumbNav($event, 'pending')"
+      ></app-breadcrumb>
+    </div>
+    <div *ngIf="txState === 'ERROR'">
+      <app-breadcrumb
+        [path]="[
+          {
+            name: 'skip',
+            swapView: 'Swap',
+            mainView: 'Swap',
+            call: 'sucSwap'
+          },
+          {
+            name: 'Swap',
+            swapView: 'Swap',
+            mainView: 'Swap',
+            call: 'sucSwap'
+          }
+        ]"
+        [message]="error"
+        [isError]="true"
+        (funcCaller)="navCaller($event)"
+      ></app-breadcrumb>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <app-asset-input
+      label="Send"
+      type="swap"
+      [(selectedAsset)]="swapData.sourceAsset.asset"
+      [(assetUnit)]="swapData.inputValue"
+      [balance]="swapData.balance"
+      [disableInput]="true"
+      [disabledAssetSymbol]="swapData.sourceAsset.asset.symbol"
+      [priceInput]="swapData.sourceAsset.assetPriceUSD"
+      [disabledMarketSelect]="true"
+      [hideMax]="true"
+    ></app-asset-input>
+
+    <app-arrow></app-arrow>
+
+    <app-asset-input
+      label="Receive"
+      [(selectedAsset)]="swapData.targetAsset.asset"
+      [(assetUnit)]="swapData.outputValue"
+      [balance]="swapData.targetAsset?.balance?.amount().toNumber()"
+      [disableInput]="true"
+      [disabledAssetSymbol]="swapData.targetAsset.asset.symbol"
+      [priceInput]="swapData.targetAsset.assetPriceUSD"
+      [disabledMarketSelect]="true"
+      [targetAddress]="swapData.targetAddress"
+      [hideMax]="true"
+      extraLabel="(estimated)"
+    ></app-asset-input>
+
     <div>
-      <div class="content-top">
-        <div *ngIf="txState === 'PENDING_CONFIRMATION'">
-          <app-breadcrumb
-            [path]="[
-              { name: 'skip', call: 'skip' },
-              { name: 'Swap', call: 'swap' }
-            ]"
-            message="confirm"
-            (funcCaller)="breadcrumbNav($event, 'pending')"
-          ></app-breadcrumb>
-        </div>
-        <div *ngIf="txState === 'ERROR'">
-          <app-breadcrumb
-            [path]="[
-              {
-                name: 'skip',
-                swapView: 'Swap',
-                mainView: 'Swap',
-                call: 'sucSwap'
-              },
-              {
-                name: 'Swap',
-                swapView: 'Swap',
-                mainView: 'Swap',
-                call: 'sucSwap'
-              }
-            ]"
-            [message]="error"
-            [isError]="true"
-            (funcCaller)="navCaller($event)"
-          ></app-breadcrumb>
-        </div>
-      </div>
-
-      <app-asset-input
-        label="Send"
-        type="swap"
-        [(selectedAsset)]="swapData.sourceAsset.asset"
-        [(assetUnit)]="swapData.inputValue"
-        [balance]="swapData.balance"
-        [disableInput]="true"
-        [disabledAssetSymbol]="swapData.sourceAsset.asset.symbol"
-        [priceInput]="swapData.sourceAsset.assetPriceUSD"
-        [disabledMarketSelect]="true"
-        [hideMax]="true"
-      ></app-asset-input>
-
-      <app-arrow></app-arrow>
-
-      <app-asset-input
-        label="Receive"
-        [(selectedAsset)]="swapData.targetAsset.asset"
-        [(assetUnit)]="swapData.outputValue"
-        [balance]="swapData.targetAsset?.balance?.amount().toNumber()"
-        [disableInput]="true"
-        [disabledAssetSymbol]="swapData.targetAsset.asset.symbol"
-        [priceInput]="swapData.targetAsset.assetPriceUSD"
-        [disabledMarketSelect]="true"
-        [targetAddress]="swapData.targetAddress"
-        [hideMax]="true"
-        extraLabel="(estimated)"
-      ></app-asset-input>
-
-      <div>
-        <div class="swap-details">
-          <div class="flex justify-between">
-            <span class="tx-detail-label">Price:</span>
+      <div class="swap-details">
+        <div class="flex justify-between">
+          <span class="tx-detail-label">Price:</span>
+          <span>
+            1 {{ swapData.targetAsset.asset.ticker }} = {{ swapData.basePrice | number: "1.2-4" }} {{ swapData.sourceAsset.asset.ticker }}
             <span>
-              1 {{ swapData.targetAsset.asset.ticker }} = {{ swapData.basePrice | number: "1.2-4" }} {{ swapData.sourceAsset.asset.ticker }}
               <span
                 *ngIf="swapData.sourceAsset.assetPriceUSD"
                 class="mono"
-                style="margin-left: 5px"
-              >
-                ({{
+                >({{
                   swapData.sourceAsset.assetPriceUSD *
                     currency.value *
                     swapData.basePrice | number: "0.2-2"
@@ -126,102 +127,94 @@
                 {{ currency.code }})
               </span>
             </span>
-          </div>
+          </span>
+        </div>
 
-          <div *ngIf="swapData.networkFeeInSource" class="flex justify-between text-white">
-            <span class="tx-detail-label">Network Fee:</span>
-            <span>
-              {{ swapData.networkFeeInSource | number: "1.0-8" }} {{ swapData.sourceAsset.asset.ticker }}
-              <span
-                *ngIf="swapData.sourceAsset.assetPriceUSD"
-                class="mono"
-                style="margin-left: 5px"
-                >({{
-                  swapData.sourceAsset.assetPriceUSD *
-                    currency.value *
-                    swapData.networkFeeInSource | number: "0.2-2"
-                }}
-                {{ currency.code }})</span
-              ></span
-            >
-          </div>
-
-          <!-- <div *ngIf="swapData.sourceAsset.asset.chain === 'THOR'" class="flex justify-between">
-            <span class="tx-detail-label">Total Fee:</span>
-            <span>{{swapData.outboundTransactionFee}} RUNE<span *ngIf="swapData.runePrice" class="mono" style="margin-left: 5px;">(${{swapData.runePrice * swapData.outboundTransactionFee | number: '0.2-2'}})</span></span>
-          </div> -->
-
-          <div class="flex justify-between">
-            <span class="tx-detail-label">Slip:</span>
+        <div *ngIf="swapData.networkFeeInSource" class="flex justify-between text-white">
+          <span class="tx-detail-label">Network Fee:</span>
+          <span>
+            {{ swapData.networkFeeInSource | number: "1.0-8" }} {{ swapData.sourceAsset.asset.ticker }}
             <span
-              [ngStyle]="{
-                color:
-                  swapData.slip * 100 > slippageTolerance
-                    ? '#FF4954'
-                    : 'var(--primary-default)'
-              }"
-            >
-              {{ swapData.slip | percent: "0.2-4" }}
-              <span
-                *ngIf="swapData.sourceAsset.assetPriceUSD"
-                class="mono"
-                style="margin-left: 5px"
-                >({{
-                  swapData.sourceAsset.assetPriceUSD *
-                    currency.value *
-                    swapData.inputValue *
-                    swapData.slip | number: "1.2-2"
-                }}
-                {{ currency.code }})
-              </span>
-            </span>
-          </div>
-
-          <!-- <div *ngIf="swapData.targetAddress" class="flex justify-between mb-2">
-            <span class="tx-detail-label">To Address</span>
-            <span>{{swapData.targetAddress.substring(0, 8)}}...{{swapData.targetAddress.substring(swapData.targetAddress.length - 4, swapData.targetAddress.length)}}</span>
-          </div>
-
-          <div *ngIf="swapData.networkFeeInSource" class="flex justify-between mb-2">
-            <span class="tx-detail-label">Total Fee</span>
-            <span>{{swapData.networkFeeInSource | number:"1.0-4"}} {{swapData.sourceAsset.ticker}}</span>
-          </div> -->
-
-          <!-- <div class="flex justify-between">
-            <div class="tx-detail-label">
-              Estimated Transaction Time:
-            </div>
-            <span><{{ estimatedMinutes }} min</span>
-          </div> -->
+              *ngIf="swapData.sourceAsset.assetPriceUSD"
+              class="mono"
+              >({{
+                swapData.sourceAsset.assetPriceUSD *
+                  currency.value *
+                  swapData.networkFeeInSource | number: "0.2-2"
+              }}
+              {{ currency.code }})</span
+            ></span
+          >
         </div>
 
-        <div class="bottom-actions two-btn">
-          <ng-container>
-            <div class="left-btn">
-              <button
-                class="close-btn"
-                aria-label="Close Markets Dialog"
-                (click)="closeDialog(false)"
-              >
-                <span>CANCEL</span>
-              </button>
-            </div>
-            <div class="divider"></div>
-            <div class="right-btn">
-              <button
-                (click)="submitTransaction()"
-                class="next-btn"
-                [disabled]="insufficientChainBalance"
-              >
-                <span *ngIf="!insufficientChainBalance">Confirm</span>
-                <span *ngIf="insufficientChainBalance"
-                  >Insufficient {{ swapData.sourceAsset.asset.chain }}</span
-                >
-              </button>
-            </div>
-          </ng-container>
+        <div class="flex justify-between">
+          <span class="tx-detail-label">Slip:</span>
+          <span
+            [ngStyle]="{
+              color:
+                swapData.slip * 100 > slippageTolerance
+                  ? '#FF4954'
+                  : 'var(--primary-default)'
+            }"
+            >{{ swapData.slip | percent: "0.2-4" }} <span
+              *ngIf="swapData.sourceAsset.assetPriceUSD"
+              class="mono"
+              >({{
+                swapData.sourceAsset.assetPriceUSD *
+                  currency.value *
+                  swapData.inputValue *
+                  swapData.slip | number: "1.2-2"
+              }}
+              {{ currency.code }})</span
+            ></span
+          >
         </div>
-      </div>
+
+        <!-- <div *ngIf="swapData.targetAddress" class="flex justify-between mb-2">
+          <span class="tx-detail-label">To Address</span>
+          <span>{{swapData.targetAddress.substring(0, 8)}}...{{swapData.targetAddress.substring(swapData.targetAddress.length - 4, swapData.targetAddress.length)}}</span>
+        </div>
+
+        <div *ngIf="swapData.networkFeeInSource" class="flex justify-between mb-2">
+          <span class="tx-detail-label">Total Fee</span>
+          <span>{{swapData.networkFeeInSource | number:"1.0-4"}} {{swapData.sourceAsset.ticker}}</span>
+        </div> -->
+
+        <!-- <div class="flex justify-between">
+          <div class="tx-detail-label">
+            Estimated Transaction Time:
+          </div>
+          <span><{{ estimatedMinutes }} min</span>
+        </div> -->
     </div>
+  </div>
+
+  <div class="bottom-actions two-btn">
+      <ng-container>
+        <div class="left-btn">
+          <button
+            class="close-btn"
+            aria-label="Close Markets Dialog"
+            (click)="closeDialog(false)"
+          >
+            <span>CANCEL</span>
+          </button>
+        </div>
+        <div class="divider"></div>
+        <div class="right-btn">
+          <button
+            (click)="submitTransaction()"
+            class="next-btn"
+            [disabled]="insufficientChainBalance"
+          >
+            <span *ngIf="!insufficientChainBalance">Confirm</span>
+            <span *ngIf="insufficientChainBalance"
+              >Insufficient {{ swapData.sourceAsset.asset.chain }}</span
+            >
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
   </div>
 </div>

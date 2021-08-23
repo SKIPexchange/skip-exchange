@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DirectivesModule } from 'src/app/_directives/directives.module';
 import { IconTickerModule } from '../icon-ticker/icon-ticker.module';
 import { ArrowModule } from '../arrow/arrow.module';
-import { ShortPipeModule } from 'src/app/_pipes/short-number.module';
+import { CustomPipesModule } from 'src/app/_pipes/custom-pipes.module';
 
 @NgModule({
   declarations: [AssetsListComponent],
@@ -17,9 +17,9 @@ import { ShortPipeModule } from 'src/app/_pipes/short-number.module';
     MatIconModule,
     MatButtonModule,
     IconTickerModule,
-    ShortPipeModule,
     ArrowModule,
     DirectivesModule,
+    CustomPipesModule,
   ],
   exports: [AssetsListComponent],
 })
