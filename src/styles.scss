@@ -585,6 +585,10 @@ button {
   left: 0px;
   white-space: nowrap;
   color: var(--primary-default);
+
+  &.seprator {
+    padding: 0 5px;
+  }
 }
 
 .max {

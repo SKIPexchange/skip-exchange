@@ -107,7 +107,7 @@
         >
           LOADING BALANCE 
         </span>
-        <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice && !(hasAddress || targetAddress)"> / </span>
+        <span class="usd-est seprator" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice && !(hasAddress || targetAddress)"> / </span>
         <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue && !(hasAddress || targetAddress) && selectedAsset">
           {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
         </span>
