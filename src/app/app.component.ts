@@ -187,7 +187,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   setHeight(id?: string) {
-    this.screenHeight = `${window.innerHeight}px`;
+    this.screenHeight = `${window.innerHeight - 2}px`;
     const styles = `.isMobile main .container-wrapper { min-height: ${
       this.screenHeight
     }; } .isMobile main .overlay-container-wrapper { min-height: ${
