@@ -1360,6 +1360,7 @@ main {
     font-size: 22px;
     font-weight: 500;
     line-height: 30px;
+    min-width: 100px;
 
     &.disabled {
       color: var(--primary-grey-color);
