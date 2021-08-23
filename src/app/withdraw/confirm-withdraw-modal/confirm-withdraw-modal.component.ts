@@ -11,7 +11,13 @@ import { Subject, Subscription } from 'rxjs';
 import { User } from '../../_classes/user';
 import { TransactionConfirmationState } from '../../_const/transaction-confirmation-state';
 import { UserService } from '../../_services/user.service';
-import { assetToString, baseAmount, Chain, bn } from '@xchainjs/xchain-util';
+import {
+  assetToString,
+  baseAmount,
+  Chain,
+  bn,
+  assetAmount,
+} from '@xchainjs/xchain-util';
 import {
   TransactionStatusService,
   TxActions,
@@ -34,6 +40,9 @@ import { retry, take } from 'rxjs/operators';
 import { Transaction } from 'src/app/_classes/transaction';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
+import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
+import { MockClientService } from 'src/app/_services/mock-client.service';
+import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 
 // TODO: this is the same as ConfirmStakeData in confirm stake modal
 export interface ConfirmWithdrawData {
@@ -77,6 +86,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   hashSuccess: boolean;
   outboundHash: string;
   currency: Currency;
+  hashes: noticeData[] = [];
 
   constructor(
     private txStatusService: TransactionStatusService,
@@ -88,7 +98,8 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
     private midgardService: MidgardService,
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
-    private currencyService: CurrencyService
+    private currencyService: CurrencyService,
+    private mockClientService: MockClientService
   ) {
     this.hashSuccess = false;
     this.closeEvent = new EventEmitter<boolean>();
@@ -125,6 +136,43 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
         this.data.asset.chain,
         this.data.assetAmount
       );
+    }
+  }
+
+  makeHash(hash: string, asset: Asset, isThorchainTx: boolean = false) {
+    if (isThorchainTx === true) {
+      // eslint-disable-next-line prettier/prettier
+      let thorHash = asset.chain === Chain.Ethereum ? this.ethUtilsService.strip0x(hash): hash;
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(asset.chain).getExplorerTxUrl(hash),
+        // eslint-disable-next-line prettier/prettier
+        thorUrl: this.mockClientService.getMockClientByChain(Chain.THORChain).getExplorerTxUrl(thorHash),
+        asset: asset,
+      });
+    } else {
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(asset.chain).getExplorerTxUrl(hash),
+        asset: asset,
+      });
+    }
+
+    // for asym_rune withdraw there is no second txid because the transaction is done internal
+    if (this.data.withdrawType !== 'ASYM_RUNE') {
+      // also add the second outbound hash
+      this.hashes.splice(1, 1, {
+        copy: '',
+        show: '',
+        url: '',
+        asset: this.data.asset,
+      });
     }
   }
 
@@ -196,6 +244,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
         memo,
       });
 
+      this.makeHash(hash, this.data.rune);
       this.txSuccess(hash);
     } catch (error) {
       console.error('error making RUNE withdraw: ', error);
@@ -245,6 +294,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
 
       if (hash.length > 0) {
         this.txSuccess(this.ethUtilsService.strip0x(hash));
+        this.makeHash(hash, this.data.asset, true);
       } else {
         console.error('hash empty');
         this.error = 'Error withdrawing, hash is empty. Please try again later';
@@ -300,9 +350,8 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
             amount: minAmount.amount(),
             memo,
           });
-
+          this.makeHash(ethHash, this.data.asset, true);
           hash = this.ethUtilsService.strip0x(ethHash);
-
           break;
 
         case 'BTC':
@@ -331,6 +380,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
             memo,
             feeRate: +matchingInboundAddress.gas_rate,
           });
+          this.makeHash(hash, this.data.asset, true);
           break;
       }
 
@@ -405,12 +455,12 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   }
 
   hashIsSuccessful(hash: string) {
-    this.txStatusService
-      .getOutboundHash(hash)
-      .pipe(retry(2))
-      .subscribe((res: Transaction) => {
+    // eslint-disable-next-line prettier/prettier
+    this.txStatusService.getOutboundHash(hash).pipe(retry(2)) .subscribe((res: Transaction) => {
         if (res.type === 'withdraw' && res.status === 'success') {
           this.hashSuccess = true;
+
+          // runeamount update from midgard
           this.data.runeAmount = bn(
             res.out
               .find((outTx) =>
@@ -420,32 +470,52 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
               )
               ?.coins.find(
                 (c) => c.asset === `${this.rune.chain}.${this.rune.ticker}`
-              ).amount
+              )?.amount
           )
-            .div(10 ** 8)
-            .toNumber();
+            ?.div(10 ** 8)
+            ?.toNumber();
 
-          this.data.assetAmount = bn(
-            res.out
-              .find((outTx) =>
-                outTx.coins.find(
-                  (c) => c.asset === assetToString(this.data.asset)
+          // assetamount update from midgard
+          this.data.assetAmount =
+            bn(
+              res.out
+                .find((outTx) =>
+                  outTx.coins.find(
+                    (c) => c.asset === assetToString(this.data.asset)
+                  )
                 )
-              )
-              ?.coins.find((c) => c.asset === assetString(this.data.asset))
-              .amount
-          )
-            .div(10 ** 8)
-            .toNumber();
+                ?.coins.find((c) => c.asset === assetToString(this.data.asset))
+                ?.amount
+            )
+              ?.div(10 ** 8)
+              ?.toNumber() || this.data.assetAmount;
 
-          this.outboundHash =
-            res.out.find((outTx) =>
-              outTx.coins.find(
-                (c) => c.asset === assetToString(this.data.asset)
-              )
-            )?.txID || '';
+          // the outbound hash
+          // prettier-ignore
+          const outboundHash = res.out.find((outTx) => outTx.coins.find((c) => c.asset === assetToString(this.data.asset)) )?.txID || '';
+          if (outboundHash) {
+            // prettier-ignore
+            this.hashes.splice(1, 1, {
+              copy: outboundHash,
+              show: `${outboundHash.substring(0, 3)}...${outboundHash.substring(outboundHash.length - 3, outboundHash.length)}`,
+              url: this.mockClientService.getMockClientByChain(this.data.asset.chain).getExplorerTxUrl(outboundHash),
+              asset: this.data.asset
+            });
+          }
         }
       });
+  }
+
+  getSuccessData(): SuccessModal {
+    // prettier-ignore
+    return {
+      modalType: 'WITHDRAW',
+      asset: [{ asset: this.data.asset, balance: assetAmount(0), assetPriceUSD: 0 }, { asset: this.data.rune, balance: assetAmount(0), assetPriceUSD: 0 }], 
+      label: this.hashSuccess ? ['Withdrawn', this.data.poolShareMessage] : ['Withdrawing', this.data.poolShareMessage],
+      isPending: [!this.hashSuccess],
+      amount: [this.data.assetAmount, this.data.runeAmount], 
+      hashes: this.hashes,
+    };
   }
 
   closeDialog(transactionSucess?: boolean) {

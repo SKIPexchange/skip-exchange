@@ -31,6 +31,9 @@ import { environment } from 'src/environments/environment';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from '../../account-settings/currency-converter/currency-converter.component';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
+import { WalletConnectService } from 'src/app/_services/wallet-connect.service';
+import { Router } from '@angular/router';
 
 export interface coinLists {
   [id: string]: {
@@ -87,6 +90,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
   chainUsdValue: { [chain: string]: { value: number; tokens: string[] } } = {};
   isTestnet: boolean;
   currecny: Currency;
+  isMobile: boolean;
 
   constructor(
     private userService: UserService,
@@ -97,7 +101,11 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
     private cgService: CoinGeckoService,
     private currencyService: CurrencyService,
     private analytics: AnalyticsService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    private layout: LayoutObserverService,
+    private wcService: WalletConnectService,
+    private router: Router,
+    private analyticsService: AnalyticsService
   ) {
     this.pools = [];
     this.pendingTxCount = 0;
@@ -106,6 +114,10 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
 
     this.selectedAsset = null;
     this.selectedChain = null;
+
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
 
     const user$ = this.userService.user$.subscribe(async (user) => {
       if (user) {
@@ -143,7 +155,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
       this.selectedAsset = val.asset;
     });
 
-    this.subs = [user$, txs$, overlay$];
+    this.subs = [user$, txs$, overlay$, layout$];
 
     // this.path = this.getPath();
   }
@@ -298,7 +310,22 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
     this.userService.setUser(null);
     this.metaMaskService.setProvider(null);
     this.transactionStatusService.clearPendingTransactions();
-    // this.dialogRef.close();
+
+    this.analyticsService.event(
+      'menu',
+      'option_selected_*MENU_OPTION*',
+      undefined,
+      'disconnect'
+    );
+    this.overlaysService.setViews(MainViewsEnum.Swap, 'Swap');
+
+    // kill TrustWallet session if TW client is valid
+    this.wcService.killSession();
+
+    // add this guard in case the route is not in the swap change it to the swap
+    if (this.router.url !== '/swap') {
+      this.router.navigate(['/', 'swap']);
+    }
   }
 
   close() {

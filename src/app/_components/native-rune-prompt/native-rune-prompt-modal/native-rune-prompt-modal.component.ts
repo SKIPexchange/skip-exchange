@@ -14,6 +14,7 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 @Component({
   selector: 'app-native-rune-prompt-modal',
@@ -30,13 +31,15 @@ export class NativeRunePromptModalComponent {
   successfulTxHash: string;
   nonNativeRuneAssets: AssetAndBalance[];
   nativeRune: AssetAndBalance;
+  isMobile: boolean = false;
 
   constructor(
     private userService: UserService,
     private midgardService: MidgardService,
     private thorchainPricesService: ThorchainPricesService,
     private overlaysService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.nonNativeRuneAssets = [];
     this.loading = true;
@@ -69,7 +72,11 @@ export class NativeRunePromptModalComponent {
       }
     });
 
-    this.subs = [balances$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [balances$, layout$];
 
     this.getNativeRune();
   }

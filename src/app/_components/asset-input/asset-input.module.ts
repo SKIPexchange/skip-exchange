@@ -10,9 +10,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { IconTickerModule } from '../icon-ticker/icon-ticker.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TagModule } from '../tag/tag.module';
+import { TargetAddressComponent } from './target-address/target-address.component';
+import { CustomPipesModule } from 'src/app/_pipes/custom-pipes.module';
+import { SelectAssetModule } from './select-asset/select-asset.module';
 
 @NgModule({
-  declarations: [AssetInputComponent],
+  declarations: [AssetInputComponent, TargetAddressComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -22,6 +25,8 @@ import { TagModule } from '../tag/tag.module';
     MatProgressSpinnerModule,
     MatIconModule,
     TagModule,
+    CustomPipesModule,
+    SelectAssetModule,
   ],
   exports: [AssetInputComponent],
 })

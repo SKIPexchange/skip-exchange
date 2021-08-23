@@ -11,14 +11,8 @@
   </div>
 
   <app-notice [isMono]="true">
-    <span text style="font-family: inherit">{{
-      data.routerAddress.substring(0, 16) +
-        "..." +
-        data.routerAddress.substring(
-          data.routerAddress.length - 16,
-          data.routerAddress.length
-        )
-    }}</span>
+    <span *ngIf="!isMobile ; else elseBlock" text style="font-family: inherit">{{ data.routerAddress.substring(0, 16) + "..." + data.routerAddress.substring( data.routerAddress.length - 16, data.routerAddress.length ) }}</span>
+    <span text style="font-family: inherit" #elseBlock>{{ data.routerAddress.substring(0, 8) + "..." + data.routerAddress.substring( data.routerAddress.length - 8, data.routerAddress.length ) }}</span>
     <ng-container tags>
       <app-tag>
         <div (click)="copyToClipboard()">

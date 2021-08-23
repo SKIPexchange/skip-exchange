@@ -7,7 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { Balance } from '@xchainjs/xchain-client';
-import { assetAmount, assetToBase } from '@xchainjs/xchain-util';
+import { assetAmount, assetToBase, Chain } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { Asset, getChainAsset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
@@ -35,6 +35,8 @@ import {
 import { TransactionUtilsService } from 'src/app/_services/transaction-utils.service';
 import { UserService } from 'src/app/_services/user.service';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
+import { noticeData } from '../success-notice/success-notice.component';
+import { SuccessModal } from '../transaction-success-modal/transaction-success-modal.component';
 
 @Component({
   selector: 'app-upgrade-rune-confirm',
@@ -64,6 +66,7 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
   isError: boolean = false;
   loading: boolean = false;
   currency: Currency;
+  hashes: noticeData[];
 
   constructor(
     private midgardService: MidgardService,
@@ -139,6 +142,19 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
         'INBOUND'
       );
     }
+  }
+
+  getSuccessData(): SuccessModal {
+    // prettier-ignore
+    return {
+      modalType: 'UPGRADE',
+      asset: [this.asset, this.nativeRune], 
+      label: ['Upgraded', 'Received'],
+      amount: [this.amount, this.amount], 
+      balances: this.balances,
+      hashes: this.hashes,
+      isPlus: true,
+    };
   }
 
   checkSufficientFunds() {
@@ -258,6 +274,17 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
             action: TxActions.UPGRADE_RUNE,
             isThorchainTx: false,
           });
+          this.hashes = [
+            {
+              copy: this.hash,
+              // eslint-disable-next-line prettier/prettier
+              show: `${this.hash.substring(0, 6)}...${this.hash.substring( this.hash.length - 6, this.hash.length )}`,
+              url: client.getExplorerTxUrl(this.hash),
+              // eslint-disable-next-line prettier/prettier
+              thorUrl: this.userService.getChainClient(undefined, Chain.THORChain).getExplorerTxUrl(this.hash),
+              asset: asset,
+            },
+          ];
 
           // this because of fetchBalances might gives a bug
           this.userService.pollNativeRuneBalance(this.runeBalance ?? 0);
@@ -301,7 +328,18 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
             ethClient: client,
           });
 
-          this.hash = hash.substr(2);
+          this.hash = hash.substring(2);
+          this.hashes = [
+            {
+              copy: hash.substring(2),
+              // eslint-disable-next-line prettier/prettier
+              show: `${hash.substring(0, 6)}...${hash.substring( hash.length - 6, hash.length )}`,
+              url: client.getExplorerTxUrl(hash),
+              // eslint-disable-next-line prettier/prettier
+              thorUrl: this.userService.getChainClient(undefined, Chain.THORChain).getExplorerTxUrl(this.hash),
+              asset: asset,
+            },
+          ];
 
           this.txStatusService.addTransaction({
             chain: asset.chain,

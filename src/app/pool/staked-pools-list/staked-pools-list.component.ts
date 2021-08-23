@@ -5,6 +5,7 @@ import { MemberPool } from 'src/app/_classes/member';
 import { PoolDTO } from 'src/app/_classes/pool';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import {
   RuneYieldPoolResponse,
   RuneYieldService,
@@ -49,17 +50,23 @@ export class StakedPoolsListComponent implements OnDestroy {
   currency: Currency;
   subs: Subscription[];
   runeYieldPools: RuneYieldPoolResponse[];
+  isMobile: boolean;
 
   constructor(
     private currencyService: CurrencyService,
     private runeYieldService: RuneYieldService,
-    private userService: UserService
+    private userService: UserService,
+    private layout: LayoutObserverService
   ) {
     const cur$ = this.currencyService.cur$.subscribe((cur) => {
       this.currency = cur;
     });
 
-    this.subs = [cur$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [cur$, layout$];
   }
 
   mapPools() {

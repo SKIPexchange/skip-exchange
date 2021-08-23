@@ -12,14 +12,13 @@
       ></app-breadcrumb>
       <div class="top-right"></div>
     </div>
-    <div class="content-middle">
+    <div class="content-middle main-content">
       <div class="modal-head" style="margin-bottom: 20px">
         <app-notice [isMono]="true" [isCenter]="true">
-          <span text style="font-family: inherit; text-align: center">{{
-            address.substring(0, 10) +
-              "..." +
-              address.substring(address.length - 10, address.length)
-          }}</span>
+          <span text style="font-family: inherit; text-align: center">
+          <ng-container *ngIf="!isMobile; else elseBlock">{{ address.substring(0, 10) + "..." + address.substring(address.length - 10, address.length) }}</ng-container>
+          <ng-template #elseBlock>{{ address.substring(0, 8) + "..." + address.substring(address.length - 8, address.length) }}</ng-template>
+          </span>
           <ng-container tags>
             <app-tag>
               <div (click)="copyToClipboard(address)">
@@ -50,7 +49,7 @@
           [loading]="loading"
           [displayAddTokenButton]="chain === 'ETH'"
           (selectAsset)="selectAsset($event)"
-          [showPrice]="true"
+          [showPrice]="!isMobile"
           (addToken)="navigateToAddToken.emit()"
           expandable="semi"
         >
@@ -58,7 +57,6 @@
         <div
           *ngIf="error"
           class="lists"
-          style="height: 289px; justify-content: center; align-items: center"
         >
           <div class="info">
             <span>{{ error }}</span>

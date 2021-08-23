@@ -38,6 +38,10 @@ import { ethers } from 'ethers';
 import { Transaction } from 'src/app/_classes/transaction';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { Currency } from 'src/app/_components/account-settings/currency-converter/currency-converter.component';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
+import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
+import { MockClientService } from 'src/app/_services/mock-client.service';
+import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 
 // assets should be added for asset-input as designed.
 export interface ConfirmDepositData {
@@ -78,6 +82,9 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   depositSuccess: boolean;
   outboundHash: string;
   currency: Currency;
+  isMobile: boolean;
+  hashes: noticeData[] = [];
+  successMessage: string = 'processing';
 
   //foe this interface it should be imported from despoit page
   @Input() data: ConfirmDepositData;
@@ -93,7 +100,9 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     private analyticsService: AnalyticsService,
     private keystoreDepositService: KeystoreDepositService,
     private metaMaskService: MetamaskService,
-    private curService: CurrencyService
+    private curService: CurrencyService,
+    private layout: LayoutObserverService,
+    private mockClientService: MockClientService
   ) {
     this.depositSuccess = false;
     this.loading = true;
@@ -116,7 +125,11 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       this.currency = cur;
     });
 
-    this.subs = [user$, balances$, metaMaskProvider$];
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
+
+    this.subs = [user$, balances$, metaMaskProvider$, cur$, layout$];
   }
 
   ngOnInit(): void {
@@ -138,6 +151,31 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
         this.data.asset.asset.chain,
         this.data.assetAmount
       );
+    }
+  }
+
+  makeHash(hash: string, asset: Asset, isThorchainTx: boolean = false) {
+    if (isThorchainTx === true) {
+      if (asset.chain === Chain.Ethereum) {
+        hash = this.ethUtilsService.strip0x(hash);
+      }
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(Chain.THORChain).getExplorerTxUrl(hash),
+        asset: this.data.rune.asset,
+      });
+    } else {
+      this.hashes.push({
+        copy: hash,
+        // eslint-disable-next-line prettier/prettier
+        show: `${hash.substring(0, 3)}...${hash.substring(hash.length - 3, hash.length)}`,
+        // eslint-disable-next-line prettier/prettier
+        url: this.mockClientService.getMockClientByChain(asset.chain).getExplorerTxUrl(hash),
+        asset: asset,
+      });
     }
   }
 
@@ -183,6 +221,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
         if (hash && hash.length > 0) {
           this.hash = hash;
           this.assetDepositSuccess(this.data.asset.asset, hash);
+          this.makeHash(hash, this.data.asset.asset);
+          this.makeHash(hash, this.data.asset.asset, true);
           this.txState = TransactionConfirmationState.SUCCESS;
         } else {
           this.assetDepositError('Deposit Unsuccessful');
@@ -206,6 +246,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
           try {
             assetHash = await this.keystoreDepositAsset(pools);
             console.log('asset hash is: ', assetHash);
+            this.makeHash(assetHash, this.data.asset.asset);
           } catch (error) {
             console.error('error making token transfer: ', error);
             this.txState = TransactionConfirmationState.ERROR;
@@ -226,6 +267,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
               this.data.asset.asset
             );
             console.log('rune hash is: ', runeHash);
+            this.makeHash(runeHash, this.data.rune.asset);
             this.runeDepositSuccess(runeHash);
           } catch (error) {
             console.error('error making RUNE transfer: ', error);
@@ -246,6 +288,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
             }
 
             console.log('asset hash is: ', assetHash);
+            this.makeHash(assetHash, this.data.asset.asset);
+            this.makeHash(assetHash, this.data.asset.asset, true);
             this.assetDepositSuccess(this.data.asset.asset, assetHash);
             this.txState = TransactionConfirmationState.SUCCESS;
           } catch (error) {
@@ -264,6 +308,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
               this.data.asset.asset
             );
             console.log('rune hash is: ', runeHash);
+            this.makeHash(runeHash, this.data.rune.asset);
             this.runeDepositSuccess(runeHash);
             break;
           } catch (error) {
@@ -452,10 +497,16 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
   }
 
   getOutboundSuccess(hash: string) {
+    // see if midgard gets the tx success
     this.txStatusService.getOutboundHash(hash).subscribe((res: Transaction) => {
       if (res.status === 'success') {
-        this.depositSuccess = true;
+        this.successMessage = 'loading balance';
+        this.userService.fetchBalances(() => {
+          this.depositSuccess = true;
+          this.successMessage = 'success';
+        });
 
+        //updates amount
         this.data.runeAmount = bn(
           res.in
             .find((inTX) =>
@@ -474,6 +525,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
           .div(10 ** 8)
           .toNumber();
 
+        //updates asset amount
         this.data.assetAmount = bn(
           res.in
             .find((inTX) =>
@@ -487,13 +539,6 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
         )
           .div(10 ** 8)
           .toNumber();
-
-        this.outboundHash =
-          res.in.find((inTX) =>
-            inTX.coins.find(
-              (c) => c.asset === assetToString(this.data.asset.asset)
-            )
-          )?.txID || '';
       }
     });
   }
@@ -603,6 +648,33 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     } else {
       return 'confirm';
     }
+  }
+
+  getSuccessData(): SuccessModal {
+    let assets = [];
+    let amounts = [];
+    if (this.data.poolTypeOption === 'ASYM_ASSET') {
+      assets = [this.data.asset];
+      amounts = [this.data.assetAmount];
+    } else if (this.data.poolTypeOption === 'ASYM_RUNE') {
+      assets = [this.data.rune];
+      amounts = [this.data.runeAmount];
+    } else {
+      assets = [this.data.asset, this.data.rune];
+      amounts = [this.data.assetAmount, this.data.runeAmount];
+    }
+    // prettier-ignore
+    return {
+      modalType: 'DEPOSIT',
+      poolType: this.data.poolTypeOption,
+      asset: assets, 
+      label: this.depositSuccess ? ['Deposited', 'Deposited'] : ['Depositing', 'Depositing'],
+      amount: amounts, 
+      balances: this.balances,
+      hashes: this.hashes,
+      isPlus: true,
+      isPending: this.depositSuccess ? [false, false] : [true, true]
+    };
   }
 
   closeDialog(transactionSucess?: boolean) {

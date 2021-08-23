@@ -21,6 +21,17 @@
       background: var(--primary-grey-background);
     }
 
+    &.isMobile {
+      width: 100%;
+
+      &:active {
+        background-color: var(--primary-default);
+        svg {
+          fill: var(--primary-dark-color);
+        }
+      }
+    }
+
     &:disabled {
       background: none;
     }

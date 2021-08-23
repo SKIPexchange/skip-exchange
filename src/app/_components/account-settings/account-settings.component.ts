@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { User } from 'src/app/_classes/user';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import {
   MainViewsEnum,
   OverlaysService,
@@ -24,18 +25,24 @@ export class AccountSettingsComponent implements OnInit {
   user: User;
 
   currency: Currency;
+  isMobile: boolean;
 
   constructor(
     private overlaysService: OverlaysService,
     private slipLimitService: SlippageToleranceService,
     private userService: UserService,
     private currencyService: CurrencyService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     const slippageTolerange$ =
       this.slipLimitService.slippageTolerance$.subscribe(
         (limit) => (this.slippageTolerance = limit)
       );
+
+    const layout$ = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
+    });
 
     const user$ = this.userService.user$.subscribe(async (user) => {
       if (user) {
@@ -47,7 +54,7 @@ export class AccountSettingsComponent implements OnInit {
       this.currency = cur;
     });
 
-    this.subs = [slippageTolerange$, user$, cur$];
+    this.subs = [slippageTolerange$, user$, cur$, layout$];
   }
 
   breadcrumbNav(val: string) {

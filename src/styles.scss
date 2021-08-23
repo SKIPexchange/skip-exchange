@@ -178,10 +178,6 @@ body {
   font-family: "Roboto";
 }
 
-html,
-body {
-  height: 100%;
-}
 body {
   margin: 0;
 }
@@ -284,12 +280,20 @@ button {
 /** XDEFI checkmarks */
 .notice-check {
   display: flex;
+  overflow: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   img {
     margin-right: 10px;
   }
 
   .not-checked {
+    flex: 0 0 24px;
     width: 24px;
     height: 24px;
     background: var(--primary-dark-color);
@@ -575,15 +579,16 @@ button {
 }
 
 .usd-est {
-  top: -8px;
-  position: relative;
   font-family: "Roboto Mono";
   font-weight: 500;
-  line-height: 24px;
   font-size: 10px;
   left: 0px;
-  bottom: -10px;
+  white-space: nowrap;
   color: var(--primary-default);
+
+  &.seprator {
+    padding: 0 5px;
+  }
 }
 
 .max {
@@ -721,7 +726,6 @@ button {
       label {
         font-weight: 500;
         font-size: 22px;
-        line-height: 30px;
         cursor: pointer;
       }
     }
@@ -1008,6 +1012,7 @@ a.mat-primary {
 .descriptive {
   margin-top: 14px;
   margin-left: 22px;
+  margin-right: 22px;
 }
 
 .mat-progress-spinner,
@@ -1111,10 +1116,28 @@ a.mat-primary {
   text-align: center;
 }
 
+.graident-text {
+  background: linear-gradient(
+    to right,
+    #fffd00 0%,
+    #f625f0 49.98%,
+    #01f6ee 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+
+  &.disabled, &.disconnect {
+    background: initial;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+  }
+}
+
 main {
   display: flex;
   flex-flow: column;
-  justify-content: center;
+  // justify-content: center;
   align-items: center;
   // padding: 45px 15px 100px;
   // min-height: calc(100vh - 138px);
@@ -1157,6 +1180,7 @@ main {
     height: 100%;
     display: flex;
     flex-flow: column;
+    max-width: initial;
     // border: 2px solid var(--primary-default);
 
     .content-top {
@@ -1165,14 +1189,6 @@ main {
       justify-content: space-between;
       margin-bottom: 30px;
       height: 48px;
-      overflow: auto;
-
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-    
-      &::-webkit-scrollbar {
-        display: none;
-      }
     }
 
     .bottom-actions {
@@ -1348,10 +1364,11 @@ main {
     font-size: 22px;
     font-weight: 500;
     line-height: 30px;
-  }
+    min-width: 100px;
 
-  .slider {
-    width: 443px;
+    &.disabled {
+      color: var(--primary-grey-color);
+    }
   }
 }
 
@@ -1418,3 +1435,5 @@ input:focus {
   from, to { background-color: transparent }
   50% { background-color: var(--primary-grey-color); }
 }
+
+@import "./mobile-layout";

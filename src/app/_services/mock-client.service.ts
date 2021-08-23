@@ -78,4 +78,10 @@ export class MockClientService {
 
     throw new Error(`mock client no matching client for chain: ${chain}`);
   }
+
+  //Helper for explorer tx url
+  getTxByChain(tx: string, chain: Chain): string {
+    const client = this.getMockClientByChain(chain);
+    return client.getExplorerTxUrl(tx);
+  }
 }

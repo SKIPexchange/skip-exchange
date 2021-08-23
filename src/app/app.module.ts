@@ -94,10 +94,12 @@ import { ReconnectXDEFIDialogComponent } from './_components/reconnect-xdefi-dia
 import { KeystoreCreateStorePhraseComponent } from './_components/connect/keystore-create-store-phrase/keystore-create-store-phrase.component';
 import { from } from 'rxjs';
 import { CurrencyConverterComponent } from './_components/account-settings/currency-converter/currency-converter.component';
-import { ShortNumberPipe } from './_pipes/short-number.pipe';
 import { RuneYieldService } from './_services/rune-yield.service';
-import { ShortPipeModule } from './_pipes/short-number.module';
 import { AnalyticsService } from './_services/analytics.service';
+import { LayoutObserverService } from './_services/layout-observer.service';
+import { FooterMenuComponent } from './_components/footer-menu/footer-menu.component';
+import { CustomPipesModule } from './_pipes/custom-pipes.module';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 @NgModule({
   declarations: [
@@ -128,6 +130,7 @@ import { AnalyticsService } from './_services/analytics.service';
     AccountSettingsComponent,
     SeedPhraseComponent,
     CurrencyConverterComponent,
+    FooterMenuComponent,
     // KeystoreCreateStorePhraseComponent,
   ],
   imports: [
@@ -162,7 +165,9 @@ import { AnalyticsService } from './_services/analytics.service';
     NativeRunePromptModule,
     ModalSectionHeaderModule,
     PhraseWordsListModule,
-    ShortPipeModule,
+    CustomPipesModule,
+    HttpClientModule,
+    AngularSvgIconModule.forRoot(),
   ],
   providers: [
     BinanceService,
@@ -188,6 +193,7 @@ import { AnalyticsService } from './_services/analytics.service';
     AnalyticsService,
     MetamaskService,
     MockClientService,
+    LayoutObserverService,
   ],
   bootstrap: [AppComponent],
 })

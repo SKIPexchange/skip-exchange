@@ -59,6 +59,7 @@ import { Liquidity } from '../_classes/liquidiyt';
 import { NetworkQueueService } from '../_services/network-queue.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NetworkSummary } from '../_classes/network';
+import { LayoutObserverService } from '../_services/layout-observer.service';
 
 @Component({
   selector: 'app-deposit',
@@ -162,6 +163,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   slippageTolerance: number;
   queue: ThorchainQueue;
   appLocked: boolean;
+  isMobile: boolean;
 
   constructor(
     private userService: UserService,
@@ -176,7 +178,8 @@ export class DepositComponent implements OnInit, OnDestroy {
     private ethUtilService: EthUtilsService,
     private metaMaskService: MetamaskService,
     private slipLimitService: SlippageToleranceService,
-    private networkQueueService: NetworkQueueService
+    private networkQueueService: NetworkQueueService,
+    private layout: LayoutObserverService
   ) {
     this.appLocked = environment.appLocked;
     this.poolNotFoundErr = false;
@@ -191,7 +194,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     this.poolType = 'SYM';
     this.userSelectedPoolType = false;
     this.formValidation = {
-      message: '',
+      message: 'Loading',
       isValid: false,
       isError: false,
     };
@@ -343,6 +346,8 @@ export class DepositComponent implements OnInit, OnDestroy {
         ) {
           this.checkContractApproved(this.asset);
         }
+
+        this.validate();
       }
     );
 
@@ -371,6 +376,10 @@ export class DepositComponent implements OnInit, OnDestroy {
       (queue) => (this.queue = queue)
     );
 
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
+
     this.getPools();
     this.getEthRouter();
     this.getPoolCap();
@@ -382,7 +391,8 @@ export class DepositComponent implements OnInit, OnDestroy {
       metaMaskProvider$,
       metaMaskNetwork$,
       slippageTolerange$,
-      queue$
+      queue$,
+      layout$
     );
   }
 
@@ -824,6 +834,11 @@ export class DepositComponent implements OnInit, OnDestroy {
               pool.asset.chain === 'BCH'
           )
 
+          // filter out avaiable chains
+          .filter((pool) =>
+            this.userService.clientAvailableChains().includes(pool.asset.chain)
+          )
+
           // filter out non-native RUNE tokens
           .filter((pool) => !isNonNativeRuneToken(pool.asset))
 
@@ -867,13 +882,21 @@ export class DepositComponent implements OnInit, OnDestroy {
     }
 
     /** Wallet not connected */
-    if (!this.balances) {
+    if (!this.user) {
       this.formValidation = {
         message: 'connect wallet',
         isValid: false,
         isError: false,
       };
       return;
+    }
+
+    if (!this.balances) {
+      this.formValidation = {
+        message: 'loading balances',
+        isValid: false,
+        isError: false,
+      };
     }
 
     if (this.depositsDisabled) {

@@ -134,12 +134,7 @@
 
 <app-transaction-success-modal
   *ngIf="txState === 'SUCCESS' && asset"
-  modalType="SEND"
-  [label]="['Sent']"
-  [asset]="[asset]"
-  [chain]="asset.asset.chain"
-  [amount]="[amount]"
-  [hash]="hash"
+  [data]="getSuccessData()"
   (closeDialog)="close.emit()"
   [recipientAddress]="recipientAddress"
 >

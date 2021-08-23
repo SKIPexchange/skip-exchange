@@ -11,7 +11,7 @@
             [message]="getBreadcrumbText()"
             (funcCaller)="breadcrumbNav($event)"
           ></app-breadcrumb>
-          <div class="top-right">
+          <div class="top-right" *ngIf="!isMobile">
             <app-right-option
               [switchField]="{
                 right: { text: 'Pool', tag: '', disable: false },
@@ -22,68 +22,69 @@
           </div>
         </nav>
 
-        <app-staked-pools-list
-          *ngIf="pools && !userPoolError"
-          [pools]="pools"
-          [runePrice]="runePrice"
-          [memberPools]="memberPools"
-        ></app-staked-pools-list>
-        <div
-          *ngIf="userPoolError || !pools"
-          class="lists flex justify-center items-center"
-          style="height: 262px"
-        >
-          <span
-            style="color: var(--primary-grey-color); font-size: 22px"
-            *ngIf="(!memberPools || !pools) && !userPoolError"
-            >FETCHING POOLS</span
+        <div class="main-content">
+          <app-staked-pools-list
+            *ngIf="pools && !userPoolError"
+            [pools]="pools"
+            [runePrice]="runePrice"
+            [memberPools]="memberPools"
+          ></app-staked-pools-list>
+          <div
+            *ngIf="userPoolError || !pools"
+            class="lists flex justify-center items-center"
+            style="height: 262px"
           >
-          <span
-            style="color: var(--primary-grey-color); font-size: 22px"
-            *ngIf="userPoolError"
-            >ERROR OCCURRED</span
-          >
+            <span
+              style="color: var(--primary-grey-color); font-size: 22px"
+              *ngIf="(!memberPools || !pools) && !userPoolError"
+              >FETCHING POOLS</span
+            >
+            <span
+              style="color: var(--primary-grey-color); font-size: 22px"
+              *ngIf="userPoolError"
+              >ERROR OCCURRED</span
+            >
+          </div>
+          <div class="swap-details">
+            <ng-container *ngIf="poolType !== 'notMember'">
+              <div *ngIf="pooledAmountRune" class="flex justify-between" style="color: var(--primary-default);">
+                <span class="tx-detail-label">Pooled THOR.RUNE:</span>
+                <span>
+                  {{ pooledAmountRune | number: "0.0-6" }}
+                  <span *ngIf="runePrice && currency"> ({{runePrice * pooledAmountRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+                </span>
+              </div>
+              <div *ngIf="pooledAsset && pooledAmountAsset" class="flex justify-between" style="color: var(--primary-default);">
+                <span class="tx-detail-label"> Pooled <span *ngIf="pooledAsset"> {{ pooledAsset.chain }}.{{ pooledAsset.ticker }}</span><span *ngIf="!pooledAsset">Asset</span>:</span>
+                <span>
+                  {{ pooledAmountAsset | number: "0.0-6" }}
+                  <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAmountAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+                </span>
+              </div>
+              <div *ngIf="pooledShare" class="flex justify-between text-white">
+                <span class="tx-detail-label">Pool Share:</span>
+                <span *ngIf="pooledShare">
+                  {{ pooledShare * 100 | number: "0.0-6" }}%
+                </span>
+              </div>
+            </ng-container>
+            <ng-container>
+              <div *ngIf="pooledDayAverage !== undefined && pooledDayAverage !== null" class="flex justify-between">
+                <span class="tx-detail-label">Average 24H Volume:</span>
+                <span>
+                  {{ pooledDayAverage | number: "0.0-2" }} {{ currency.code }}
+                </span>
+              </div>
+              <div *ngIf="pooledDepth" class="flex justify-between">
+                <span class="tx-detail-label">Depth:</span>
+                <span>
+                  {{ pooledDepth | number: "0.0-2" }} {{ currency.code }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+          </div>
         </div>
-
-        <div class="swap-details">
-          <ng-container *ngIf="poolType !== 'notMember'">
-            <div *ngIf="pooledAmountRune" class="flex justify-between" style="color: var(--primary-default);">
-              <span class="tx-detail-label">Pooled THOR.RUNE:</span>
-              <span>
-                {{ pooledAmountRune | number: "0.0-6" }}
-                <span *ngIf="runePrice && currency"> ({{runePrice * pooledAmountRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
-              </span>
-            </div>
-            <div *ngIf="pooledAsset && pooledAmountAsset" class="flex justify-between" style="color: var(--primary-default);">
-              <span class="tx-detail-label"> Pooled <span *ngIf="pooledAsset"> {{ pooledAsset.chain }}.{{ pooledAsset.ticker }}</span><span *ngIf="!pooledAsset">Asset</span>:</span>
-              <span> 
-                {{ pooledAmountAsset | number: "0.0-6" }}
-                <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAmountAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
-              </span>
-            </div>
-            <div *ngIf="pooledShare" class="flex justify-between text-white">
-              <span class="tx-detail-label">Pool Share:</span>
-              <span *ngIf="pooledShare">
-                {{ pooledShare * 100 | number: "0.0-6" }}%
-              </span>
-            </div>
-          </ng-container>
-          <ng-container>
-            <div *ngIf="pooledDayAverage !== undefined && pooledDayAverage !== null" class="flex justify-between">
-              <span class="tx-detail-label">Average 24H Volume:</span>
-              <span>
-                {{ pooledDayAverage | number: "0.0-2" }} {{ currency.code }}
-              </span>
-            </div>
-            <div *ngIf="pooledDepth" class="flex justify-between">
-              <span class="tx-detail-label">Depth:</span>
-              <span>
-                {{ pooledDepth | number: "0.0-2" }} {{ currency.code }}
-              </span>
-            </div>
-          </ng-container>
-        </div>
-      </div>
 
 
       <div class="bottom-actions" *ngIf="user">

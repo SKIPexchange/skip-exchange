@@ -18,6 +18,7 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
 @Component({
   selector: 'app-user-address',
@@ -41,6 +42,7 @@ export class UserAddressComponent implements OnInit {
   explorerPath: string;
   error: string;
   copied: boolean = false;
+  isMobile: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -48,7 +50,8 @@ export class UserAddressComponent implements OnInit {
     private explorerPathsService: ExplorerPathsService,
     private thorchainPricesService: ThorchainPricesService,
     private overlaysService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.back = new EventEmitter<null>();
     this.navigateToAsset = new EventEmitter<AssetAndBalance>();
@@ -79,9 +82,13 @@ export class UserAddressComponent implements OnInit {
       }
     );
 
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
+
     this.setExplorerPath();
 
-    this.subs = [balances$, chainBalanceErrors$];
+    this.subs = [balances$, chainBalanceErrors$, layout$];
   }
 
   getMessage(): string {

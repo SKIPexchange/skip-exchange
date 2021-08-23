@@ -22,6 +22,7 @@ import { assetToString } from '@xchainjs/xchain-util';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NetworkSummary } from '../_classes/network';
 import { environment } from 'src/environments/environment';
+import { LayoutObserverService } from '../_services/layout-observer.service';
 
 @Component({
   selector: 'app-pool',
@@ -55,6 +56,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   mode: PoolViews;
   assetPriceUSD: number;
   appLocked: boolean;
+  isMobile: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -65,7 +67,8 @@ export class PoolComponent implements OnInit, OnDestroy {
     private thorchainPricesService: ThorchainPricesService,
     private currencyService: CurrencyService,
     public ovrService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.appLocked = environment.appLocked;
     this.subs = [];
@@ -76,6 +79,10 @@ export class PoolComponent implements OnInit, OnDestroy {
       this.user = user;
       this.getAccountPools();
     });
+
+    const layout$ = this.layout.isMobile.subscribe(
+      (isMobile) => (this.isMobile = isMobile)
+    );
 
     const balances$ = this.userService.userBalances$.subscribe((balances) => {
       this.balances = balances;
@@ -143,7 +150,8 @@ export class PoolComponent implements OnInit, OnDestroy {
       poolDeatil$,
       activePool$,
       cur$,
-      ovr$
+      ovr$,
+      layout$
     );
   }
 

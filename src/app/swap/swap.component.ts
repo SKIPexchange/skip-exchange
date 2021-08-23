@@ -56,6 +56,7 @@ import { ethers } from 'ethers';
 import { EthUtilsService } from '../_services/eth-utils.service';
 import { MockClientService } from '../_services/mock-client.service';
 import { environment } from 'src/environments/environment';
+import { LayoutObserverService } from '../_services/layout-observer.service';
 
 export enum SwapType {
   DOUBLE_SWAP = 'double_swap',
@@ -253,6 +254,8 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     isError: boolean;
   };
 
+  isMobile: boolean = false;
+
   constructor(
     private dialog: MatDialog,
     private userService: UserService,
@@ -269,7 +272,8 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
     private ethUtilService: EthUtilsService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    private layout: LayoutObserverService
   ) {
     this.ethContractApprovalRequired = false;
     this.selectableMarkets = undefined;
@@ -280,6 +284,10 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       isValid: false,
       isError: false,
     };
+
+    const layout$ = this.layout.isMobile.subscribe(
+      (res) => (this.isMobile = res)
+    );
 
     const balances$ = this.userService.userBalances$
       .pipe(debounceTime(500))
@@ -386,6 +394,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       curs$,
       metaMaskProvider$,
       metaMaskNetwork$,
+      layout$,
     ];
 
     this.appLocked = environment.appLocked;

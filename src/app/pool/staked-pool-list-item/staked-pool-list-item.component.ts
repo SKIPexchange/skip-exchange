@@ -12,6 +12,7 @@ import { Currency } from 'src/app/_components/account-settings/currency-converte
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { PoolDetailService } from 'src/app/_services/pool-detail.service';
 import {
   RuneYieldPoolResponse,
@@ -20,6 +21,7 @@ import {
 import {
   TransactionStatusService,
   Tx,
+  TxActions,
 } from 'src/app/_services/transaction-status.service';
 import { UserService } from 'src/app/_services/user.service';
 import { environment } from 'src/environments/environment';
@@ -62,6 +64,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
 
   @Input() depositsDisabled: boolean;
   @Input() currency: Currency;
+  @Input() isMobile: boolean;
 
   @Input() set runeYieldPool(data: RuneYieldPoolResponse[]) {
     this._runeYieldPool = data;
@@ -100,8 +103,8 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
     const poolDetail$ = this.poolDetailService.activatedAsset$.subscribe(
       (asset) => {
         if (asset && this.asset && this.asset == asset) {
-          this.getPoolShare();
           this.activate = true;
+          this.getPoolShare();
         } else {
           this.activate = false;
         }
@@ -317,6 +320,10 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
       (runeAddress ? `thor=${runeAddress}&` : '') +
       (assetAddress ? `${this.asset.chain.toLowerCase()}=${assetAddress}` : '')
     );
+  }
+
+  isWithdraw(action: TxActions): boolean {
+    return action === TxActions.WITHDRAW;
   }
 
   ngOnDestroy(): void {

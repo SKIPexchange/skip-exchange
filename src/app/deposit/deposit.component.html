@@ -86,12 +86,13 @@
         </div>
         <div class="flex justify-between white-text">
           <span class="tx-detail-label">Network Fees:</span>
-          <div>
+          <div [ngClass]="{'text-right': isMobile}">
             <span *ngIf="networkFee && poolType != 'ASYM_RUNE'"> 
               {{ networkFee | number: "1.0-8" }} {{ asset.ticker }} 
               <span *ngIf="currency && assetPrice">({{this.currency.value * networkFee * assetPrice | number: '0.2-2'}} {{currency.code}})</span>
             </span>
-            <span *ngIf="poolType === 'SYM' && runeFee && networkFee" > + </span>
+            <span *ngIf="poolType === 'SYM' && runeFee && networkFee && !isMobile" > + </span>
+            <br *ngIf="isMobile" />
             <span *ngIf="runeFee && poolType != 'ASYM_ASSET'">
               {{ runeFee | number: "1.0-4" }} RUNE 
               <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.2-2'}} {{currency.code}})</span>
@@ -235,7 +236,7 @@
   *ngIf="view === 'PoolType'"
   [assets]="[{asset: asset, balance: assetBalance, assetPriceUSD: assetPrice}, {asset: rune, balance: runeBalance, assetPriceUSD: runePrice}]" 
   [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
-  [selectedPoolType]="poolType" 
+  [selectedPoolType]="userSelectedPoolType ? poolType : undefined" 
   [poolTypeOptions]="poolTypeOptions" 
   (selectPoolType)="setPoolTypeOptionFromEvent($event)"
 >

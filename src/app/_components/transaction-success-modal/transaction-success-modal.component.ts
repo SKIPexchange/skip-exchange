@@ -6,88 +6,78 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Chain } from '@xchainjs/xchain-util';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
-import { CopyService } from 'src/app/_services/copy.service';
-import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
 import BigNumber from 'bignumber.js';
 import { UserService } from 'src/app/_services/user.service';
 import { Balance } from '@xchainjs/xchain-client';
 import { Subscription } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import {
-  AnalyticsService,
-  assetString,
-} from 'src/app/_services/analytics.service';
-import { PoolTypeOption } from 'src/app/_const/pool-type-options';
-import { MockClientService } from 'src/app/_services/mock-client.service';
+import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { Asset } from 'src/app/_classes/asset';
+import { noticeData } from '../success-notice/success-notice.component';
+import { PoolTypeOption } from 'src/app/_const/pool-type-options';
 
+export type ModalTypes =
+  | 'SWAP'
+  | 'DEPOSIT'
+  | 'WITHDRAW'
+  | 'SEND'
+  | 'UPGRADE'
+  | 'CREATE';
+
+export type SuccessModal = {
+  modalType: ModalTypes;
+  asset: AssetAndBalance[];
+  label: string[];
+  amount: (number | BigNumber)[];
+  balances?: Balance[]; // only if it is withdraw we can ignore it.
+  hashes: noticeData[];
+  isPlus?: boolean;
+  isPending?: boolean[];
+  poolType?: PoolTypeOption;
+};
 @Component({
   selector: 'app-transaction-success-modal',
   templateUrl: './transaction-success-modal.component.html',
   styleUrls: ['./transaction-success-modal.component.scss'],
 })
-export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
-  @Input() chain: Chain;
-  @Input() hash: string;
-  // @Input() tx: Tx;
-  // @Input() label: string;
-  @Input() externalTx: boolean = false; // not Thorchain
+export class TransactionSuccessModalComponent implements OnInit {
   @Output() closeDialog: EventEmitter<null>;
 
   //added by the new reskin
-  @Input() modalType:
-    | 'SWAP'
-    | 'DEPOSIT'
-    | 'WITHDRAW'
-    | 'SEND'
-    | 'UPGRADE'
-    | 'CREATE';
-  @Input() asset: Array<AssetAndBalance>;
-  @Input() label: Array<string>;
-  @Input() amount: Array<number | BigNumber>;
-  @Input() recipientAddress: string;
-  @Input() percentage: number;
-  @Input() isPlus: boolean = false;
-  @Input() hasOutbound: boolean = false;
-  @Input() hashOutbound: string = '';
+  _data: SuccessModal;
+  @Input() set data(data: SuccessModal) {
+    this._data = data;
+    if (data.balances) {
+      this.firstBalance =
+        // eslint-disable-next-line prettier/prettier
+        this.userService.findBalance(data.balances, data.asset[0]?.asset) ?? 0;
+      this.secondBalance =
+        // eslint-disable-next-line prettier/prettier
+        this.userService.findBalance(data.balances, data.asset[1]?.asset) ?? 0;
+    }
+  }
+  get data() {
+    return this._data;
+  }
+  @Input() recipientAddress?: string;
+  @Input() percentage?: number;
+  @Input() disabledAsset?: Asset;
   @Input() targetAddress?: string;
-  @Input() disabledAsset: Asset;
-  @Input() poolType: PoolTypeOption;
 
-  binanceExplorerUrl: string;
-  bitcoinExplorerUrl: string;
-  ethereumExplorerUrl: string;
-  thorchainExplorerUrl: string;
-  litecoinExplorerUrl: string;
-  bchExplorerUrl: string;
-  balances: Balance[];
-  sourceBalance: number;
-  targetBalance: number;
   subs: Subscription[];
-  copied: boolean = false;
-  copiedOutbound: boolean = false;
+  firstBalance: number;
+  secondBalance: number;
 
   constructor(
-    private explorerPathsService: ExplorerPathsService,
-    private copyService: CopyService,
-    private userService: UserService,
     private analyticsService: AnalyticsService,
-    private mockClientService: MockClientService
+    private userService: UserService
   ) {
     this.closeDialog = new EventEmitter<null>();
-    this.binanceExplorerUrl = `${this.explorerPathsService.binanceExplorerUrl}/tx`;
-    this.bitcoinExplorerUrl = `${this.explorerPathsService.bitcoinExplorerUrl}/tx`;
-    this.ethereumExplorerUrl = `${this.explorerPathsService.ethereumExplorerUrl}/tx`;
-    this.thorchainExplorerUrl = `${this.explorerPathsService.thorchainExplorerUrl}/txs`;
-    this.litecoinExplorerUrl = `${this.explorerPathsService.litecoinExplorerUrl}`;
-    this.bchExplorerUrl = `${this.explorerPathsService.bchExplorerUrl}/tx`;
   }
 
   getEventTags(index: number) {
     let eventWallet;
-    if (this.modalType === 'SWAP') {
+    if (this.data.modalType === 'SWAP') {
       eventWallet = [
         {
           event_category: 'swap_success',
@@ -98,7 +88,7 @@ export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
           event_label_wallet: 'tag_send_container_wallet_*ASSET*',
         },
       ];
-    } else if (this.modalType === 'DEPOSIT') {
+    } else if (this.data.modalType === 'DEPOSIT') {
       eventWallet = [
         {
           event_category: 'pool_deposit_symmetrical_success',
@@ -110,7 +100,7 @@ export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
           event_label_wallet: 'tag_deposited_wallet_THOR.RUNE',
         },
       ];
-    } else if (this.modalType === 'UPGRADE') {
+    } else if (this.data.modalType === 'UPGRADE') {
       eventWallet = [
         {
           event_category: 'upgrade_success',
@@ -121,253 +111,55 @@ export class TransactionSuccessModalComponent implements OnInit, OnDestroy {
           event_label_wallet: 'tag_receive_container_wallet_THOR.RUNE',
         },
       ];
+    } else if (this.data.modalType === 'SEND') {
+      eventWallet = [
+        {
+          event_category: 'wallet_asset_send_success',
+          event_label_wallet: 'tag_wallet_*ASSET*',
+        },
+      ];
+    } else if (this.data.modalType === 'WITHDRAW') {
+      eventWallet = [
+        {
+          event_category: 'pool_withdraw_symmetrical_success',
+          event_tag_wallet: 'tag_withdrawn_wallet_*POOL_ASSET*',
+        },
+      ];
     }
 
     return eventWallet[index];
   }
 
-  copyToClipboard(val?: string, copyOutbound?: boolean) {
-    let result;
-    if (val)
-      result = this.copyService.copyToClipboard(
-        this.asset[1].asset.chain === 'ETH' ? '0x' + val : val
-      );
-    else
-      result = this.copyService.copyToClipboard(
-        this.chain === 'ETH' ? '0x' + this.hash : this.hash
-      );
-
-    if (result) {
-      if (copyOutbound) {
-        this.copiedOutbound = true;
-        setTimeout(() => {
-          this.copiedOutbound = false;
-        }, 3000);
-        if (this.modalType === 'SWAP') {
-          this.analyticsService.event(
-            'swap_success',
-            `tag_outbound_txid_copy_*ASSET*`,
-            undefined,
-            assetString(this.asset[1].asset)
-          );
-        }
-      } else {
-        this.copied = true;
-        setTimeout(() => {
-          this.copied = false;
-        }, 3000);
-        if (this.modalType === 'SWAP') {
-          if (this.hasOutbound)
-            this.analyticsService.event(
-              'swap_success',
-              `tag_inbound_txid_copy_*POOL_ASSET*`,
-              undefined,
-              assetString(this.asset[0].asset)
-            );
-          else
-            this.analyticsService.event(
-              'swap_success',
-              'tag_txid_copy_*FROM_ASSET*_*TO_ASSET*',
-              undefined,
-              assetString(this.asset[0].asset),
-              assetString(this.asset[1].asset)
-            );
-        } else if (this.modalType === 'DEPOSIT') {
-          this.analyticsService.event(
-            'pool_deposit_symmetrical_success',
-            'tag_txid_copy_*POOL_ASSET*',
-            undefined,
-            assetString(this.asset[0].asset)
-          );
-        } else if (this.modalType === 'WITHDRAW') {
-          this.analyticsService.event(
-            'pool_withdraw_symmetrical_success',
-            'tag_txid_copy_*POOL_ASSET*',
-            undefined,
-            assetString(this.asset[0].asset)
-          );
-        } else if (this.modalType === 'UPGRADE') {
-          this.analyticsService.event(
-            'upgrade_success',
-            'tag_txid_copy_*FROM_ASSET*',
-            undefined,
-            assetString(this.asset[0].asset)
-          );
-        } else if (this.modalType === 'SEND') {
-          this.analyticsService.event(
-            'wallet_asset_send_success',
-            'tag_txid_copy_*WALLET*_*ASSET*',
-            undefined,
-            this.asset[0].asset.chain,
-            assetString(this.asset[0].asset)
-          );
-        } else if (this.modalType === 'CREATE') {
-          this.analyticsService.event(
-            'pool_create_success',
-            'tag_txid_copy_*ASSET*',
-            undefined,
-            assetString(this.asset[0].asset)
-          );
-        }
-      }
-    }
-  }
-
-  explorerPath(hash: string = this.hash, chain: Chain = this.chain): string {
-    if (this.externalTx) chain = Chain.THORChain;
-
-    let urlHash = chain === 'ETH' ? `0x${hash}` : hash;
-    let url = this.mockClientService
-      .getMockClientByChain(chain)
-      .getExplorerTxUrl(urlHash);
-    return url;
-  }
-
-  viewBlockPath(hash: string): string {
-    let path = `https://viewblock.io/thorchain/tx/${hash}`;
-    if (environment.network === 'testnet') {
-      path += '?network=testnet';
-    }
-    return path;
-  }
-
   ngOnInit(): void {
-    if (this.amount[1] && !(this.amount[1] instanceof Number)) {
-      this.amount[1] = Number(this.amount[1].toPrecision());
+    if (this.data.amount[1] && !(this.data.amount[1] instanceof Number)) {
+      this.data.amount[1] = Number(this.data.amount[1].toPrecision());
     }
-
-    //get balance of the new
-    this.asset.forEach((asset) => {
-      try {
-        this.userService.fetchBalance(asset.asset.chain);
-      } catch (error) {
-        console.error(error);
-      }
-    });
-
-    const balances$ = this.userService.userBalances$.subscribe((balances) => {
-      if (balances) {
-        this.balances = balances;
-        this.sourceBalance = this.userService.findBalance(
-          this.balances,
-          this.asset[0].asset
-        );
-        if (this.asset[1]) {
-          this.targetBalance = this.userService.findBalance(
-            this.balances,
-            this.asset[1].asset
-          );
-        }
-      }
-    });
-
-    this.subs = [balances$];
   }
 
-  txEventClick(
-    type:
-      | 'inbound'
-      | 'outbound'
-      | 'none_inbound'
-      | 'none_outbound'
-      | 'none' = 'none'
-  ) {
-    if (type === 'inbound') {
+  closeEventTags() {
+    if (this.data.modalType === 'SWAP') {
+      this.analyticsService.event('swap_success', 'button_close');
+    } else if (this.data.modalType === 'DEPOSIT') {
       this.analyticsService.event(
-        'swap_success',
-        `tag_inbound_txid_explore_*ASSET*`,
-        undefined,
-        assetString(this.asset[0].asset)
+        'pool_withdraw_symmetrical_success',
+        'button_close'
       );
-    } else if (type === 'outbound') {
+    } else if (this.data.modalType === 'SEND') {
+      this.analyticsService.event('wallet_asset_send_success', 'button_close');
+    } else if (this.data.modalType === 'WITHDRAW') {
       this.analyticsService.event(
-        'swap_success',
-        `tag_outbound_txid_explore_*ASSET*`,
-        undefined,
-        assetString(this.asset[1].asset)
+        'pool_withdraw_symmetrical_success',
+        'button_close'
       );
-    } else if (type === 'none_inbound') {
-      this.analyticsService.event(
-        'swap_success',
-        `tag_txid_explore_*FROM_ASSET*`,
-        undefined,
-        assetString(this.asset[0].asset)
-      );
-    } else if (type === 'none_outbound') {
-      this.analyticsService.event(
-        'swap_success',
-        `tag_txid_explore_*TO_ASSET*`,
-        undefined,
-        assetString(this.asset[1].asset)
-      );
-    } else if (type === 'none') {
-      if (this.modalType === 'SEND') {
-        this.analyticsService.event(
-          'wallet_asset_send_success',
-          'tag_txid_explore_*WALLET*_*ASSET*',
-          undefined,
-          this.asset[0].asset.chain,
-          assetString(this.asset[0].asset)
-        );
-      } else if (this.modalType === 'DEPOSIT') {
-        this.analyticsService.event(
-          'pool_deposit_symmetrical_success',
-          'tag_txid_explore_*POOL_ASSET*',
-          undefined,
-          assetString(this.asset[0].asset)
-        );
-      } else if (this.modalType === 'WITHDRAW') {
-        this.analyticsService.event(
-          'pool_withdraw_symmetrical_success',
-          'tag_txid_explore_*POOL_ASSET*',
-          undefined,
-          assetString(this.asset[0].asset)
-        );
-      } else if (this.modalType === 'UPGRADE') {
-        this.analyticsService.event(
-          'upgrade_success',
-          'tag_txid_explore_*FROM_ASSET*',
-          undefined,
-          assetString(this.asset[0].asset)
-        );
-      } else if (this.modalType === 'CREATE') {
-        this.analyticsService.event(
-          'pool_create_success',
-          'tag_txid_explore_*ASSET*',
-          undefined,
-          assetString(this.asset[0].asset)
-        );
-      }
+    } else if (this.data.modalType === 'UPGRADE') {
+      this.analyticsService.event('upgrade_success', 'button_close');
+    } else if (this.data.modalType === 'CREATE') {
+      this.analyticsService.event('pool_create_success', 'button_close');
     }
   }
 
   close() {
-    if (this.modalType === 'SWAP') {
-      this.analyticsService.event('swap_success', 'button_close');
-    } else if (this.modalType === 'DEPOSIT') {
-      this.analyticsService.event(
-        'pool_withdraw_symmetrical_success',
-        'button_close'
-      );
-    } else if (this.modalType === 'SEND') {
-      this.analyticsService.event('wallet_asset_send_success', 'button_close');
-    } else if (this.modalType === 'WITHDRAW') {
-      this.analyticsService.event(
-        'pool_withdraw_symmetrical_success',
-        'button_close'
-      );
-    } else if (this.modalType === 'UPGRADE') {
-      this.analyticsService.event('upgrade_success', 'button_close');
-    } else if (this.modalType === 'CREATE') {
-      this.analyticsService.event('pool_create_success', 'button_close');
-    }
-
+    this.closeEventTags();
     this.closeDialog.emit();
-  }
-
-  ngOnDestroy(): void {
-    for (const sub of this.subs) {
-      sub.unsubscribe();
-    }
   }
 }
