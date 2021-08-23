@@ -48,8 +48,9 @@
           }
 
           .unstake-percent {
-            margin-right: 30px;
-          } 
+            min-width: 63px;
+            padding-right: 5px;
+          }
         }
 
         .long-content {
@@ -141,11 +142,23 @@
 
       .uni-input.swap-input {
         height: 140px;
-        padding: 10px;
+        padding: 15px;
 
-        &.one-asset {
-          min-height: 100px;
-          height: 100px;
+        &.double-asset {
+          height: 185px;
+
+          .middle-bar {
+            height: 73px;
+          }
+
+          &.one-asset {
+            min-height: 140px;
+            height: 140px;
+
+            .middle-bar {
+              height: 30px;
+            }
+          }
         }
 
         .usd-est {
@@ -156,15 +169,17 @@
           font-size: 30px !important;
         }
 
+        .top-bar, .bottom-bar {
+          height: 30px;
+        }
+
         .middle-bar {
-          margin-top: 6px;
-          margin-bottom: 15px;
+          margin: 10px 0;
         }
 
         .target-address {
-          right: 10px;
+          position: initial;
           height: 30px;
-          bottom: 10px;
         }
       }
     }

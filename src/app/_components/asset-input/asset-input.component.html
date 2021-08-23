@@ -2,7 +2,7 @@
   <div class="swap-input--inner">
 
     <!-- top bar -->
-    <div class="flex justify-between label-wrapper" [ngClass]="{'items-center': isMobile}">
+    <div class="flex justify-between label-wrapper top-bar" [ngClass]="{'items-center': isMobile}">
 
       <!-- label -->
       <label class="label-title" for="{{ label }}Input">
@@ -91,9 +91,9 @@
     </div>
 
     <!-- bottom bar -->
-    <div class="flex justify-between items-center">
-      <div>
-        <span 
+    <div class="flex justify-between items-center bottom-bar">
+      <div class="flex items-center" [ngStyle]="{'margin-top': isMobile ? '2px' : '0'}">
+        <span
           class="usd-est"
           [ngClass]="{ processing: processing }"
           *ngIf="selectedAsset && balance && !disableUser && showBalance"
@@ -108,20 +108,20 @@
           LOADING BALANCE 
         </span>
         <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice && !(hasAddress || targetAddress)"> / </span>
-        <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue && !(hasAddress || targetAddress)">
+        <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue && !(hasAddress || targetAddress) && selectedAsset">
           {{ inputUsdValue * currency.value | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
         </span>
         <span
           class="usd-est"
           [ngClass]="{ processing: processing }"
-          *ngIf="showPrice && !inputUsdValue && priceInput && assetUnit && !(hasAddress || targetAddress)"
+          *ngIf="showPrice && !inputUsdValue && priceInput && assetUnit && !(hasAddress || targetAddress) && selectedAsset"
         >
           {{ priceInput * currency.value * assetUnit | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
         </span>
         <span
           class="usd-est"
           [ngClass]="{ processing: processing }"
-          *ngIf="showPrice && !inputUsdValue && (assetUnit == 0 || !assetUnit) && !(hasAddress || targetAddress)"
+          *ngIf="showPrice && !inputUsdValue && (assetUnit == 0 || !assetUnit) && !(hasAddress || targetAddress) && selectedAsset"
         >{{ 0 | number: ".2-3" }} {{ currency.code }}<span *ngIf="type" style="text-transform: uppercase;"> {{type}}</span>
         </span>
       </div>

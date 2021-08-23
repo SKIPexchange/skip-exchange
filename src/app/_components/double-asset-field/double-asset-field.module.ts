@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { IconTickerModule } from '../icon-ticker/icon-ticker.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TagModule } from '../tag/tag.module';
+import { SelectAssetModule } from '../asset-input/select-asset/select-asset.module';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 @NgModule({
   declarations: [DoubleAssetFieldComponent],
@@ -21,6 +23,8 @@ import { TagModule } from '../tag/tag.module';
     IconTickerModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    SelectAssetModule,
+    AngularSvgIconModule,
     TagModule,
   ],
   exports: [DoubleAssetFieldComponent],

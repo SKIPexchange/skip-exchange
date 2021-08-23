@@ -99,6 +99,7 @@ import { AnalyticsService } from './_services/analytics.service';
 import { LayoutObserverService } from './_services/layout-observer.service';
 import { FooterMenuComponent } from './_components/footer-menu/footer-menu.component';
 import { CustomPipesModule } from './_pipes/custom-pipes.module';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 @NgModule({
   declarations: [
@@ -165,6 +166,8 @@ import { CustomPipesModule } from './_pipes/custom-pipes.module';
     ModalSectionHeaderModule,
     PhraseWordsListModule,
     CustomPipesModule,
+    HttpClientModule,
+    AngularSvgIconModule.forRoot(),
   ],
   providers: [
     BinanceService,

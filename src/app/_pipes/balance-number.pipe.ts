@@ -13,7 +13,7 @@ export class BalanceNumberPipe implements PipeTransform {
     console.log(digits, number);
 
     if (digits > 10) {
-      return number.toString().substring(0, 10) + '...';
+      return number.toString().substring(0, 8) + '...';
     }
 
     return number;

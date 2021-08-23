@@ -18,8 +18,11 @@
   }
 
   .shadow {
+    position: relative;
     height: 24px;
     width: 1px;
+    right: -1.5px;
+    background-color: #000b12;
     box-shadow: 0 -2px 7px 4px #000b12;
     z-index: 2;
   }

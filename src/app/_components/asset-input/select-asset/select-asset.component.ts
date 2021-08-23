@@ -7,15 +7,9 @@ import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
   templateUrl: './select-asset.component.html',
   styleUrls: ['./select-asset.component.scss']
 })
-export class SelectAssetComponent implements OnInit {
+export class SelectAssetComponent {
   @Input() selectedAsset: Asset;
   @Input() disabledMarketSelect: boolean;
   @Input() selectableMarkets: AssetAndBalance[];
   @Output() launchMarketsModal: EventEmitter<null> = new EventEmitter<null>();
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

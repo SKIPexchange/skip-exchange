@@ -1,7 +1,13 @@
-<div class="swap-input uni-input" [ngClass]="{ disable: disableUser, 'one-asset': disabledAsset }">
+<div class="swap-input uni-input double-asset" [ngClass]="{ disable: disableUser, 'one-asset': disabledAsset }">
   <div class="swap-input--inner">
-    <div class="flex justify-between label-wrapper">
+    <div class="flex justify-between items-center top-bar">
       <label class="label-title" for="{{ label }}Input">{{ label }}</label>
+      <app-select-asset
+        *ngIf="isMobile"
+        [selectedAsset]="disabledAsset && assetToString(disabledAsset) === assetToString(selectedAssets[0])  ? selectedAssets[1] : selectedAssets[0]"
+        [disabledMarketSelect]="true"
+        [selectableMarkets]="[]"
+      ></app-select-asset>
     </div>
 
     <div class="flex justify-between items-center" style="position: relative">
@@ -27,7 +33,7 @@
       </div>
     </div>
 
-    <div class="inputs">
+    <div class="inputs middle-bar">
       <div *ngIf="!disabledAsset || assetToString(selectedAssets[0]) !== assetToString(disabledAsset)" class="input flex-grow">
         <input
           class="priceInput focus:outline-none focus:ring-0"
@@ -48,7 +54,7 @@
           <app-tag (click)="gotoWallet(selectedAssets[0])">WALLET</app-tag>
         </div>
         <button
-          *ngIf="selectedAssets[0]"
+          *ngIf="selectedAssets[0] && !isMobile"
           class="launch-markets-btn"
           [disabled]="true"
         >
@@ -60,9 +66,11 @@
             ></app-icon-ticker>
           </div>
         </button>
+        <svg-icon *ngIf="isMobile && !disabledAsset" src="assets/icons/withdrawal-up-arrow.svg" alt="up arrow"
+          class="default-arrow"
+        ></svg-icon>
       </div>
-
-      <div *ngIf="!disabledAsset || assetToString(selectedAssets[1]) !== assetToString(disabledAsset)" class="input flex-grow" style="margin-top: -5px">
+      <div *ngIf="!disabledAsset || assetToString(selectedAssets[1]) !== assetToString(disabledAsset)" [ngClass]="{'break-point': !isMobile && !disabledAsset}" class="input flex-grow">
         <input
           class="priceInput focus:outline-none focus:ring-0"
           *ngIf="!loading && !error"
@@ -82,7 +90,7 @@
           <app-tag (click)="gotoWallet(selectedAssets[1])">WALLET</app-tag>
         </div>
         <button
-          *ngIf="selectedAssets[1]"
+          *ngIf="selectedAssets[1] && !isMobile"
           class="launch-markets-btn"
           [disabled]="true"
         >
@@ -94,15 +102,26 @@
             ></app-icon-ticker>
           </div>
         </button>
+        <svg-icon *ngIf="isMobile && !disabledAsset" src="assets/icons/withdrawal-up-arrow.svg" alt="down arrow"
+          class="default-arrow down"
+        ></svg-icon>
       </div>
     </div>
 
-    <span
-      class="usd-est"
-      *ngIf="showPrice"
-      [ngClass]="{ processing: processing }"
-    >
-      {{bottomLabel}}
-    </span>
+    <div class="flex justify-between items-center bottom-bar">
+      <span
+        class="usd-est"
+        *ngIf="showPrice"
+        [ngClass]="{ processing: processing }"
+      >
+        {{bottomLabel}}
+      </span>
+      <app-select-asset
+        *ngIf="isMobile && !disabledAsset"
+        [selectedAsset]="selectedAssets[1]"
+        [disabledMarketSelect]="true"
+        [selectableMarkets]="[]"
+      ></app-select-asset>
+    </div>
   </div>
 </div>

@@ -579,14 +579,11 @@ button {
 }
 
 .usd-est {
-  top: -8px;
-  position: relative;
   font-family: "Roboto Mono";
   font-weight: 500;
-  line-height: 24px;
   font-size: 10px;
   left: 0px;
-  bottom: -10px;
+  white-space: nowrap;
   color: var(--primary-default);
 }
 
@@ -1367,10 +1364,6 @@ main {
     &.disabled {
       color: var(--primary-grey-color);
     }
-  }
-
-  .slider {
-    width: 443px;
   }
 }
 
