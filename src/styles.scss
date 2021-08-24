@@ -439,7 +439,7 @@ button {
     flex-flow: row;
     justify-content: center;
     align-items: center;
-    padding: initial;
+    padding: 10px;
 
     span {
       text-transform: uppercase;
@@ -925,6 +925,7 @@ a.mat-primary {
     font-weight: 700;
     font-size: 18px;
     line-height: 32px;
+    margin: auto;
   }
 }
 
@@ -979,6 +980,7 @@ a.mat-primary {
     font-weight: 700;
     font-size: 18px;
     line-height: 32px;
+    margin: auto;
   }
 
   &:disabled,

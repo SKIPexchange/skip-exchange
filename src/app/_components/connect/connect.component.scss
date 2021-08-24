@@ -22,15 +22,24 @@
     font-weight: 700;
   }
 
+  &:not([disabled]) .item-text .main-color {
+    color: var(--primary-default);
+  }
+
   &:hover {
     cursor: pointer;
     color: #000b12;
     background-color: var(--primary-default);
-
+    
     .item-text .main-color {
-      color: #000b12 !important;
+      color: #000b12;
+    }
+
+    &:disabled .item-text .main-color {
+      color: #888d9b !important;
     }
   }
+  
 
   & a {
     color: #0000ee;
@@ -43,10 +52,6 @@
       background-color: transparent;
       cursor: inherit;
     }
-  }
-
-  &:not([disabled]) .item-text .main-color {
-    color: var(--primary-default);
   }
 
   &__logo {
