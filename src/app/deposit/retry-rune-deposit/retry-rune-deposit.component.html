@@ -15,51 +15,53 @@
       </nav>
     </div>
 
-    <app-asset-input
-      label="Deposited"
-      [(selectedAsset)]="asset"
-      [(assetUnit)]="assetAmount"
-      [disabledAssetSymbol]="asset.symbol"
-      [balance]="assetBalance"
-      [hideMax]="true"
-      [disableInput]="true"
-      [disabledMarketSelect]="true"
-      [isDeposit]="true"
-    >
-    </app-asset-input>
-
-    <app-arrow [isPlus]="true" [isError]="true"></app-arrow>
-
-    <app-asset-input
-      label="Deposit"
-      [(selectedAsset)]="rune"
-      [(assetUnit)]="runeAmount"
-      [disabledAssetSymbol]="rune.symbol"
-      [balance]="runeBalance"
-      [hideMax]="true"
-      [disableInput]="true"
-      [disabledMarketSelect]="true"
-      [isDeposit]="true"
-      [inputColor]="'var(--primary-red)'"
-      [isError]="true"
-    >
-    </app-asset-input>
-
-    <div *ngIf="asset && !resubmitError" class="swap-details">
-      <span style="color: var(--primary-red)">
-        It looks like the {{ asset.chain }}.{{ asset.ticker }} deposit
-        succeeded, but there was an error depositing {{ rune.chain }}.{{
-          rune.ticker
-        }}. <br />
-        The error is {{errorMessage}}. We use symmetrical deposits, which means THORChain is
-        waiting for the <br />
-        {{ rune.chain }}.{{ rune.ticker }} deopsit to register you as a pool
-        member.
-      </span>
-      <span *ngIf="resubmitError"
-        >It looks like resubmitting RUNE failed. The error is: <br />
-        "{{ resubmitError }}"</span
+    <div class="main-content">
+      <app-asset-input
+        label="Deposited"
+        [(selectedAsset)]="asset"
+        [(assetUnit)]="assetAmount"
+        [disabledAssetSymbol]="asset.symbol"
+        [balance]="assetBalance"
+        [hideMax]="true"
+        [disableInput]="true"
+        [disabledMarketSelect]="true"
+        [isDeposit]="true"
       >
+      </app-asset-input>
+  
+      <app-arrow [isPlus]="true" [isError]="true"></app-arrow>
+  
+      <app-asset-input
+        label="Deposit"
+        [(selectedAsset)]="rune"
+        [(assetUnit)]="runeAmount"
+        [disabledAssetSymbol]="rune.symbol"
+        [balance]="runeBalance"
+        [hideMax]="true"
+        [disableInput]="true"
+        [disabledMarketSelect]="true"
+        [isDeposit]="true"
+        [inputColor]="'var(--primary-red)'"
+        [isError]="true"
+      >
+      </app-asset-input>
+  
+      <div *ngIf="asset && !resubmitError" class="swap-details">
+        <span style="color: var(--primary-red)">
+          It looks like the {{ asset.chain }}.{{ asset.ticker }} deposit
+          succeeded, but there was an error depositing {{ rune.chain }}.{{
+            rune.ticker
+          }}. <br />
+          The error is {{errorMessage}}. We use symmetrical deposits, which means THORChain is
+          waiting for the <br />
+          {{ rune.chain }}.{{ rune.ticker }} deopsit to register you as a pool
+          member.
+        </span>
+        <span *ngIf="resubmitError"
+          >It looks like resubmitting RUNE failed. The error is: <br />
+          "{{ resubmitError }}"</span
+        >
+      </div>
     </div>
 
     <!-- close dialog -->

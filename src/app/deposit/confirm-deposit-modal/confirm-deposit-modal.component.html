@@ -19,96 +19,99 @@
             (funcCaller)="breadcrumbNav($event, 'pending')"
           ></app-breadcrumb>
         </nav>
-      </div>
-      <app-asset-input
-        *ngIf="data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_ASSET'"
-        label="Deposit"
-        type="deposit"
-        [(selectedAsset)]="data.asset.asset"
-        [(assetUnit)]="data.assetAmount"
-        [priceInput]="data.assetPrice"
-        [disabledAssetSymbol]="data.asset.asset.symbol"
-        [balance]="data.assetBalance"
-        [hideMax]="true"
-        [disableInput]="true"
-        [disabledMarketSelect]="true"
-        [isDeposit]="true"
-        [isError]="txState === 'ERROR'"
-      >
-      </app-asset-input>
-      <app-arrow *ngIf="data.poolTypeOption === 'SYM'" [isPlus]="true" [isError]="txState === 'ERROR'"></app-arrow>
-      <app-asset-input
-        *ngIf="data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_RUNE'"
-        label="Deposit"
-        type="deposit"
-        [(selectedAsset)]="data.rune.asset"
-        [(assetUnit)]="data.runeAmount"
-        [priceInput]="data.runePrice"
-        [disabledAssetSymbol]="data.rune.asset.symbol"
-        [balance]="data.runeBalance"
-        [hideMax]="true"
-        [disableInput]="true"
-        [disabledMarketSelect]="true"
-        [isDeposit]="true"
-        [isError]="txState === 'ERROR'"
-      >
-      </app-asset-input>
-      <div class="swap-details" *ngIf="txState !== 'ERROR'">
-        <ng-container *ngIf="data.poolTypeOption === 'SYM'">
-          <div class="flex justify-between">
-            <span class="tx-detail-label">Prices:</span>
-            <span>
-              1 {{ data.rune.asset.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.asset.ticker }}
-              <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
-            </span>
+      
+        <div class="main-content">
+          <app-asset-input
+            *ngIf="data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_ASSET'"
+            label="Deposit"
+            type="deposit"
+            [(selectedAsset)]="data.asset.asset"
+            [(assetUnit)]="data.assetAmount"
+            [priceInput]="data.assetPrice"
+            [disabledAssetSymbol]="data.asset.asset.symbol"
+            [balance]="data.assetBalance"
+            [hideMax]="true"
+            [disableInput]="true"
+            [disabledMarketSelect]="true"
+            [isDeposit]="true"
+            [isError]="txState === 'ERROR'"
+          >
+          </app-asset-input>
+          <app-arrow *ngIf="data.poolTypeOption === 'SYM'" [isPlus]="true" [isError]="txState === 'ERROR'"></app-arrow>
+          <app-asset-input
+            *ngIf="data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_RUNE'"
+            label="Deposit"
+            type="deposit"
+            [(selectedAsset)]="data.rune.asset"
+            [(assetUnit)]="data.runeAmount"
+            [priceInput]="data.runePrice"
+            [disabledAssetSymbol]="data.rune.asset.symbol"
+            [balance]="data.runeBalance"
+            [hideMax]="true"
+            [disableInput]="true"
+            [disabledMarketSelect]="true"
+            [isDeposit]="true"
+            [isError]="txState === 'ERROR'"
+          >
+          </app-asset-input>
+          <div class="swap-details" *ngIf="txState !== 'ERROR'">
+            <ng-container *ngIf="data.poolTypeOption === 'SYM'">
+              <div class="flex justify-between">
+                <span class="tx-detail-label">Prices:</span>
+                <span>
+                  1 {{ data.rune.asset.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.asset.ticker }}
+                  <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="tx-detail-label"></span>
+                <span>
+                  1 {{ data.asset.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.asset.ticker }}
+                  <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+                </span>
+              </div>
+            </ng-container>
+            <div *ngIf="data.depositValue" class="flex justify-between primary-text">
+              <span class="tx-detail-label">Total Deposit:</span>
+              <span>{{ data.depositValue | number: '0.2-2' }} {{currency.code}}</span>
+            </div>
+            <div class="flex justify-between white-text">
+              <span class="tx-detail-label">Network Fees:</span>
+              <div [ngClass]="{'text-right': isMobile}">
+                <span *ngIf="data.estimatedFee && data.poolTypeOption != 'ASYM_RUNE'"> 
+                  {{ data.estimatedFee| number: "1.0-8" }} {{ data.asset.asset.ticker }} 
+                  <span *ngIf="currency && data.assetPrice">({{this.currency.value * data.estimatedFee * data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
+                </span>
+                <span *ngIf="data.poolTypeOption === 'SYM' && data.runeFee && data.estimatedFee && !isMobile" > + </span>
+                <br *ngIf="isMobile" />
+                <span *ngIf="data.runeFee && data.poolTypeOption != 'ASYM_ASSET'">
+                  {{ data.runeFee | number: "1.0-4" }} RUNE 
+                  <span *ngIf="currency && data.runePrice">({{this.currency.value * data.runePrice * data.runeFee | number: '0.2-2'}} {{currency.code}})</span>
+                </span>
+              </div>
+            </div>
+            <div *ngIf="data.poolTypeOption !== 'SYM' && data.slip && data.slippageTolerance" class="flex justify-between">
+              <span *ngIf="data.poolTypeOption === 'ASYM_ASSET'" class="tx-detail-label">50% Swap to <span class="small-1">THOR</span>.RUNE Slip:</span>
+              <span *ngIf="data.poolTypeOption === 'ASYM_RUNE'"  class="tx-detail-label">50% Swap to <span class="small-1">{{this.data.asset.asset.chain}}</span>.{{this.data.asset.asset.ticker}} Slip:</span>
+              <span class="white-text" [ngClass]="{'red-text': data.slippageTolerance < (data.slip * 100)}">
+                {{ this.data.slip * 100 | number: '0.0-2' }}%
+                <span *ngIf="data.poolTypeOption === 'ASYM_ASSET'"> ( {{ this.currency.value * data.assetPrice * data.assetAmount * data.slip | number: '0.0-2' }} {{ currency.code }})</span>
+                <span *ngIf="data.poolTypeOption === 'ASYM_RUNE'"> ( {{ this.currency.value * data.runePrice * data.runeAmount * data.slip | number: '0.0-2' }} {{ currency.code }})</span>
+              </span>
+            </div>
+            <!-- <div class="flex justify-between primary-text">
+              <div class="tx-detail-label">
+                Estimated Transaction Time:
+              </div>
+              <span><{{ estimatedMinutes }} min</span>
+            </div> -->
+            <!-- <div class="flex justify-between">
+              <span class="tx-detail-label">Disclaimer:</span>
+              <span>Output is estimated</span>
+            </div> -->
           </div>
-          <div class="flex justify-between">
-            <span class="tx-detail-label"></span>
-            <span>
-              1 {{ data.asset.asset.ticker }} = {{ data.runeBasePrice | number: "1.2-4" }} {{ data.rune.asset.ticker }}
-              <span *ngIf="data.assetPrice">({{ data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
-            </span>
-          </div>
-        </ng-container>
-        <div *ngIf="data.depositValue" class="flex justify-between primary-text">
-          <span class="tx-detail-label">Total Deposit:</span>
-          <span>{{ data.depositValue | number: '0.2-2' }} {{currency.code}}</span>
         </div>
-        <div class="flex justify-between white-text">
-          <span class="tx-detail-label">Network Fees:</span>
-          <div [ngClass]="{'text-right': isMobile}">
-            <span *ngIf="data.estimatedFee && data.poolTypeOption != 'ASYM_RUNE'"> 
-              {{ data.estimatedFee| number: "1.0-8" }} {{ data.asset.asset.ticker }} 
-              <span *ngIf="currency && data.assetPrice">({{this.currency.value * data.estimatedFee * data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
-            </span>
-            <span *ngIf="data.poolTypeOption === 'SYM' && data.runeFee && data.estimatedFee && !isMobile" > + </span>
-            <br *ngIf="isMobile" />
-            <span *ngIf="data.runeFee && data.poolTypeOption != 'ASYM_ASSET'">
-              {{ data.runeFee | number: "1.0-4" }} RUNE 
-              <span *ngIf="currency && data.runePrice">({{this.currency.value * data.runePrice * data.runeFee | number: '0.2-2'}} {{currency.code}})</span>
-            </span>
-          </div>
-        </div>
-        <div *ngIf="data.poolTypeOption !== 'SYM' && data.slip && data.slippageTolerance" class="flex justify-between">
-          <span *ngIf="data.poolTypeOption === 'ASYM_ASSET'" class="tx-detail-label">50% Swap to <span class="small-1">THOR</span>.RUNE Slip:</span>
-          <span *ngIf="data.poolTypeOption === 'ASYM_RUNE'"  class="tx-detail-label">50% Swap to <span class="small-1">{{this.data.asset.asset.chain}}</span>.{{this.data.asset.asset.ticker}} Slip:</span>
-          <span class="white-text" [ngClass]="{'red-text': data.slippageTolerance < (data.slip * 100)}">
-            {{ this.data.slip * 100 | number: '0.0-2' }}%
-            <span *ngIf="data.poolTypeOption === 'ASYM_ASSET'"> ( {{ this.currency.value * data.assetPrice * data.assetAmount * data.slip | number: '0.0-2' }} {{ currency.code }})</span>
-            <span *ngIf="data.poolTypeOption === 'ASYM_RUNE'"> ( {{ this.currency.value * data.runePrice * data.runeAmount * data.slip | number: '0.0-2' }} {{ currency.code }})</span>
-          </span>
-        </div>
-        <!-- <div class="flex justify-between primary-text">
-          <div class="tx-detail-label">
-            Estimated Transaction Time:
-          </div>
-          <span><{{ estimatedMinutes }} min</span>
-        </div> -->
-        <!-- <div class="flex justify-between">
-          <span class="tx-detail-label">Disclaimer:</span>
-          <span>Output is estimated</span>
-        </div> -->
-      </div>
+      </div>  
 
       <!-- close dialog -->
       <div class="bottom-actions two-btn">
