@@ -55,6 +55,30 @@ export class TransactionSuccessModalComponent implements OnInit {
         // eslint-disable-next-line prettier/prettier
         this.userService.findBalance(data.balances, data.asset[1]?.asset) ?? 0;
     }
+    // add event tags
+    if (data.hashes) {
+      const map = this._data.hashes.map((el) => {
+        switch (this.data.modalType) {
+          case 'WITHDRAW':
+            el.tagCategory = 'pool_withdraw_symmetrical_success';
+            break;
+          case 'SWAP':
+            el.tagCategory = 'swap_success';
+            break;
+          case 'DEPOSIT':
+            el.tagCategory = 'pool_deposit_symmetrical_success';
+            break;
+          case 'SEND':
+            el.tagCategory = 'wallet_asset_send_success';
+            break;
+          case 'UPGRADE':
+            el.tagCategory = 'upgrade_success';
+            break;
+          default:
+            break;
+        }
+      });
+    }
   }
   get data() {
     return this._data;

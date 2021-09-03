@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Asset as XchainAsset } from '@xchainjs/xchain-util';
 import { environment } from 'src/environments/environment';
 import { Asset } from '../_classes/asset';
 import { events } from '../_const/events';
@@ -9,7 +10,7 @@ export type Events = {
   event_address?: string;
 };
 
-export function assetString(asset: Asset) {
+export function assetString(asset: Asset | XchainAsset) {
   try {
     return `${asset.chain}.${asset.ticker}`;
   } catch (error) {
