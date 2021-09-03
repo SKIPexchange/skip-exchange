@@ -9,7 +9,7 @@ export class TextFieldComponent implements OnInit {
   @Input() textOfField: string;
   @Output() textOfFieldChange = new EventEmitter<string>();
 
-  @Input() selectedType: 'Password' | 'Text' = 'Text';
+  @Input() selectedType: 'Password' | 'Text' | 'Number' = 'Text';
   @Input() mode: 'Single' | 'Double' = 'Single';
 
   @Input() label: string = 'TEXT';
@@ -18,7 +18,7 @@ export class TextFieldComponent implements OnInit {
   @Input() textOfFieldTwo: string;
   @Output() textOfFieldTwoChange = new EventEmitter<string>();
 
-  @Input() typeTwo: 'Password' | 'Text' = 'Text';
+  @Input() typeTwo: 'Password' | 'Text' | 'Number' = 'Text';
   @Input() modeTwo: 'Single' | 'Double' = 'Single';
 
   @Input() labelTwo: string = 'TEXT';

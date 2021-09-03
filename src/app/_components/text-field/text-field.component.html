@@ -9,6 +9,8 @@
       [name]="name"
       [placeholder]="placeHolder[0]"
       [type]="selectedType"
+      [pattern]="selectedType === 'Number' ? '[0-9]*': ''"
+      [attr.inputmode]="selectedType === 'Number' ? 'decimal': ''"
       [disabled]="disable"
     />
     <span class="pulse-placeholder"></span>
