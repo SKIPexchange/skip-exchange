@@ -24,7 +24,7 @@ export class LayoutObserverService {
       .subscribe((result) => {
         for (const query of Object.keys(result.breakpoints)) {
           // eslint-disable-next-line prettier/prettier
-          if (result.breakpoints[query] && query === Breakpoints.XSmall && window.screen.availWidth <= 576) {
+          if (result.breakpoints[query] && query === Breakpoints.XSmall && window.innerWidth <= 576) {
             this.isMobileSource.next(true);
             let meta = document.head.querySelector('meta[name="viewport"]');
             // eslint-disable-next-line prettier/prettier

@@ -10,7 +10,7 @@
             <span>{{item.copyText || 'Copy'}}</span>
         </app-tag>
         <div *ngIf="item.copy && item.url" style="width: 5px;"></div>
-        <a *ngIf="item.url" class="tag-container outline" [href]="item.url" target="_blank">
+        <a *ngIf="item.url" (click)="exploreEvent(i)" class="tag-container outline" [href]="item.url" target="_blank">
             <div class="tag-field">
                 <span>Explore</span>
             </div>

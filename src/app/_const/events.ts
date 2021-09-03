@@ -573,6 +573,18 @@ export const events = {
       action: 'skip_swap',
       value: false,
     },
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
+      category: 'swap_success',
+      action: 'skip_swap',
+      value: false,
+    },
+    'tag_txid_explore_*ASSET*': {
+      label: 'tag_txid_explore_*ASSET*',
+      category: 'swap_success',
+      action: 'skip_swap',
+      value: false,
+    },
     'tag_txid_explore_*FROM_ASSET*': {
       label: 'tag_txid_explore_*FROM_ASSET*',
       category: 'swap_success',
@@ -1077,14 +1089,14 @@ export const events = {
       action: 'skip_pool',
       value: false,
     },
-    'tag_txid_copy_*POOL_ASSET*': {
-      label: 'tag_txid_copy_*POOL_ASSET*',
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
       category: 'pool_deposit_symmetrical_success',
       action: 'skip_pool',
       value: false,
     },
-    'tag_txid_explore_*POOL_ASSET*': {
-      label: 'tag_txid_explore_*POOL_ASSET*',
+    'tag_txid_explore_*ASSET*': {
+      label: 'tag_txid_explore_*ASSET*',
       category: 'pool_deposit_symmetrical_success',
       action: 'skip_pool',
       value: false,
@@ -1220,14 +1232,14 @@ export const events = {
       action: 'skip_pool',
       value: false,
     },
-    'tag_txid_copy_*POOL_ASSET*': {
-      label: 'tag_txid_copy_*POOL_ASSET*',
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
       category: 'pool_withdraw_symmetrical_success',
       action: 'skip_pool',
       value: false,
     },
-    'tag_txid_explore_*POOL_ASSET*': {
-      label: 'tag_txid_explore_*POOL_ASSET*',
+    'tag_txid_explore_*ASSET*': {
+      label: 'tag_txid_explore_*ASSET*',
       category: 'pool_withdraw_symmetrical_success',
       action: 'skip_pool',
       value: false,
@@ -1368,14 +1380,14 @@ export const events = {
       action: 'skip_upgrade',
       value: false,
     },
-    'tag_txid_copy_*FROM_ASSET*': {
-      label: 'tag_txid_copy_*FROM_ASSET*',
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
       category: 'upgrade_success',
       action: 'skip_upgrade',
       value: false,
     },
-    'tag_txid_explore_*FROM_ASSET*': {
-      label: 'tag_txid_explore_*FROM_ASSET*',
+    'tag_txid_explore_*ASSET*': {
+      label: 'tag_txid_explore_*ASSET*',
       category: 'upgrade_success',
       action: 'skip_upgrade',
       value: false,
@@ -1471,8 +1483,8 @@ export const events = {
       action: 'skip_wallets',
       value: false,
     },
-    'tag_txid_copy_*WALLET*': {
-      label: 'tag_txid_copy_*WALLET*',
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
       category: 'wallet_asset_select',
       action: 'skip_wallets',
       value: false,
@@ -1521,8 +1533,8 @@ export const events = {
       action: 'skip_wallets',
       value: false,
     },
-    'tag_txid_copy_*WALLET*_*ASSET*': {
-      label: 'tag_txid_copy_*WALLET*_*ASSET*',
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
       category: 'wallet_asset',
       action: 'skip_wallets',
       value: false,
@@ -1697,14 +1709,14 @@ export const events = {
       action: 'skip_wallets',
       value: false,
     },
-    'tag_txid_copy_*WALLET*_*ASSET*': {
-      label: 'tag_txid_copy_*WALLET*_*ASSET*',
+    'tag_txid_copy_*ASSET*': {
+      label: 'tag_txid_copy_*ASSET*',
       category: 'wallet_asset_send_success',
       action: 'skip_wallets',
       value: false,
     },
-    'tag_txid_explore_*WALLET*_*ASSET*': {
-      label: 'tag_txid_explore_*WALLET*_*ASSET*',
+    'tag_txid_explore_*ASSET*': {
+      label: 'tag_txid_explore_*ASSET*',
       category: 'wallet_asset_send_success',
       action: 'skip_wallets',
       value: false,

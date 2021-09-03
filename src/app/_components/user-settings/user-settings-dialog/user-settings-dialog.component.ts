@@ -214,24 +214,29 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
         this.cgService
           .getCurrencyConversion(Object.keys(ids).join(','))
           .subscribe((cnPrice) => {
-            Object.keys(cnPrice).forEach((ca) => {
-              let { asset, amount } = ids[ca];
-              if (
-                this.chainUsdValue[asset.chain] &&
-                !this.chainUsdValue[asset.chain].tokens.includes(asset.ticker)
-              ) {
-                this.chainUsdValue[asset.chain].tokens = [
-                  ...this.chainUsdValue[asset.chain].tokens,
-                  asset.ticker,
-                ];
-                this.chainUsdValue[asset.chain].value +=
-                  cnPrice[ca].usd * baseToAsset(amount).amount().toNumber();
-              } else if (!this.chainUsdValue[asset.chain]) {
-                this.chainUsdValue[asset.chain] = {
-                  value:
-                    cnPrice[ca].usd * baseToAsset(amount).amount().toNumber(),
-                  tokens: [asset.ticker],
-                };
+            balances.forEach((balance) => {
+              if (balance.amount.amount().toNumber() > 0) {
+                let { asset, amount } = balance;
+                let ca = Object.keys(ids).find(
+                  (el) => ids[el].asset.ticker === asset.ticker
+                );
+                if (
+                  this.chainUsdValue[asset.chain] &&
+                  !this.chainUsdValue[asset.chain].tokens.includes(asset.ticker)
+                ) {
+                  this.chainUsdValue[asset.chain].tokens = [
+                    ...this.chainUsdValue[asset.chain].tokens,
+                    asset.ticker,
+                  ];
+                  this.chainUsdValue[asset.chain].value +=
+                    cnPrice[ca].usd * baseToAsset(amount).amount().toNumber();
+                } else if (!this.chainUsdValue[asset.chain]) {
+                  this.chainUsdValue[asset.chain] = {
+                    value:
+                      cnPrice[ca].usd * baseToAsset(amount).amount().toNumber(),
+                    tokens: [asset.ticker],
+                  };
+                }
               }
             });
           });

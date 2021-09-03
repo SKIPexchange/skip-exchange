@@ -113,8 +113,11 @@
             <span class="item-text" *ngIf="isXDEFIConnected"
               ><span class="small-1">Connect with </span><span class="main-color">XDEFI</span></span
             >
-            <span class="item-text" *ngIf="!isXDEFIConnected">
+            <span class="item-text" *ngIf="!isXDEFIConnected && !isMobileDevice">
               <span class="small-1">Install </span><span class="main-color">XDEFI</span><span class="small-1"> in Chrome/Brave</span>
+            </span>
+            <span class="item-text" *ngIf="!isXDEFIConnected && isMobileDevice">
+              <span class="small-1">Use </span><span class="main-color">XDEFI</span><span class="small-1"> in Desktop platforms</span>
             </span>
           </div>
         </button>
@@ -135,7 +138,8 @@
               />
             </div>
             <span *ngIf="isMetamask" class="item-text"><span class="small-1">Connect with </span><span class="main-color">MetaMask</span></span>
-            <span *ngIf="!isMetamask" class="item-text"><span class="small-1">Install </span><span class="main-color">Metamask</span><span class="small-1"> in Chrome/Brave/Firefox</span></span>
+            <span *ngIf="!isMetamask && !isMobileDevice" class="item-text"><span class="small-1">Install </span><span class="main-color">Metamask</span><span class="small-1"> in Chrome/Brave/Firefox</span></span>
+            <span *ngIf="!isMetamask && isMobileDevice" class="item-text"><span class="small-1">Use </span><span class="main-color">MetaMask</span><span class="small-1"> in Desktop platforms</span></span>
           </div>
         </button>
 
