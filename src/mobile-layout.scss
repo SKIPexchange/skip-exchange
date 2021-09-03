@@ -214,6 +214,10 @@
   
 
   .lists-wrapper {
+    &.pools-wrapper {
+      height: 80%;
+    }
+
     .short {
       height: 470px;
 
