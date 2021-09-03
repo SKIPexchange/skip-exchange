@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Asset } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
+import { AnalyticsService, assetString } from 'src/app/_services/analytics.service';
 import { CopyService } from 'src/app/_services/copy.service';
 import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 
@@ -13,6 +14,8 @@ export type noticeData = {
   asset: Asset;
   isPending?: boolean;
   copyText?: string;
+  tagCategory?: string;
+  tagEvents?: string[];
 };
 
 @Component({
@@ -28,7 +31,8 @@ export class SuccessNoticeComponent implements OnDestroy {
 
   constructor(
     private copyService: CopyService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    private analytics: AnalyticsService
   ) {
     this.sub = this.layout.isMobile.pipe(take(1)).subscribe((res) => {
       this.isMobile = res;
@@ -41,6 +45,12 @@ export class SuccessNoticeComponent implements OnDestroy {
     setTimeout(() => {
       this.data[index].copyText = 'Copy';
     }, 3000);
+    this.analytics.event(
+      this.data[index].tagCategory,
+      'tag_txid_copy_*ASSET*',
+      undefined,
+      assetString(this.data[index].asset)
+    );
   }
 
   ngDoCheck() {
@@ -51,9 +61,19 @@ export class SuccessNoticeComponent implements OnDestroy {
         this.isMobile
       ) {
         let copy = this.data[index].copy;
+        // eslint-disable-next-line prettier/prettier
         this.data[index].show = copy.substring(0, 5) + '...' + copy.substring(copy.length - 5, copy.length);
       }
     }
+  }
+
+  exploreEvent(index: number) {
+    this.analytics.event(
+      this.data[index].tagCategory,
+      'tag_txid_explore_*ASSET*',
+      undefined,
+      assetString(this.data[index].asset)
+    );
   }
 
   ngOnDestroy() {
