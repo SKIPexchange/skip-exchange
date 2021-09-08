@@ -236,6 +236,7 @@
 
 <app-pool-type-options 
   *ngIf="view === 'PoolType'"
+  [optionType]="user ? 'deposit' : 'disconnect'"
   [assets]="[{asset: asset, balance: assetBalance, assetPriceUSD: assetPrice}, {asset: rune, balance: runeBalance, assetPriceUSD: runePrice}]" 
   [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
   [selectedPoolType]="userSelectedPoolType ? poolType : undefined" 

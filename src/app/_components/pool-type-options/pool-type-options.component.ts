@@ -21,9 +21,10 @@ export class PoolTypeOptionsComponent implements OnInit {
   @Input() selectedPoolType: PoolTypeOption;
   @Input() userValues: { sym: number; asymAsset: number; asymRune: number };
   @Input() poolTypeOptions: AvailablePoolTypeOptions;
+  @Input() optionType: 'withdraw' | 'deposit' | 'disconnect';
   @Output() selectPoolType: EventEmitter<PoolTypeOption>;
 
-  _poolType: PoolTypeOption;
+  _poolType: PoolTypeOption | undefined;
   rune: Asset = new Asset('THOR.RUNE');
   currency: Currency;
 
@@ -40,12 +41,21 @@ export class PoolTypeOptionsComponent implements OnInit {
 
   ngOnInit() {
     this._poolType = this.selectedPoolType;
-    console.log(this.assets);
   }
 
-  choosenPoolType(poolType: PoolTypeOption) {
+  choosenPoolType(poolType: PoolTypeOption, disabled?: boolean) {
     this._poolType = poolType;
+    if (disabled) return;
     this.submitPoolType();
+  }
+
+  linkSwap(asset: Asset) {
+    this.router.navigate([
+      '/',
+      'swap',
+      'no-asset',
+      `${asset.chain}.${asset.symbol}`,
+    ]);
   }
 
   submitPoolType() {
