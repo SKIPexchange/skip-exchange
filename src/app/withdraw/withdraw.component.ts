@@ -43,6 +43,7 @@ import { formatNumber } from '@angular/common';
 import { PoolDTO } from '../_classes/pool';
 import { Liquidity } from '../_classes/liquidiyt';
 import { BreadcrumbComponent } from '../_components/breadcrumb/breadcrumb.component';
+import { number } from 'yargs';
 
 @Component({
   selector: 'app-withdraw',
@@ -120,6 +121,15 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
   poolShare: number;
   isHalted: boolean;
+
+  withdrawAmoutAssets = {
+    sym: {
+      asset: 0,
+      rune: 0,
+    },
+    asymAsset: 0,
+    asymRune: 0,
+  };
 
   @ViewChild(BreadcrumbComponent) breadcrumb: BreadcrumbComponent;
 
@@ -225,6 +235,47 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     );
 
     this.subs.push(sub, overlayService$);
+  }
+
+  getPoolShares() {
+    let poolShares = {
+      sym: undefined,
+      asymAsset: undefined,
+      asymRune: undefined,
+    };
+    if (this.symMemberPool && this.poolUnits) {
+      // eslint-disable-next-line prettier/prettier
+      poolShares.sym = bn(this.symMemberPool.liquidityUnits).div(this.poolUnits).times(100).toNumber();
+      const poolShare = this.symPool();
+      this.withdrawAmoutAssets.sym.asset = poolShare.asset
+        .amount()
+        .div(10 ** 8)
+        .toNumber();
+      this.withdrawAmoutAssets.sym.rune = poolShare.rune
+        .amount()
+        .div(10 ** 8)
+        .toNumber();
+    }
+    if (this.asymAssetMemberPool && this.poolUnits) {
+      // eslint-disable-next-line prettier/prettier
+      poolShares.asymAsset = bn(this.asymAssetMemberPool.liquidityUnits).div(this.poolUnits).times(100).toNumber();
+      const poolShare = this.getAsymAssetShare(
+        this.asymAssetMemberPool,
+        this.assetPoolData.assetBalance
+      );
+      this.withdrawAmoutAssets.asymAsset = poolShare.div(10 ** 8).toNumber();
+    }
+    if (this.asymRuneMemberPool && this.poolUnits) {
+      // eslint-disable-next-line prettier/prettier
+      poolShares.asymAsset = bn(this.asymRuneMemberPool.liquidityUnits).div(this.poolUnits).times(100).toNumber();
+      const poolShare = this.getAsymAssetShare(
+        this.asymRuneMemberPool,
+        this.assetPoolData.runeBalance
+      );
+      this.withdrawAmoutAssets.asymRune = poolShare.div(10 ** 8).toNumber();
+    }
+
+    return poolShares;
   }
 
   async getAccountStaked() {
@@ -535,15 +586,21 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     }
   }
 
+  symPool() {
+    const unitData: UnitData = {
+      stakeUnits: baseAmount(this.symMemberPool.liquidityUnits),
+      totalUnits: baseAmount(this.poolUnits),
+    };
+
+    const poolShare = getPoolShare(unitData, this.assetPoolData);
+    this.poolShare = +this.symMemberPool.liquidityUnits / this.poolUnits;
+
+    return poolShare;
+  }
+
   calculateSym() {
     if (this.symMemberPool && this.poolUnits) {
-      const unitData: UnitData = {
-        stakeUnits: baseAmount(this.symMemberPool.liquidityUnits),
-        totalUnits: baseAmount(this.poolUnits),
-      };
-
-      const poolShare = getPoolShare(unitData, this.assetPoolData);
-      this.poolShare = +this.symMemberPool.liquidityUnits / this.poolUnits;
+      const poolShare = this.symPool();
 
       const runeAmountAfterFee = poolShare.rune
         .amount()
@@ -905,10 +962,15 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     this.withdrawPercent = event.value;
   }
 
-  back() {
+  closeComponent() {
     this.analytics.event('pool_withdraw_symmetrical_prepare', 'button_cancel');
-
     this.router.navigate(['/', 'pool']);
+  }
+
+  back() {
+    if (Object.values(this.withdrawOptions).filter(Boolean).length > 1)
+      this.overlaysService.setCurrentWithdrawView('PoolType');
+    else this.closeComponent();
   }
 
   totalWithdrawal() {

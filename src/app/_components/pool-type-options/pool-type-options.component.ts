@@ -7,6 +7,7 @@ import {
   AvailablePoolTypeOptions,
   PoolTypeOption,
 } from 'src/app/_const/pool-type-options';
+import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
 import { OverlaysService } from 'src/app/_services/overlays.service';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
@@ -20,9 +21,12 @@ export class PoolTypeOptionsComponent implements OnInit {
   @Input() assets: { asset: Asset; balance: number; assetPriceUSD: number }[];
   @Input() selectedPoolType: PoolTypeOption;
   @Input() userValues: { sym: number; asymAsset: number; asymRune: number };
+  @Input() poolShares: { sym: any; asymAsset: any; asymRune: any };
+  @Input() withdrawAmountAssets: { sym: any; asymAsset: any; asymRune: any };
   @Input() poolTypeOptions: AvailablePoolTypeOptions;
   @Input() optionType: 'withdraw' | 'deposit' | 'disconnect';
   @Output() selectPoolType: EventEmitter<PoolTypeOption>;
+  @Output() closeComponent: EventEmitter<null> = new EventEmitter<null>();
 
   _poolType: PoolTypeOption | undefined;
   rune: Asset = new Asset('THOR.RUNE');
@@ -30,7 +34,8 @@ export class PoolTypeOptionsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private currencyService: CurrencyService
+    private currencyService: CurrencyService,
+    private analytics: AnalyticsService
   ) {
     this.selectPoolType = new EventEmitter<PoolTypeOption>();
 
@@ -43,10 +48,10 @@ export class PoolTypeOptionsComponent implements OnInit {
     this._poolType = this.selectedPoolType;
   }
 
-  choosenPoolType(poolType: PoolTypeOption, disabled?: boolean) {
-    this._poolType = poolType;
-    if (disabled) return;
-    this.submitPoolType();
+  choosenPoolType(poolType: PoolTypeOption) {
+    if (!this.isDisabled(poolType) || this.optionType == 'withdraw') {
+      this._poolType = poolType;
+    }
   }
 
   linkSwap(asset: Asset) {
@@ -62,7 +67,35 @@ export class PoolTypeOptionsComponent implements OnInit {
     this.selectPoolType.emit(this._poolType);
   }
 
+  isDisabled(poolType: PoolTypeOption) {
+    if (!poolType) {
+      return true;
+    }
+
+    if (this.optionType == 'withdraw') {
+      return false;
+    }
+
+    if (
+      poolType == 'SYM' &&
+      (!this.assets[0].balance || !this.assets[1].balance)
+    ) {
+      return true;
+    }
+
+    if (poolType == 'ASYM_ASSET' && !this.assets[0].balance) {
+      return true;
+    }
+
+    if (poolType == 'ASYM_RUNE' && !this.assets[1].balance) {
+      return true;
+    }
+
+    return false;
+  }
+
   back() {
+    this.closeComponent.emit();
     this.router.navigate(['/', 'pool']);
   }
 }
