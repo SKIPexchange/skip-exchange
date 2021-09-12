@@ -139,7 +139,7 @@
         <div class="divider"></div>
         <div class="right-btn">
           <button
-            *ngIf="!ethContractApprovalRequired"
+            *ngIf="!ethContractApprovalRequired || !assetAmount"
             (click)="openConfirmationDialog()"
             class="next-btn graident-btn"
             [disabled]="!formValidation.isValid"
@@ -147,7 +147,7 @@
             <span>Deposit</span>
           </button>
           <app-approve-eth-contract
-            *ngIf="ethContractApprovalRequired"
+            *ngIf="ethContractApprovalRequired && assetAmount"
             [contractAddress]="ethRouter"
             [asset]="asset"
             (approveClicked)="overlaysService.setCurrentDepositView('Approve')"
