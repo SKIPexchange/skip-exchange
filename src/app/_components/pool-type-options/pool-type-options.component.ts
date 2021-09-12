@@ -49,9 +49,7 @@ export class PoolTypeOptionsComponent implements OnInit {
   }
 
   choosenPoolType(poolType: PoolTypeOption) {
-    if (!this.isDisabled(poolType) || this.optionType == 'withdraw') {
-      this._poolType = poolType;
-    }
+    this._poolType = poolType;
   }
 
   linkSwap(asset: Asset) {
