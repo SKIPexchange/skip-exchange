@@ -16,7 +16,7 @@
             <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}} + <span class="small-1">THOR</span>.RUNE</label>
           </div>
           <div style="margin-left: 0;" class="addr flex-row-reverse">
-            <span *ngIf="userValues && userValues.sym">{{ userValues.sym * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
+            <span *ngIf="userValues && userValues.sym && !isMobile">{{ userValues.sym * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
             <div class="flex flex-row-reverse" *ngIf="optionType == 'deposit' && _poolType ===  'SYM' && (!assets[0].balance || !assets[1].balance)">
               <app-tag *ngIf="!assets[0].balance">
                 <a style="font-family: 'Roboto';" (click)="linkSwap(assets[0].asset)">SWAP {{assets[0].asset.ticker}}</a>
@@ -36,7 +36,7 @@
             <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}}</label>
           </div>
           <div style="margin-left: 0;" class="addr flex-row-reverse">
-            <span *ngIf="userValues && userValues.asymAsset">{{ userValues.asymAsset * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
+            <span *ngIf="userValues && userValues.asymAsset && !isMobile">{{ userValues.asymAsset * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
             <div class="flex flex-row-reverse" *ngIf="optionType == 'deposit' && _poolType === 'ASYM_ASSET' && !assets[0].balance">
               <app-tag>
                 <a style="font-family: 'Roboto';" (click)="linkSwap(assets[0].asset)">SWAP {{assets[0].asset.ticker}}</a>
@@ -53,7 +53,7 @@
             <label><span class="small-1">THOR</span>.RUNE</label>
           </div>
           <div style="margin-left: 0;" class="addr flex-row-reverse">
-            <span *ngIf="userValues && userValues.asymRune">{{ userValues.asymRune * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
+            <span *ngIf="userValues && userValues.asymRune && !isMobile">{{ userValues.asymRune * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
             <div class="flex flex-row-reverse" *ngIf="optionType == 'deposit' && _poolType === 'ASYM_RUNE' && !assets[1].balance">
               <app-tag>
                 <a style="font-family: 'Roboto';" (click)="linkSwap(assets[1].asset)">SWAP {{assets[1].asset.ticker}}</a>

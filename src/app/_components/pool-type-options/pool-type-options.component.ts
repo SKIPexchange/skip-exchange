@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Asset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
@@ -9,6 +10,7 @@ import {
 } from 'src/app/_const/pool-type-options';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
+import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { OverlaysService } from 'src/app/_services/overlays.service';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
 
@@ -31,16 +33,23 @@ export class PoolTypeOptionsComponent implements OnInit {
   _poolType: PoolTypeOption | undefined;
   rune: Asset = new Asset('THOR.RUNE');
   currency: Currency;
+  sub: Subscription;
+  isMobile: boolean;
 
   constructor(
     private router: Router,
     private currencyService: CurrencyService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private layout: LayoutObserverService
   ) {
     this.selectPoolType = new EventEmitter<PoolTypeOption>();
 
     this.currencyService.cur$.pipe(take(1)).subscribe((cur) => {
       this.currency = cur;
+    });
+
+    this.sub = this.layout.isMobile.subscribe((res) => {
+      this.isMobile = res;
     });
   }
 
@@ -95,5 +104,9 @@ export class PoolTypeOptionsComponent implements OnInit {
   back() {
     this.closeComponent.emit();
     this.router.navigate(['/', 'pool']);
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 }
