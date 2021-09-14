@@ -3,6 +3,8 @@
   class="pool-list-item"
   [ngClass]="{ activate: activate, pending: isPending }"
   (click)="toggleExpanded()"
+  (mouseover)="hover = true"
+  (mouseout)="hover = false"
 >
   <div class="flex justify-between items-center">
     <div class="left-section">
@@ -18,10 +20,7 @@
     </div>
 
     <div class="flex justify-between" >
-      <app-tag *ngIf="isPending" type="color" [color]="isWithdraw(isPending.action) ? '#FF4954' : '#28F4AE'">
-        <span style="color: inherit">{{ isPending.action + 'ING' }}</span>
-      </app-tag>
-      <ng-container *ngIf="activate && !isPending" >
+      <ng-container *ngIf="activate">
         <app-tag *ngIf="!isMobile">
           <a
             [href]="getPoolUrl()"
@@ -30,14 +29,17 @@
             >POOL STATS</a
           >
         </app-tag>
-        <div style="width: 5px"></div>
-        <app-tag *ngIf="!depositsDisabled">
+        <div *ngIf="!isMobile" style="width: 5px"></div>
+        <app-tag *ngIf="!depositsDisabled && !isPending">
           <a [routerLink]="['/', 'deposit', asset.chain + '.' + asset.symbol]"
             (click)="depositEvent()"
             >Deposit</a
           >
         </app-tag>
       </ng-container>
+      <app-tag *ngIf="isPending" type="color" [color]="isWithdraw(isPending.action) ? '#FF4954' : '#28F4AE'" [active]="activate || hover">
+        <span style="color: inherit">{{ isPending.action + 'ING' }}</span>
+      </app-tag>
     </div>
   </div>
 </div>

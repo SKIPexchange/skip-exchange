@@ -132,7 +132,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
   }
 
   toggleExpanded() {
-    if (!this.isPending) this.poolDetailService.setActivatedAsset(this.asset);
+    this.poolDetailService.setActivatedAsset(this.asset);
   }
 
   setAsset(): void {
