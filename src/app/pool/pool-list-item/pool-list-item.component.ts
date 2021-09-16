@@ -54,6 +54,7 @@ export class PoolListItemComponent implements OnChanges {
   isPending: Tx;
   isTestnet: boolean;
   assetDepth: number;
+  hover: boolean = false;
 
   constructor(
     private poolDetailService: PoolDetailService,
@@ -108,7 +109,7 @@ export class PoolListItemComponent implements OnChanges {
   }
 
   toggleExpanded() {
-    if (!this.isPending) this.poolDetailService.setActivatedAsset(this.asset);
+    this.poolDetailService.setActivatedAsset(this.asset);
   }
 
   setAsset(): void {

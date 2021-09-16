@@ -20,10 +20,7 @@
     </div>
 
     <div class="flex justify-between">
-      <app-tag *ngIf="isPending" type="color" [color]="isWithdraw(isPending.action) ? '#FF4954' : '#28F4AE'" [active]="hover">
-        <span style="color: inherit">{{ isPending.action + 'ING' }}</span>
-      </app-tag>
-      <ng-container *ngIf="activate && !isPending">
+      <ng-container *ngIf="activate">
         <app-tag *ngIf="!isTestnet && !isMobile">
           <a
             [href]="runeyieldAddress()"
@@ -31,7 +28,7 @@
             >YIELD STATS</a
           >
         </app-tag>
-        <div style="width: 5px"></div>
+        <div *ngIf="(!isTestnet && !isMobile) || isPending" style="width: 5px"></div>
         <app-tag>
           <a
             [href]="getPoolUrl()"
@@ -41,20 +38,23 @@
           >
         </app-tag>
         <div style="width: 5px"></div>
-        <app-tag *ngIf="!depositsDisabled">
+        <app-tag *ngIf="!depositsDisabled && !isPending">
           <a [routerLink]="['/', 'deposit', asset.chain + '.' + asset.symbol]"
           (click)="depositEvent()"
           >Deposit</a
           >
         </app-tag>
-        <div style="width: 5px"></div>
-        <app-tag>
+        <div *ngIf="!depositsDisabled && !isPending" style="width: 5px"></div>
+        <app-tag *ngIf="!isPending">
           <a [routerLink]="['/', 'withdraw', asset.chain + '.' + asset.symbol]"
             (click)="withdrawEvent()"  
           >Withdraw</a
           >
         </app-tag>
       </ng-container>
+      <app-tag *ngIf="isPending" type="color" [color]="isWithdraw(isPending.action) ? '#FF4954' : '#28F4AE'" [active]="hover || activate">
+        <span style="color: inherit">{{ isPending.action + 'ING' }}</span>
+      </app-tag>
       <ng-container *ngIf="!activate && !isPending">
         <app-tag
           type="color"

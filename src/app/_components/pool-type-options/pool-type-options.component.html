@@ -7,7 +7,7 @@
       </nav>
 
       <div *ngIf="poolTypeOptions" class="lists" style="height: 167px;">
-        <button *ngIf="poolTypeOptions.sym && assets" [ngClass]="{'active': _poolType === 'SYM'}" (click)="choosenPoolType('SYM')" class="w-address" >
+        <button *ngIf="poolTypeOptions.sym && assets" [ngClass]="{'active': _poolType === 'SYM', 'disabled non-hover': optionType == 'deposit' && (!assets[0].balance || !assets[1].balance)}" class="w-address" (click)="choosenPoolType('SYM')">
           <div class="icon-addr flex-grow flex-shrink-0">
             <div class="asset-icon-container two-icons">
               <img class="asset-icon" [src]="assets[0].asset.iconPath" appImgFallback/>
@@ -15,46 +15,134 @@
             </div>
             <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}} + <span class="small-1">THOR</span>.RUNE</label>
           </div>
-          <div style="margin-left: 0;" class="addr">
-            <span *ngIf="userValues && userValues.sym">{{ userValues.sym * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+          <div style="margin-left: 0;" class="addr flex-row-reverse">
+            <span *ngIf="userValues && userValues.sym && !isMobile">{{ userValues.sym * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
+            <div class="flex flex-row-reverse" *ngIf="optionType == 'deposit' && _poolType ===  'SYM' && (!assets[0].balance || !assets[1].balance)">
+              <app-tag *ngIf="!assets[0].balance">
+                <a style="font-family: 'Roboto';" (click)="linkSwap(assets[0].asset)">SWAP {{assets[0].asset.ticker}}</a>
+              </app-tag>
+              <app-tag *ngIf="!assets[1].balance">
+                <a style="font-family: 'Roboto';" (click)="linkSwap(assets[1].asset)">SWAP {{assets[1].asset.ticker}}</a>
+              </app-tag>
+            </div>
           </div>
         </button>
       
-        <button *ngIf="poolTypeOptions.asymAsset && assets" [ngClass]="{'active': _poolType === 'ASYM_ASSET'}" (click)="choosenPoolType('ASYM_ASSET')" class="w-address" >
+        <button *ngIf="poolTypeOptions.asymAsset && assets" [ngClass]="{'active': _poolType === 'ASYM_ASSET', 'disabled non-hover': optionType == 'deposit' && !assets[0].balance}" class="w-address" (click)="choosenPoolType('ASYM_ASSET')">
           <div class="icon-addr flex-grow flex-shrink-0">
             <div class="asset-icon-container">
               <img class="asset-icon" [src]="assets[0].asset.iconPath" appImgFallback/>
             </div>
             <label><span class="small-1">{{assets[0].asset.chain}}</span>.{{assets[0].asset.ticker}}</label>
           </div>
-          <div style="margin-left: 0;" class="addr">
-            <span *ngIf="userValues && userValues.asymAsset">{{ userValues.asymAsset * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+          <div style="margin-left: 0;" class="addr flex-row-reverse">
+            <span *ngIf="userValues && userValues.asymAsset && !isMobile">{{ userValues.asymAsset * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
+            <div class="flex flex-row-reverse" *ngIf="optionType == 'deposit' && _poolType === 'ASYM_ASSET' && !assets[0].balance">
+              <app-tag>
+                <a style="font-family: 'Roboto';" (click)="linkSwap(assets[0].asset)">SWAP {{assets[0].asset.ticker}}</a>
+              </app-tag>
+            </div>
           </div>
         </button>
       
-        <button *ngIf="poolTypeOptions.asymRune" [ngClass]="{'active': _poolType === 'ASYM_RUNE'}" (click)="choosenPoolType('ASYM_RUNE')" class="w-address" >
+        <button *ngIf="poolTypeOptions.asymRune" [ngClass]="{'active': _poolType === 'ASYM_RUNE', 'disabled non-hover': optionType == 'deposit' && !assets[1].balance}"  class="w-address" (click)="choosenPoolType('ASYM_RUNE')">
           <div class="icon-addr flex-grow flex-shrink-0">
             <div class="asset-icon-container">
               <img class="asset-icon" [src]="rune.iconPath" appImgFallback/>
             </div>
             <label><span class="small-1">THOR</span>.RUNE</label>
           </div>
-          <div style="margin-left: 0;" class="addr">
-            <span *ngIf="userValues && userValues.asymRune">{{ userValues.asymRune * currency.value | number: '0.0-2' }} {{ currency.code }}</span>
+          <div style="margin-left: 0;" class="addr flex-row-reverse">
+            <span *ngIf="userValues && userValues.asymRune && !isMobile">{{ userValues.asymRune * currency.value | number: '0.0-2' }} {{ currency.code }}<span class="small-1" style="margin-left: 5px;">{{optionType == 'deposit'? 'DEPOSITED' : 'WITHDRAWABLE'}}</span></span>
+            <div class="flex flex-row-reverse" *ngIf="optionType == 'deposit' && _poolType === 'ASYM_RUNE' && !assets[1].balance">
+              <app-tag>
+                <a style="font-family: 'Roboto';" (click)="linkSwap(assets[1].asset)">SWAP {{assets[1].asset.ticker}}</a>
+              </app-tag>
+            </div>
           </div>
         </button>
       </div>
 
-      <div class="disclaimer" style="margin-top: 14px; margin-left: 22px;">
+      <div class="disclaimer" style="margin: 14px 20px;">
         <ng-content select="[disclaimer]"></ng-content>
+        <ng-container *ngIf="optionType !== 'disconnect'">
+          <div *ngIf="_poolType == 'SYM'">
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit'">
+              <span>{{assets[0].asset.chain}}.{{assets[0].asset.ticker}} Depositable:</span>
+              <span>{{assets[0].balance}} ({{assets[0].balance * assets[0].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit'">
+              <span>{{assets[1].asset.chain}}.{{assets[1].asset.ticker}} Depositable:</span>
+              <span>{{assets[1].balance}} ({{assets[1].balance * assets[1].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit' && userValues.sym">
+              <span>Deposited:</span>
+              <span>{{userValues.sym * currency.value | number: '0.0-2'}} {{currency.code}}</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'withdraw'">
+              <span>{{assets[0].asset.chain}}.{{assets[0].asset.ticker}} Withdrawable:</span>
+              <span>{{withdrawAmountAssets.sym.asset}} ({{withdrawAmountAssets.sym.asset * assets[0].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'withdraw'">
+              <span>{{assets[1].asset.chain}}.{{assets[1].asset.ticker}} Withdrawable:</span>
+              <span>{{withdrawAmountAssets.sym.rune}} ({{withdrawAmountAssets.sym.rune * assets[1].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="poolShares.sym">
+              <span>Pool Share:</span>
+              <span>{{poolShares.sym | number: '0.0-4'}} %</span>
+            </div>
+          </div>
+          <div *ngIf="_poolType == 'ASYM_RUNE'">
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit'">
+              <span>Depositable:</span>
+              <span>{{assets[1].balance}} ({{assets[1].balance * assets[1].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit' && userValues.asymRune">
+              <span>Deposited:</span>
+              <span>{{userValues.asymRune * currency.value | number: '0.0-2'}} {{currency.code}}</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'withdraw'">
+              <span>Withdrawable:</span>
+              <span>{{withdrawAmountAssets.asymRune}} ({{withdrawAmountAssets.asymRune * assets[0].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="poolShares.asymRune">
+              <span>Pool Share:</span>
+              <span>{{poolShares.asymRune | number: '0.0-4'}} %</span>
+            </div>
+          </div>
+          <div *ngIf="_poolType == 'ASYM_ASSET'">
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit'">
+              <span>Depositable:</span>
+              <span>{{assets[0].balance}} ({{assets[0].balance * assets[0].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'deposit' && userValues.asymAsset">
+              <span>Deposited:</span>
+              <span>{{userValues.asymAsset * currency.value | number: '0.0-2'}} {{currency.code}}</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="optionType === 'withdraw'">
+              <span>Withdrawable:</span>
+              <span>{{withdrawAmountAssets.asymAsset}} ({{withdrawAmountAssets.asymAsset * assets[0].assetPriceUSD * currency.value | number: '0.0-2'}} {{currency.code}})</span>
+            </div>
+            <div class="flex justify-between line-detail" *ngIf="poolShares.asymAsset">
+              <span>Pool Share:</span>
+              <span>{{poolShares.asymAsset | number: '0.0-4'}} %</span>
+            </div>
+          </div>
+        </ng-container>
       </div>
 
     </div>
     <!-- close dialog -->
-    <div class="bottom-actions">
+    <div class="bottom-actions two-btn">
       <div class="left-btn">
         <button class="close-btn" (click)="back()">
           <span>Cancel</span>
+        </button>
+      </div>
+      <div class="divider"></div>
+      <div class="right-btn">
+        <button class="next-btn graident-btn" [disabled]="isDisabled(_poolType)" (click)="submitPoolType()">
+          <span>{{optionType == 'deposit' ? 'DEPOSIT' : 'WITHDRAW'}}</span>
         </button>
       </div>
     </div>

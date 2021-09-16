@@ -157,6 +157,15 @@ export class DepositComponent implements OnInit, OnDestroy {
     isValid: boolean;
     isError: boolean;
   };
+  poolShares: {
+    asymAsset: number | undefined;
+    asymRune: number | undefined;
+    sym: number | undefined;
+  } = {
+    sym: undefined,
+    asymAsset: undefined,
+    asymRune: undefined,
+  };
   metaMaskProvider?: ethers.providers.Web3Provider;
   metaMaskNetwork?: 'testnet' | 'mainnet';
   slip: number;
@@ -464,6 +473,13 @@ export class DepositComponent implements OnInit, OnDestroy {
       rune: baseAmount(rune),
     };
 
+    if (poolType === 'SYM') {
+      this.poolShares.sym = units.div(total).times(100).toNumber();
+    } else if (poolType === 'ASYM_ASSET') {
+      this.poolShares.asymAsset = units.div(total).times(100).toNumber();
+    } else if (poolType === 'ASYM_RUNE') {
+      this.poolShares.asymRune = units.div(total).times(100).toNumber();
+    }
     let pooledRune = stakeData.rune
       .amount()
       .div(10 ** 8)
@@ -560,7 +576,6 @@ export class DepositComponent implements OnInit, OnDestroy {
       const userSymValue =
         pooledRune * this.runePrice + pooledAsset * this.assetPrice;
 
-      console.log(userSymValue, userAssetValue, userThorValue);
       [this.userThorValue, this.userAssetValue, this.userSymValue] = [
         userThorValue,
         userAssetValue,
@@ -1182,7 +1197,6 @@ export class DepositComponent implements OnInit, OnDestroy {
         undefined,
         assetToString(this.asset)
       );
-    this.back();
   }
 
   breadCrumbNav(nav: string, type: 'deposit' | 'market') {

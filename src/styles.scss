@@ -718,6 +718,10 @@ button {
     height: 49px;
     cursor: pointer;
 
+    &.disabled {
+      color: var(--primary-grey-color);
+    }
+
     .icon-addr {
       display: flex;
       align-items: center;

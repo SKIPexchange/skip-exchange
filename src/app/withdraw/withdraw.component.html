@@ -115,11 +115,15 @@
 
 <app-pool-type-options
   *ngIf="view === 'PoolType'"
+  optionType="withdraw"
   [assets]="[{asset: asset, balance: 0, assetPriceUSD: assetPrice}, {asset: rune, balance: 0, assetPriceUSD: runePrice}]" 
   [userValues]="{sym: userSymValue, asymAsset: userAssetValue, asymRune: userThorValue}"
+  [withdrawAmountAssets]="withdrawAmoutAssets"
+  [poolShares]="getPoolShares()"
   [selectedPoolType]="withdrawType" 
   [poolTypeOptions]="withdrawOptions" 
   (selectPoolType)="setSelectedWithdrawOptionFromEvent($event)"
+  (closeComponent)="closeComponent()"
 >
 <app-breadcrumb
   [path]="[

@@ -7,9 +7,18 @@
     target="_blank"
     class="gradient"
     [ngClass]="{ 'special-gradient': depositsDisabled, 'red': error || appLocked }"
-    *ngIf="!isTestnet"
-    >{{ topbar }}</a
+    *ngIf="!isTestnet && !appLocked"
   >
+    {{ topbar }}
+  </a>
+  <a
+    href="https://twitter.com/SKIPswap/status/1433856587995746305"
+    target="_blanck"
+    class="gradient red"
+    *ngIf="!isTestnet && appLocked"
+  >
+    CLICK TO READ ABOUT OUR PLANNED DOWNTIME
+  </a>
 </div>
 <header>
   <h1>
