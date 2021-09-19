@@ -16,6 +16,7 @@ import { PoolListItemComponent } from './pool-list-item/pool-list-item.component
 import { ConnectModule } from '../_components/connect/connect.module';
 import { LayoutObserverService } from '../_services/layout-observer.service';
 import { CustomPipesModule } from '../_pipes/custom-pipes.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { CustomPipesModule } from '../_pipes/custom-pipes.module';
     TagModule,
     CustomPipesModule,
     ConnectModule,
+    TranslateModule,
     RouterModule.forChild([
       {
         path: '',

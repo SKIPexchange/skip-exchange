@@ -57,6 +57,7 @@ import { EthUtilsService } from '../_services/eth-utils.service';
 import { MockClientService } from '../_services/mock-client.service';
 import { environment } from 'src/environments/environment';
 import { LayoutObserverService } from '../_services/layout-observer.service';
+import { TranslateService } from '../_services/translate.service';
 
 export enum SwapType {
   DOUBLE_SWAP = 'double_swap',
@@ -255,6 +256,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
   };
 
   isMobile: boolean = false;
+  intel;
 
   constructor(
     private dialog: MatDialog,
@@ -273,7 +275,8 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     private metaMaskService: MetamaskService,
     private ethUtilService: EthUtilsService,
     private mockClientService: MockClientService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.ethContractApprovalRequired = false;
     this.selectableMarkets = undefined;
@@ -284,6 +287,8 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       isValid: false,
       isError: false,
     };
+
+    console.log(this.translate.intl);
 
     const layout$ = this.layout.isMobile.subscribe(
       (res) => (this.isMobile = res)
@@ -810,10 +815,10 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     this.ethContractApprovalRequired = false;
   }
 
-  validate(): void {
+  validate() {
     if (this.appLocked) {
       this.formValidation = {
-        message: 'Maintenance Enabled',
+        message: this.translate.format('breadcrumb.maintenance'),
         isValid: true,
         isError: false,
       };
@@ -823,7 +828,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** No user / balances */
     if (!this.user) {
       this.formValidation = {
-        message: 'Connect wallet',
+        message: this.translate.format('breadcrumb.connect'),
         isValid: false,
         isError: false,
       };
@@ -832,7 +837,8 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
 
     if (this.user && !this.balances) {
       this.formValidation = {
-        message: 'Loading Balance',
+        // eslint-disable-next-line prettier/prettier
+        message: this.translate.format('breadcrumb.loadingBalance'),
         isValid: false,
         isError: false,
       };
@@ -842,7 +848,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
       this.formValidation = {
-        message: 'TX Queue is filled',
+        message: this.translate.format('breadcrumb.select'),
         isValid: false,
         isError: true,
       };
@@ -852,7 +858,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** asset missing */
     if (!this.selectedSourceAsset || !this.selectedTargetAsset) {
       this.formValidation = {
-        message: 'Select',
+        message: this.translate.format('breadcrumb.select'),
         isValid: false,
         isError: false,
       };
@@ -864,7 +870,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       this.ethContractApprovalRequired
     ) {
       this.formValidation = {
-        message: `Approval Required`,
+        message: this.translate.format('breadcrumb.approval'),
         isValid: false,
         isError: false,
       };
@@ -873,7 +879,9 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
 
     if (this.haltedChains.includes(this.selectedSourceAsset.chain)) {
       this.formValidation = {
-        message: `${this.selectedSourceAsset.chain} Halted`,
+        message: this.translate.format('breadcrumb.halted', {
+          chain: this.selectedSourceAsset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -882,7 +890,9 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
 
     if (this.haltedChains.includes(this.selectedTargetAsset.chain)) {
       this.formValidation = {
-        message: `${this.selectedTargetAsset.chain} Halted`,
+        message: this.translate.format('breadcrumb.halted', {
+          chain: this.selectedTargetAsset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -894,7 +904,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       this.sourceBalance - this.sourceAssetUnit < 3
     ) {
       this.formValidation = {
-        message: 'Min 3 RUNE in Wallet Required',
+        message: this.translate.format('breadcrumb.minRune'),
         isValid: false,
         isError: true,
       };
@@ -904,7 +914,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** No source amount set */
     if (!this.sourceAssetUnit || !this.targetAssetUnit) {
       this.formValidation = {
-        message: 'Prepare',
+        message: this.translate.format('breadcrumb.prepare'),
         isValid: false,
         isError: false,
       };
@@ -920,7 +930,9 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
         ]
     ) {
       this.formValidation = {
-        message: `Insufficient ${this.selectedSourceAsset.chain} for fees`,
+        message: this.translate.format('breadcrumb.insufficient', {
+          asset: this.selectedSourceAsset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -933,7 +945,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       this.outboundFees[assetToString(this.selectedTargetAsset)]
     ) {
       this.formValidation = {
-        message: 'Output Amount Less Than Fees',
+        message: this.translate.format('breadcrumb.outputFee'),
         isValid: false,
         isError: true,
       };
@@ -942,7 +954,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
 
     if (!this.inboundAddresses) {
       this.formValidation = {
-        message: 'Loading',
+        message: this.translate.format('breadcrumb.loading'),
         isValid: false,
         isError: false,
       };
@@ -959,7 +971,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       )
     ) {
       this.formValidation = {
-        message: 'Insufficient balance',
+        message: this.translate.format('breadcrumb.insufficientBalance'),
         isValid: false,
         isError: true,
       };
@@ -974,7 +986,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
         this.userService.minimumSpendable(this.selectedTargetAsset)
     ) {
       this.formValidation = {
-        message: 'Amount too low',
+        message: this.translate.format('breadcrumb.amountTooLow'),
         isValid: false,
         isError: true,
       };
@@ -984,7 +996,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** Exceeds slip tolerance set in user settings */
     if (this.slip * 100 > this.slippageTolerance) {
       this.formValidation = {
-        message: 'Slip Limit Exceeded',
+        message: this.translate.format('breadcrumb.slipLimit'),
         isValid: false,
         isError: true,
       };
@@ -998,7 +1010,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
         .validateAddress(this.targetAddress)
     ) {
       this.formValidation = {
-        message: 'Enter Valid Address',
+        message: this.translate.format('breadcrumb.validAddress'),
         isValid: false,
         isError: true,
       };
@@ -1010,7 +1022,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       this.metaMaskNetwork !== environment.network
     ) {
       this.formValidation = {
-        message: 'Change MetaMask Network',
+        message: this.translate.format('breadcrumb.metamaskNetwork'),
         isValid: false,
         isError: true,
       };
@@ -1025,7 +1037,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       this.selectedTargetAsset
     ) {
       this.formValidation = {
-        message: 'Ready',
+        message: this.translate.format('breadcrumb.ready'),
         isValid: true,
         isError: false,
       };
@@ -1049,17 +1061,15 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
           sensitivity: 'accent',
         })
       ) {
-        return `SWAP + RECEIVE AT ${this.targetAddress.substring(
-          0,
-          6
-        )}...${this.targetAddress.substring(
-          this.targetAddress.length - 6,
-          this.targetAddress.length
-        )}`;
+        // eslint-disable-next-line prettier/prettier
+        let address = `${this.targetAddress.substring( 0, 6 )}...${this.targetAddress.substring( this.targetAddress.length - 6, this.targetAddress.length )}`;
+        return this.translate.format('swap.swapReceive', {
+          address: address,
+        });
       }
     }
 
-    return 'SWAP';
+    return this.translate.format('common.swap');
   }
 
   connectWallet() {

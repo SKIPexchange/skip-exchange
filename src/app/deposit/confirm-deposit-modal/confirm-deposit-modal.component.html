@@ -8,11 +8,11 @@
         <nav class="content-top">
           <app-breadcrumb
             [path]="[
-              { name: 'skip', call: 'swap' },
-              { name: 'Pools', call: 'pool' },
-              { name: 'Deposit', disable: true },
+              { name: 'common.skip', call: 'swap' },
+              { name: 'common.pool', call: 'pool' },
+              { name: 'common.deposit', disable: true },
               { name: data.asset.asset.chain + '.' + data.asset.asset.ticker, disable: true },
-              { name: data.poolTypeOption === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
+              { name: data.poolTypeOption === 'SYM' ? 'deposit.symetrical' : 'deposit.assymetrical', disable: true }
             ]"
             [isError]="error"
             [message]="getMessage()"

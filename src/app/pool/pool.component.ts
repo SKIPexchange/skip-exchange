@@ -23,6 +23,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NetworkSummary } from '../_classes/network';
 import { environment } from 'src/environments/environment';
 import { LayoutObserverService } from '../_services/layout-observer.service';
+import { TranslateService } from '../_services/translate.service';
 
 @Component({
   selector: 'app-pool',
@@ -68,7 +69,8 @@ export class PoolComponent implements OnInit, OnDestroy {
     private currencyService: CurrencyService,
     public ovrService: OverlaysService,
     private analytics: AnalyticsService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    private translate: TranslateService
   ) {
     this.appLocked = environment.appLocked;
     this.subs = [];
@@ -157,15 +159,24 @@ export class PoolComponent implements OnInit, OnDestroy {
 
   getBreadcrumbText() {
     if (this.appLocked) {
-      return { text: 'MAINTENANCE ENABLED', isError: false };
+      return {
+        text: this.translate.format('breadcrumb.maintenance'),
+        isError: false,
+      };
     }
 
     if (this.userPoolError) {
-      return { text: 'Cannot fetch user Pools', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.errorFetchPools'),
+        isError: true,
+      };
     }
 
     if (this.depositsDisabled) {
-      return { text: 'CAPS REACHED', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.capReached'),
+        isError: true,
+      };
     }
 
     return 'SELECT';

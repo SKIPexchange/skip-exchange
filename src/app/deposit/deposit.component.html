@@ -7,11 +7,11 @@
       <nav class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'Pools', call: 'pool' },
-            { name: 'Deposit', disable: true },
+            { name: 'common.skip', call: 'swap' },
+            { name: 'common.pool', call: 'pool' },
+            { name: 'common.deposit', disable: true },
             { name: asset?.chain + '.' + asset?.ticker, disable: true },
-            { name: poolType === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
+            { name: poolType === 'SYM' ? 'deposit.symetrical' : 'deposit.assymetrical', disable: true }
           ]"
           [message]="{text: formValidation.message, isError: formValidation.isError}"
           (funcCaller)="breadCrumbNav($event, 'deposit')"
@@ -25,7 +25,7 @@
         <app-asset-input
           *ngIf="poolType === 'SYM' || poolType === 'ASYM_ASSET'"
           type="deposit"
-          label="Deposit"
+          [label]="translate.format('common.deposit')"
           [(selectedAsset)]="asset"
           [assetUnit]="assetAmount"
           (assetUnitChange)="updateValues('ASSET', $event)"
@@ -48,7 +48,7 @@
         <app-asset-input
           *ngIf="poolType === 'SYM' || poolType === 'ASYM_RUNE'"
           label="Deposit"
-          type="deposit"
+          [label]="translate.format('common.deposit')"
           [(selectedAsset)]="rune"
           [assetUnit]="runeAmount"
           (assetUnitChange)="updateValues('RUNE', $event)"
@@ -67,7 +67,7 @@
         <div *ngIf="assetAmount || runeAmount" class="swap-details">
           <ng-container *ngIf="assetBasePrice && runeBasePrice && poolType === 'SYM' && userSelectedPoolType">
             <div class="flex justify-between">
-              <span class="tx-detail-label">Prices:</span>
+              <span class="tx-detail-label">{{ 'common.prices' | translate }}</span>
               <span>
                 1 {{ rune.ticker }} = {{ assetBasePrice | number: "1.2-4" }} {{ asset.ticker }}
                 <span *ngIf="runePrice">({{ runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
@@ -82,11 +82,11 @@
             </div>
           </ng-container>
           <div *ngIf="totalDeposit()" class="flex justify-between primary-text">
-            <span class="tx-detail-label">Total Deposit:</span>
+            <span class="tx-detail-label">{{ 'deposit.total' | translate }}</span>
             <span>{{ totalDeposit() | number: '0.2-2' }} {{currency.code}}</span>
           </div>
           <div class="flex justify-between white-text">
-            <span class="tx-detail-label">Network Fees:</span>
+            <span class="tx-detail-label">{{ 'common.fees' | translate }}</span>
             <div [ngClass]="{'text-right': isMobile}">
               <span *ngIf="networkFee && poolType != 'ASYM_RUNE'"> 
                 {{ networkFee | number: "1.0-8" }} {{ asset.ticker }} 
@@ -130,10 +130,10 @@
         </div>
       </div>
 
-      <div *ngIf="user" class="bottom-actions two-btn">
+      <div *ngIf="hasUser" class="bottom-actions two-btn">
         <div class="left-btn">
           <button class="close-btn" (click)="back()">
-            <span>Cancel</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -144,7 +144,7 @@
             class="next-btn graident-btn"
             [disabled]="!formValidation.isValid"
           >
-            <span>Deposit</span>
+            <span>{{ 'common.deposit' | translate }}</span>
           </button>
           <app-approve-eth-contract
             *ngIf="ethContractApprovalRequired && assetAmount"
@@ -158,10 +158,10 @@
         </div>
       </div>
 
-      <div *ngIf="!user && !appLocked" class="bottom-actions two-btn">
+      <div *ngIf="!hasUser && !appLocked" class="bottom-actions two-btn">
         <div class="left-btn">
           <button class="close-btn" (click)="back()">
-            <span>Cancel</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -173,7 +173,7 @@
 
     <div class="bottom-actions" *ngIf="!user && appLocked">
       <button class="next-btn bug-btn" [disabled]="true">
-        <span>UNDER MAINTENANCE</span>
+        <span>{{ 'common.maintenance' | translate }}</span>
       </button>
     </div>
 
