@@ -35,23 +35,24 @@
 
   <footer *ngIf="!isMobile">
     <div class="footer-content">
-      <span
-        ><span
+      <span>
+        <span
           [ngStyle]="{
             color: isTestnet ? 'inherit' : 'var(--primary-red)',
             'font-weight': isTestnet ? 'inherit' : 'bold'
           }"
-          >BETA product. Don’t swap/pool large.</span
         >
-        Powered by
-        <a class="footer-link" href="https://t.me/thorchain_org" target="_blank"
-          (click)="eventFooterClick('link_thorchain')"
-          >THORChain</a
-        >. Go to
-        <a class="footer-link" [href]="mainnetUrl" *ngIf="!isTestnet" (click)="eventFooterClick('link_testnet')">TestNet</a
-        ><a class="footer-link" [href]="mainnetUrl" *ngIf="isTestnet" (click)="eventFooterClick('link_chaosnet')">ChaosNet</a>
-        app instead.</span
-      >
+          {{ 'footer.beta' | translate }}
+        </span>
+        {{ 'footer.power' | translate }}
+        <a class="footer-link" href="https://t.me/thorchain_org" target="_blank" (click)="eventFooterClick('link_thorchain')" >
+        THORChain
+        </a>.
+        {{ 'footer.goto' | translate }} 
+        <a class="footer-link" [href]="mainnetUrl" *ngIf="!isTestnet" (click)="eventFooterClick('link_testnet')">TestNet</a>
+        <a class="footer-link" [href]="mainnetUrl" *ngIf="isTestnet" (click)="eventFooterClick('link_chaosnet')">ChaosNet</a>
+        {{ 'footer.instead' | translate }}
+      </span>
     </div>
   </footer>
 </div>

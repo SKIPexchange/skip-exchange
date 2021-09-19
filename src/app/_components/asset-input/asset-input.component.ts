@@ -29,6 +29,7 @@ import {
   assetString,
 } from 'src/app/_services/analytics.service';
 import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
+import { TranslateService } from '@ngx-translate/core';
 
 export type assetInputEventTags = {
   event_category: string;

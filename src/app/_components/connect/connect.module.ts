@@ -16,6 +16,7 @@ import { NoticeModule } from '../notice/notice.module';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { TextFieldModule } from '../text-field/text-field.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { TextFieldModule } from '../text-field/text-field.module';
     FormsModule,
     MatIconModule,
     TextFieldModule,
+    TranslateModule,
   ],
   exports: [
     ConnectComponent,
