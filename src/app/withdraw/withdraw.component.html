@@ -4,9 +4,9 @@
       <nav class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'Pools', call: 'pool' },
-            { name: 'Withdraw', disable: true },
+            { name: 'common.skip', call: 'swap' },
+            { name: 'common.pool', call: 'pool' },
+            { name: 'common.withdraw', disable: true },
             { name: asset?.chain + '.' + asset?.ticker , disable: true },
           ]"
           [isError]="isError"
@@ -19,7 +19,7 @@
       </nav>
 
       <div class="percent-container">
-        <span class="percent-label">Percentage</span>
+        <span class="percent-label">{{ 'withdraw.percentage' | translate }}</span>
         <span class="unstake-percent">{{ withdrawPercent }}%</span>
         <mat-slider
           class="slider"
@@ -37,7 +37,7 @@
       <app-arrow></app-arrow>
 
       <app-double-asset-field
-        label="Withdrawal"
+        [label]="translate.format('withdraw.withdrawal')"
         [selectedAssets]="[asset, rune]"
         [assetUnits]="[removeAssetAmount, removeRuneAmount]"
         [priceInputs]="[assetPrice, runePrice]"
@@ -62,14 +62,14 @@
           </span>
         </div> -->
         <div *ngIf="totalWithdrawal()" class="flex justify-between primary-text">
-          <span class="tx-detail-label">Total Withdrawal:</span>
+          <span class="tx-detail-label">{{ 'withdraw.total' | translate }}</span>
           <span>{{ totalWithdrawal() | number: '0.2-2' }} {{currency.code}}</span>
         </div>
         <div
           *ngIf="withdrawType !== 'ASYM_ASSET'"
           class="flex justify-between items-center text-white"
         >
-          <span class="tx-detail-label">Network Fees:</span>
+          <span class="tx-detail-label">{{ 'common.fees' | translate }}</span>
           <span *ngIf="runeFee">{{ runeFee }} RUNE <span *ngIf="currency && runePrice">({{this.currency.value * runePrice * runeFee | number: '0.0-2'}} {{currency.code}})</span></span>
           <span *ngIf="!runeFee">...</span>
         </div>
@@ -77,7 +77,7 @@
           *ngIf="withdrawType === 'ASYM_ASSET'"
           class="flex justify-between items-center text-white"
         >
-          <span class="tx-detail-label">Network Fees:</span>
+          <span class="tx-detail-label">{{ 'common.fees' | translate }}</span>
           <span *ngIf="networkFee"
             >{{ networkFee | number: "1.0-4" }} {{ asset.ticker }} <span *ngIf="currency && assetPrice">({{this.currency.value * assetPrice * networkFee | number: '0.0-2'}} {{currency.code}})</span></span
           >
@@ -88,7 +88,7 @@
       <div class="bottom-actions two-btn">
         <div class="left-btn">
           <button class="close-btn" (click)="back()">
-            <span>Cancel</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -98,7 +98,7 @@
             class="next-btn graident-btn"
             [disabled]="formDisabled()"
           >
-            <span>Withdraw</span>
+            <span>{{ 'common.withdraw' | translate }}</span>
           </button>
         </div>
       </div>

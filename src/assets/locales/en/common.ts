@@ -22,4 +22,7 @@ export default {
   fees: 'Network Fees:',
   cancel: 'Cancel',
   search: 'Search',
+  confirm: 'Confirm',
+  processing: 'Processing',
+  success: 'Success',
 };
