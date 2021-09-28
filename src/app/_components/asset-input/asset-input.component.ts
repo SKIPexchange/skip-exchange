@@ -16,7 +16,7 @@ import {
 import { EthUtilsService } from 'src/app/_services/eth-utils.service';
 import { User } from 'src/app/_classes/user';
 import { Subscription } from 'rxjs';
-import { baseToAsset } from '@xchainjs/xchain-util';
+import { assetToString, baseToAsset } from '@xchainjs/xchain-util';
 import { MidgardService } from 'src/app/_services/midgard.service';
 import { ThorchainPricesService } from 'src/app/_services/thorchain-prices.service';
 import { CurrencyService } from 'src/app/_services/currency.service';
@@ -162,8 +162,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
       this.userService.userBalances$.pipe(take(1)).subscribe((balances) => {
         this.hasWallet = balances.filter(
           (balance) =>
-            balance.asset.chain === this.selectedAsset.chain &&
-            balance.asset.ticker === this.selectedAsset.ticker
+            assetToString(balance.asset) === assetToString(this.selectedAsset)
         )[0]
           ? true
           : false;
@@ -184,8 +183,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
 
     const targetPool = this.selectableMarkets.find(
       (market) =>
-        `${market.asset.chain}.${market.asset.ticker}` ===
-        `${this.selectedAsset.chain}.${this.selectedAsset.ticker}`
+        assetToString(market.asset) === assetToString(this.selectedAsset)
     );
     if (!targetPool || !targetPool.assetPriceUSD) {
       return;
@@ -201,8 +199,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
 
     const targetPool = this.selectableMarkets.find(
       (market) =>
-        `${market.asset.chain}.${market.asset.ticker}` ===
-        `${this.selectedAsset.chain}.${this.selectedAsset.ticker}`
+        assetToString(market.asset) === assetToString(this.selectedAsset)
     );
     if (!targetPool || !targetPool.assetPriceUSD) {
       return;
@@ -274,8 +271,7 @@ export class AssetInputComponent implements OnInit, OnDestroy {
         if (balances) {
           const balance = balances.filter(
             (balance) =>
-              balance.asset.chain === this.selectedAsset.chain &&
-              balance.asset.ticker === this.selectedAsset.ticker
+              assetToString(balance.asset) === assetToString(this.selectedAsset)
           )[0];
 
           if (!balance) {

@@ -252,8 +252,7 @@ export class UserService {
       let _balance = balances[i];
       const index = this._balances.findIndex(
         (balance) =>
-          balance.asset.ticker === _balance.asset.ticker &&
-          balance.asset.chain === _balance.asset.chain
+          assetToString(balance.asset) === assetToString(_balance.asset)
       );
 
       if (index === -1) {

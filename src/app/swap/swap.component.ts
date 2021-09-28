@@ -1096,13 +1096,11 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
 
     let sourceAsset = this.selectableSourceMarkets.find(
       (asset) =>
-        `${asset.asset.chain}.${asset.asset.ticker}` ===
-        `${this.selectedSourceAsset.chain}.${this.selectedSourceAsset.ticker}`
+        assetToString(asset.asset) === assetToString(this.selectedSourceAsset)
     );
     let targetAsset = this.selectableTargetMarkets.find(
       (asset) =>
-        `${asset.asset.chain}.${asset.asset.ticker}` ===
-        `${this.selectedTargetAsset.chain}.${this.selectedTargetAsset.ticker}`
+        assetToString(asset.asset) === assetToString(this.selectedTargetAsset)
     );
 
     sourceAsset = { ...sourceAsset, balance: assetAmount(this.sourceBalance) };
@@ -1179,8 +1177,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     if (this.selectableSourceMarkets && this._selectedSourceAsset) {
       this.sourceAssetPrice = this.selectableSourceMarkets.find(
         (pool) =>
-          `${pool.asset.chain}.${pool.asset.ticker}` ===
-          `${this._selectedSourceAsset.chain}.${this._selectedSourceAsset.ticker}`
+          assetToString(pool.asset) === assetToString(this.selectedSourceAsset)
       )?.assetPriceUSD;
     }
 
@@ -1192,8 +1189,7 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     ) {
       this.targetAssetPrice = this.selectableTargetMarkets.find(
         (pool) =>
-          `${pool.asset.chain}.${pool.asset.ticker}` ===
-          `${this._selectedTargetAsset.chain}.${this._selectedTargetAsset.ticker}`
+          assetToString(pool.asset) === assetToString(this.selectedTargetAsset)
       )?.assetPriceUSD;
     }
 

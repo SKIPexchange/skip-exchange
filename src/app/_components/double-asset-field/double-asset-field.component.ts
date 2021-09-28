@@ -111,8 +111,7 @@ export class DoubleAssetFieldComponent {
         if (balances) {
           const balance = balances.filter(
             (balance) =>
-              balance.asset.chain === inputAsset.chain &&
-              balance.asset.ticker === inputAsset.ticker
+              assetToString(balance.asset) === assetToString(inputAsset)
           )[0];
 
           const assetString = `${balance.asset.chain}.${balance.asset.symbol}`;

@@ -274,9 +274,7 @@ export class DepositComponent implements OnInit, OnDestroy {
 
           if (this.selectableMarkets) {
             this.assetPrice = this.selectableMarkets.find(
-              (item) =>
-                item.asset.chain === this.asset.chain &&
-                item.asset.ticker === this.asset.ticker
+              (item) => assetToString(item.asset) === assetToString(this.asset)
             ).assetPriceUSD;
           }
         }
