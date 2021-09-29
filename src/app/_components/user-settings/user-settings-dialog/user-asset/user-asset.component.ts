@@ -18,6 +18,7 @@ import {
   MainViewsEnum,
   OverlaysService,
 } from 'src/app/_services/overlays.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 
 @Component({
@@ -63,7 +64,8 @@ export class UserAssetComponent {
     private currencyService: CurrencyService,
     private userService: UserService,
     private analytics: AnalyticsService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.back = new EventEmitter();
     this.send = new EventEmitter();

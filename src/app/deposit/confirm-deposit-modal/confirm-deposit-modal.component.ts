@@ -42,6 +42,7 @@ import { LayoutObserverService } from 'src/app/_services/layout-observer.service
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 // assets should be added for asset-input as designed.
 export interface ConfirmDepositData {
@@ -102,7 +103,8 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     private metaMaskService: MetamaskService,
     private curService: CurrencyService,
     private layout: LayoutObserverService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    public translate: TranslateService
   ) {
     this.depositSuccess = false;
     this.loading = true;
@@ -646,7 +648,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
     if (this.error) {
       return this.error;
     } else {
-      return 'confirm';
+      return this.translate.format('common.confirm');
     }
   }
 
@@ -668,7 +670,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       modalType: 'DEPOSIT',
       poolType: this.data.poolTypeOption,
       asset: assets, 
-      label: this.depositSuccess ? ['Deposited', 'Deposited'] : ['Depositing', 'Depositing'],
+      label: this.depositSuccess ? [this.translate.format('pending.deposited'), this.translate.format('pending.deposited')] : [this.translate.format('pending.depostiting'), this.translate.format('pending.depostiting')],
       amount: amounts, 
       balances: this.balances,
       hashes: this.hashes,

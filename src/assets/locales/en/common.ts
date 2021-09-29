@@ -34,4 +34,6 @@ export default {
   assets: 'Assets',
   password: 'Password',
   unlock: 'Unlock',
+  retry: 'Retry',
+  close: 'Close',
 };

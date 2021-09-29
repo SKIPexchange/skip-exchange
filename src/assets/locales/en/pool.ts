@@ -6,5 +6,9 @@ export default {
   share: 'Pool Share:',
   volume: 'Average 24H Volume:',
   depth: 'Depth',
+  apy: 'APY',
+  yieldStats: 'Yield Stats',
+  poolStats: 'Pool Stats',
   refresh: 'Refresh',
+  joined: 'Joined',
 };
