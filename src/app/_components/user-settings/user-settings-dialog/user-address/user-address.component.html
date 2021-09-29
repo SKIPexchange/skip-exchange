@@ -3,11 +3,11 @@
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'wallet', call: 'wallet' },
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.wallet', call: 'wallet' },
           { name: chain, disable: true }
         ]"
-        message="select"
+        [message]="translate.format('breadcrumb.select')"
         (funcCaller)="breadcrumbNav($event)"
       ></app-breadcrumb>
       <div class="top-right"></div>
@@ -22,8 +22,8 @@
           <ng-container tags>
             <app-tag>
               <div (click)="copyToClipboard(address)">
-                <span *ngIf="!copied">COPY</span>
-                <span *ngIf="copied">COPIED</span>
+                <span *ngIf="!copied">{{ 'common.copy' | translate }}</span>
+                <span *ngIf="copied">{{ 'common.copy' | translate }}</span>
               </div>
             </app-tag>
             <div style="width: 5px"></div>
@@ -35,7 +35,7 @@
                   [href]="explorerPath"
                   (click)="eventClick()"
                 >
-                  Explore
+                  {{ 'common.explore' | translate }}
                 </a>
               </div>
             </app-tag>
@@ -93,7 +93,7 @@
               d="M5.74609 19.4531L10.8086 14.3906H6.61328V0.65625H4.87891V14.3906H0.683594L5.74609 19.4531Z"
             />
           </svg>
-          <span> WALLET </span>
+          <span> {{ 'common.wallet' | translate }} </span>
         </button>
       </div>
       <div class="divider"></div>
@@ -104,7 +104,7 @@
           aria-label="Close Connect Wallet Dialog"
           (click)="refreshBalances()"
         >
-          <span>refresh</span>
+          <span>{{ 'common.refresh' | translate }</span>
         </button>
       </div>
     </div>

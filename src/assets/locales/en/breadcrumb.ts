@@ -10,6 +10,7 @@ export default {
   insufficient: 'Insufficient {{asset}} for fees',
   insufficientBalance: 'Insufficient Balance',
   outputFee: 'Output Amount Less Than Fees',
+  inputFee: 'Input Amount Less Than Fees',
   amountTooLow: 'Amount Too Low',
   slipLimit: 'Slip Limit Exceeded',
   validAddress: 'Enter Valid Address',
@@ -25,4 +26,5 @@ export default {
   capReached: 'Cap Reached',
   minRune: 'Min 3 RUNE in Wallet',
   errorFetchPools: 'Cannot fetch user Pools',
+  noClient: `No {{chain}} Client Found`,
 };

@@ -43,6 +43,7 @@ import {
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 @Component({
   selector: 'app-confim-send',
@@ -106,14 +107,15 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
     private mockClientService: MockClientService,
     private midgardService: MidgardService,
     private txUtilsService: TransactionUtilsService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    public translate: TranslateService
   ) {
     this.back = new EventEmitter<null>();
     this.close = new EventEmitter<null>();
-    this.message = 'Confirm';
+    this.message = this.translate.format('breadcrumb.confirm');
     this.transactionSuccessful = new EventEmitter<null>();
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
-    this.hash = 'No Txid !';
+    this.hash = this.translate.format('pending.noTX');
 
     const user$ = this.userService.user$.subscribe(
       (user) => (this.user = user)

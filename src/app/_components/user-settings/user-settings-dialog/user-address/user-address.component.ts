@@ -19,6 +19,7 @@ import {
   assetString,
 } from 'src/app/_services/analytics.service';
 import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 @Component({
   selector: 'app-user-address',
@@ -51,7 +52,8 @@ export class UserAddressComponent implements OnInit {
     private thorchainPricesService: ThorchainPricesService,
     private overlaysService: OverlaysService,
     private analytics: AnalyticsService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.back = new EventEmitter<null>();
     this.navigateToAsset = new EventEmitter<AssetAndBalance>();

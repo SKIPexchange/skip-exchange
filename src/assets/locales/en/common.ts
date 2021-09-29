@@ -25,4 +25,13 @@ export default {
   confirm: 'Confirm',
   processing: 'Processing',
   success: 'Success',
+  copy: 'Copy',
+  copied: 'Copied',
+  explore: 'Explore',
+  refresh: 'Refresh',
+  addToken: 'Add Token',
+  noTxs: 'No Transaction',
+  assets: 'Assets',
+  password: 'Password',
+  unlock: 'Unlock',
 };

@@ -5,5 +5,17 @@ import swap from './swap';
 import deposit from './deposit';
 import pool from './pool';
 import withdraw from './withdraw';
+import wallet from './wallet';
+import pending from './pending';
 
-export { footer, common, breadcrumb, swap, deposit, pool, withdraw };
+export {
+  footer,
+  common,
+  breadcrumb,
+  swap,
+  deposit,
+  pool,
+  withdraw,
+  wallet,
+  pending,
+};
