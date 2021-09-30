@@ -1,31 +1,12 @@
-<!-- <div *ngIf="!selectedChain">
-  <div class="modal-head">
-    <h1 mat-dialog-title>Select Chain</h1>
-  </div>
-  <div>
-    <div mat-dialog-content>
-      <button class="connect-option" (click)="setSelectedChain('BNB')">
-        <img class="connect-option__logo" src="http://localhost:4200/assets/images/token-icons/bnb.png" />
-        <span>Binance Chain</span>
-      </button>
-      <button class="connect-option" (click)="setSelectedChain('BTC')" [disabled]="!isTestnet">
-        <img class="connect-option__logo" src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BTCB-1DE/logo.png" />
-        <span>Bitcoin</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="selectedChain"> -->
 <div style="height: 100%">
   <div *ngIf="!connectionView">
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'connect', disable: true }
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.connect', disable: true }
         ]"
-        [message]="message"
+        [message]="message | translate"
         (funcCaller)="breadcrumbNav($event)"
       ></app-breadcrumb>
     </div>
@@ -34,15 +15,6 @@
       <div class="keystore-content" [ngClass]="{'is-mobile': isMobileDevice}" mat-dialog-content>
         <!-- Connect Options -->
 
-        <!-- <button class="connect-option" (click)="connectWalletConnect()" [disabled]="true">
-          <img class="connect-option__logo" src="assets/images/wallet-connect-icon.svg" />
-          <span>Wallet Connect</span>
-        </button>
-
-        <button class="connect-option" (click)="connectLedger()" [disabled]="true">
-          <img id="ledger-logo" class="connect-option__logo" src="assets/images/ledger/ledger-logo.png" />
-          <span>Ledger</span>
-        </button> -->
         <button class="connect-option" (click)="createKeystore()">
           <div class="flex item items-center">
             <div class="add-icon">
@@ -55,7 +27,7 @@
                 alt="add icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Create</span><span class="main-color"> New Keystore</span></span>
+            <span class="item-text"><span class="small-1">{{ ('connect.createKeystore' | translate)[0] }}</span><span class="main-color">{{ ('connect.createKeystore' | translate)[1] }}</span></span>
           </div>
         </button>
 
@@ -74,7 +46,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Create Keystore from </span><span class="main-color">Phrase</span></span>
+            <span class="item-text"><span class="small-1">{{ ('connect.phraseKeystore' | translate)[0] }}</span><span class="main-color">{{ ('connect.phraseKeystore' | translate)[1] }}</span></span>
           </div>
         </button>
 
@@ -90,7 +62,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Connect To </span><span class="main-color">Existing Keystore</span></span>
+            <span class="item-text"><span class="small-1">{{ ('connect.connectKeystore' | translate)[0] }}</span><span class="main-color">{{ ('connect.connectKeystore' | translate)[1] }}</span></span>
           </div>
         </button>
 
@@ -111,13 +83,13 @@
               />
             </div>
             <span class="item-text" *ngIf="isXDEFIConnected"
-              ><span class="small-1">Connect with </span><span class="main-color">XDEFI</span></span
+              ><span class="small-1">{{ ('connect.xdefiConnect' | translate)[0] }}</span><span class="main-color">{{ ('connect.xdefiConnect' | translate)[1] }}</span></span
             >
             <span class="item-text" *ngIf="!isXDEFIConnected && !isMobileDevice">
-              <span class="small-1">Install </span><span class="main-color">XDEFI</span><span class="small-1"> in Chrome/Brave</span>
+              <span class="small-1">{{ ('connect.installXdefi' | translate)[0] }}</span><span class="main-color">{{ ('connect.installXdefi' | translate)[1] }}</span><span class="small-1">{{ ('connect.installXdefi' | translate)[2] }}</span>
             </span>
             <span class="item-text" *ngIf="!isXDEFIConnected && isMobileDevice">
-              <span class="small-1">Use </span><span class="main-color">XDEFI</span><span class="small-1"> in Desktop platforms</span>
+              <span class="small-1">{{ ('connect.desktopXdefi' | translate)[0] }}</span><span class="main-color">{{ ('connect.desktopXdefi' | translate)[1] }}</span><span class="small-1">{{ ('connect.desktopXdefi' | translate)[2] }}</span>
             </span>
           </div>
         </button>
@@ -137,9 +109,9 @@
                 alt="folder icon"
               />
             </div>
-            <span *ngIf="isMetamask" class="item-text"><span class="small-1">Connect with </span><span class="main-color">MetaMask</span></span>
-            <span *ngIf="!isMetamask && !isMobileDevice" class="item-text"><span class="small-1">Install </span><span class="main-color">Metamask</span><span class="small-1"> in Chrome/Brave/Firefox</span></span>
-            <span *ngIf="!isMetamask && isMobileDevice" class="item-text"><span class="small-1">Use </span><span class="main-color">MetaMask</span><span class="small-1"> in Desktop platforms</span></span>
+            <span *ngIf="isMetamask" class="item-text"><span class="small-1">{{ ('connect.metamask' | translate)[0] }}</span><span class="main-color">{{ ('connect.metamask' | translate)[1] }}</span></span>
+            <span *ngIf="!isMetamask && !isMobileDevice" class="item-text"><span class="small-1">{{ ('connect.installMetamask' | translate)[0] }}</span><span class="main-color">{{ ('connect.installMetamask' | translate)[1] }}</span><span class="small-1">{{ ('connect.installMetamask' | translate)[2] }}</span></span>
+            <span *ngIf="!isMetamask && isMobileDevice" class="item-text"><span class="small-1">{{ ('connect.desktopMetamask' | translate)[0] }}</span><span class="main-color">{{ ('connect.desktopMetamask' | translate)[1] }}</span><span class="small-1">{{ ('connect.desktopMetamask' | translate)[2] }}</span></span>
           </div>
         </button>
 
@@ -155,7 +127,7 @@
                 alt="folder icon"
               />
             </div>
-            <span class="item-text"><span class="small-1">Connect with </span><span class="main-color">Wallet Connect</span></span>
+            <span class="item-text"><span class="small-1">{{ ('connect.walletConnect' | translate)[0] }}</span><span class="main-color">{{ ('connect.walletConnect' | translate)[1] }}</span></span>
           </div>
         </button>
 
@@ -168,7 +140,7 @@
         aria-label="Close Connect Wallet"
         (click)="close()"
       >
-        <span>cancel</span>
+        <span>{{ 'common.cancel' | translate }}</span>
       </button>
     </div>
   </div>

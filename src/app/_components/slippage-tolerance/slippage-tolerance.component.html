@@ -2,11 +2,11 @@
   <div class="content-top">
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'settings', call: 'settings' },
-        { name: 'slippage tolerance', disable: true }
+        { name: 'common.skip', call: 'swap' },
+        { name: 'common.settings', call: 'settings' },
+        { name: 'settings.slip', disable: true }
       ]"
-      [message]="message"
+      [message]="message | translate"
       (funcCaller)="breadcrumbNav($event)"
     ></app-breadcrumb>
     <div class="top-right"></div>
@@ -16,7 +16,7 @@
       <app-text-field
         [placeHolder]="[tolerance]"
         selectedType="Number"
-        label="Percentage"
+        [label]="'common.percentage' | translate"
         [(textOfField)]="customTolerance"
         name="custom-tolerance"
       ></app-text-field>
@@ -26,7 +26,7 @@
     <div class="bottom-actions two-btn">
       <div class="left-btn">
         <button class="close-btn" (click)="closeButton()">
-          <span>cancel</span>
+          <span>{{ 'common.cancel' | translate }}</span>
         </button>
       </div>
       <div class="divider"></div>
@@ -40,7 +40,7 @@
           "
           (click)="setSlippage()"
         >
-          <span>Save</span>
+          <span>{{ 'common.save' | translate }}</span>
         </button>
       </div>
     </div>

@@ -53,6 +53,7 @@ import { MockClientService } from 'src/app/_services/mock-client.service';
 import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
+import { TranslateService } from 'src/app/_services/translate.service';
 export interface SwapData {
   sourceAsset: AssetAndBalance;
   targetAsset: AssetAndBalance;
@@ -103,7 +104,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   isDoubleSwap: boolean = false;
   metaMaskProvider: ethers.providers.Web3Provider;
   swapSuccessful: boolean;
-  successMessage: string = 'Processing';
+  successMessage: string;
 
   isMobile: boolean = false;
 
@@ -122,7 +123,8 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
     private mockClientService: MockClientService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
     this.insufficientChainBalance = false;
@@ -166,6 +168,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.estimateTime();
+    this.successMessage = this.translate.format('common.processing');
 
     this.isDoubleSwap = this.isRune(this.swapData.targetAsset.asset)
       ? false

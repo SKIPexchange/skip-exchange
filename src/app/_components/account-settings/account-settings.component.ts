@@ -10,6 +10,7 @@ import {
   SettingViews,
 } from 'src/app/_services/overlays.service';
 import { SlippageToleranceService } from 'src/app/_services/slippage-tolerance.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 import { Currency } from './currency-converter/currency-converter.component';
 
@@ -33,7 +34,8 @@ export class AccountSettingsComponent implements OnInit {
     private userService: UserService,
     private currencyService: CurrencyService,
     private analytics: AnalyticsService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     const slippageTolerange$ =
       this.slipLimitService.slippageTolerance$.subscribe(

@@ -5,6 +5,7 @@ import {
 } from '@xchainjs/xchain-crypto';
 import { CopyService } from 'src/app/_services/copy.service';
 import { KeystoreService } from 'src/app/_services/keystore.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -12,7 +13,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './seed-phrase.component.html',
   styleUrls: ['./seed-phrase.component.scss'],
 })
-export class SeedPhraseComponent implements OnInit {
+export class SeedPhraseComponent {
   @Output() close: EventEmitter<null> = new EventEmitter<null>();
   passwordAccepted: boolean;
   keystoreConnecting: boolean;
@@ -23,10 +24,9 @@ export class SeedPhraseComponent implements OnInit {
 
   constructor(
     private copyService: CopyService,
-    private keystoreService: KeystoreService
+    private keystoreService: KeystoreService,
+    public translate: TranslateService
   ) {}
-
-  ngOnInit(): void {}
 
   copyToClipboard() {
     let result = this.copyService.copyToClipboard(this.phrase);

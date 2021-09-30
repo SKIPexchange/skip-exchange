@@ -5,6 +5,7 @@ import {
   MainViewsEnum,
   OverlaysService,
 } from 'src/app/_services/overlays.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 import { XDEFIService } from 'src/app/_services/xdefi.service';
 import { environment } from 'src/environments/environment';
@@ -25,13 +26,13 @@ export class XDEFIConnectComponent implements OnInit {
   isTestnet: boolean;
   subs: Subscription[];
   loading: boolean = false;
-  message: string;
 
   constructor(
     private userService: UserService,
     private xdefiService: XDEFIService,
     private overlaysService: OverlaysService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private translate: TranslateService
   ) {
     this.back = new EventEmitter<null>();
     this.closeModal = new EventEmitter<null>();
@@ -59,29 +60,46 @@ export class XDEFIConnectComponent implements OnInit {
 
   getBreadcrumbText() {
     if (this.xdefiError) {
-      return { text: 'An xdefi error occureded', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.xdefiError'),
+        isError: true,
+      };
     }
 
     if (!this.isValidNetwork) {
       return {
-        text: `SET TO ${this.isTestnet ? 'TESTNET' : 'MAINNET'} IN XDEFI`,
+        text: this.translate.format('xdefiNet', {
+          network: this.isTestnet ? 'Testnet' : 'Mainnet',
+        }),
         isError: true,
       };
     }
 
     if (this.listProviders?.every((p) => !p.enabled)) {
-      return { text: 'All dApps are disabled !', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.dAppsAll'),
+        isError: true,
+      };
     }
 
     if (this.listProviders?.some((p) => !p.enabled)) {
-      return { text: 'Some dApps are disabled !', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.dAppsSome'),
+        isError: true,
+      };
     }
 
     if (this.xdefiConnecting) {
-      return { text: 'Connecting', isError: false };
+      return {
+        text: this.translate.format('breadcrumb.connecting'),
+        isError: false,
+      };
     }
 
-    return { text: 'Are these enabled in xdefi?', isError: false };
+    return {
+      text: this.translate.format('breadcrumb.xdefiEnabled'),
+      isError: false,
+    };
   }
 
   clearKeystore() {

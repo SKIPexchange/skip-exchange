@@ -25,7 +25,7 @@
       </app-asset-input>
 
       <div class="percent-container" *ngIf="data.modalType === 'WITHDRAW'">
-        <span class="percent-label">Percentage</span>
+        <span class="percent-label">{{ 'withdraw.percentage' | translate }}</span>
         <span class="unstake-percent" [ngClass]="{disabled: this.data.isPending[0]}">{{ percentage }}%</span>
         <mat-slider
           class="slider"
@@ -57,7 +57,7 @@
         [disableUser]="false"
         [isWallet]="data.balances[1] ? true : false"
         [targetAddress]="targetAddress"
-        [targetLabel]="data.isPending && data.isPending[1] ? 'Receiving at' : 'Received at'"
+        [targetLabel]="data.isPending && data.isPending[1] ? translate.format('pending.receivingAt') : translate.format('pending.receivedAt')"
         [eventTags]="getEventTags(1)"
         [processing]="data.isPending && data.isPending[1]">
       </app-asset-input>
@@ -66,7 +66,7 @@
         *ngIf="data.modalType === 'SEND'"
         selectedType="Text"
         mode="Single"
-        label="Recipient Address"
+        [label]="translate.format('wallet.recipient')"
         [(textOfField)]="recipientAddress"
         [disable]="true"
       ></app-text-field>
@@ -95,10 +95,9 @@
       <div style="width: 100%">
         <button
           class="close-btn"
-          aria-label="CLOSE"
           (click)="close()"
         >
-          <span>close</span>
+          <span>{{ 'common.close' | translate }}</span>
         </button>
       </div>
     </div>

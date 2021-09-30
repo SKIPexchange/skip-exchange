@@ -15,6 +15,7 @@ import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { Asset } from 'src/app/_classes/asset';
 import { noticeData } from '../success-notice/success-notice.component';
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 export type ModalTypes =
   | 'SWAP'
@@ -94,7 +95,8 @@ export class TransactionSuccessModalComponent implements OnInit {
 
   constructor(
     private analyticsService: AnalyticsService,
-    private userService: UserService
+    private userService: UserService,
+    public translate: TranslateService
   ) {
     this.closeDialog = new EventEmitter<null>();
   }

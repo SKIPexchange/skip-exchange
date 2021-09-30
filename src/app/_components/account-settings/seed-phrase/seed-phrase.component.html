@@ -2,18 +2,18 @@
   <div class="content-top">
     <app-breadcrumb
       [path]="[
-        { name: 'skip', swapView: 'Swap', mainView: 'Swap' },
-        { name: 'settings', backFunc: true },
-        { name: 'seed phrase', disable: true }
+        { name: 'common.skip', swapView: 'Swap', mainView: 'Swap' },
+        { name: 'common.settings', backFunc: true },
+        { name: 'common.seed', disable: true }
       ]"
       [message]="
         passwordAccepted
-          ? 'store safely'
+          ? translate.format('breadcrumb.store')
           : keystoreError
-          ? 'incorrect password'
+          ? translate.format('breadcrumb.incorrectPass')
           : keystorePassword
-          ? 'ready'
-          : 'enter password'
+          ? translate.format('breadcrumb.ready')
+          : translate.format('breadcrumb.enterPass')
       "
       (backFunc)="close.emit()"
       [isError]="keystoreError"
@@ -26,7 +26,7 @@
         [(textOfField)]="keystorePassword"
         mode="Single"
         selectedType="Password"
-        label="Password"
+        [label]="translate.format('common.password')"
         name="keystore-password"
       ></app-text-field>
     </div>
@@ -39,7 +39,7 @@
           [disabled]="keystoreConnecting"
           (click)="close.emit()"
         >
-          <span>cancel</span>
+          <span>{{ 'common.cancel' | translate }}</span>
         </button>
       </div>
       <div class="divider"></div>
@@ -49,8 +49,8 @@
           [disabled]="!keystorePassword || keystoreConnecting"
           (click)="unlock()"
         >
-          <span *ngIf="!keystoreConnecting">Show</span>
-          <span *ngIf="keystoreConnecting">Connecting...</span>
+          <span *ngIf="!keystoreConnecting">{{ 'settings.show' | translate }}</span>
+          <span *ngIf="keystoreConnecting">{{ 'settings.connecting' | translate }}</span>
         </button>
       </div>
     </div>
@@ -60,26 +60,19 @@
       <app-phrase-words-list [phrase]="phrase"></app-phrase-words-list>
     </div>
 
-    <div class="descriptive" style="color: var(--primary-red);">
-      This phrase is your access to your wallet and funds. Write it down and
-      store it in a safe place.
-      <br/>Do not share it with anyone. SKIP never stores your keystore or
-      phrase anywhere.
-      <br/>This phrase is the only way to recover funds if your keystore file is
-      lost.
-    </div>
+    <div class="descriptive" style="color: var(--primary-red);" [innerHtml]="'settings.seedDescriptive' | translate"></div>
 
     <div class="bottom-actions two-btn">
       <div class="left-btn">
         <button class="close-btn" (click)="close.emit()">
-          <span>close</span>
+          <span>{{ 'common.close' | translate }}</span>
         </button>
       </div>
       <div class="divider"></div>
       <div class="right-btn" (click)="copyToClipboard()">
         <button class="next-btn" [disabled]="copied">
-          <span *ngIf="!copied">Copy</span>
-          <span *ngIf="copied">Copied</span>
+          <span *ngIf="!copied">{{ 'common.copy' | translate }}</span>
+          <span *ngIf="copied">{{ 'common.copied' | translate }}</span>
         </button>
       </div>
     </div>

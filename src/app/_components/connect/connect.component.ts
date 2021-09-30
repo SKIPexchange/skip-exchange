@@ -101,7 +101,7 @@ export class ConnectModal {
   isMetamask: boolean;
   phrase: string;
   writePhraseCategory: string;
-  message: string = 'select';
+  message: string = 'breadcrumb.select';
   isMobileDevice: boolean;
 
   @Output() closeEvent = new EventEmitter<null>();
@@ -183,17 +183,17 @@ export class ConnectModal {
 
   connectWalletConnect() {
     this.analytics.event('connect_select_wallet', 'option_connect_wallet');
-    this.message = 'loading';
+    this.message = 'breadcrumb.loading';
     this.wcService
       .connect(() => {
-        this.message = 'select';
+        this.message = 'breadcrumb.select';
       })
       .then((res) => {
-        this.message = 'select';
+        this.message = 'breadcrumb.select';
         this.closeEvent.emit();
       })
       .catch((err) => {
-        this.message = err.message || err || 'select';
+        this.message = err.message || err || 'breadcrumb.select';
         this.wcService.killSession();
       });
   }

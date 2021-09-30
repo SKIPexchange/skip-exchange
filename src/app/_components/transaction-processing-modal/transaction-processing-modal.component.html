@@ -29,7 +29,7 @@
           *ngIf="asset[0].asset.chain !== 'BNB'"
           selectedType="Text"
           mode="Single"
-          label="Recipient Address"
+          [label]="transalte.format('wallet.recipient')"
           [(textOfField)]="recipientAddress"
           [processing]="true"
           [disable]="true"
@@ -39,8 +39,8 @@
           selectedType="Text"
           mode="Double"
           typeTwo="text"
-          label="Recipient Address"
-          labelTwo="Memo"
+          [label]="transalte.format('wallet.recipient')"
+          [labelTwo]="transalte.format('wallet.memo')"
           [(textOfField)]="recipientAddress"
           [(textOfFieldTwo)]="memo"
           [disable]="true"
@@ -81,17 +81,17 @@
         [disabledMarketSelect]="true"
         [disableInput]="true"
         [hideMax]="true"
-        [targetLabel]="targetAddress? 'Receiving at' : undefined"
+        [targetLabel]="targetAddress? transalte.format('pending.receivingAt') : undefined"
         [processing]="true"
         [showPrice]="false"
-        [extraLabel]="type === 'Swap' ? '(estimated)' : undefined"
+        [extraLabel]="type === transalte.format('common.swap') ? transalte.format('common.estimated') : undefined"
       >
       </app-asset-input>
     </div>
 
     <div *ngIf="isWithdraw && !isSending">
       <div class="percent-container">
-        <span class="percent-label">Percentage</span>
+        <span class="percent-label">{{ 'withdraw.percentage' | translate }}</span>
         <span class="unstake-percent" style="color: var(--primary-grey-color)">{{ percentage }}%</span>
         <mat-slider
           class="slider"
@@ -122,10 +122,9 @@
         <button
           [disabled]="true"
           class="next-btn waiting"
-          aria-label="PROCESSING…"
           (click)="onCloseDialog()"
         >
-          <span>PLEASE WAIT…</span>
+          <span>{{ 'common.wait' | translate }}</span>
         </button>
       </div>
     </div>

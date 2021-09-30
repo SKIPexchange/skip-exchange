@@ -7,6 +7,9 @@ import pool from './pool';
 import withdraw from './withdraw';
 import wallet from './wallet';
 import pending from './pending';
+import txs from './txs';
+import settings from './settings';
+import connect from './connect';
 
 export {
   footer,
@@ -18,4 +21,7 @@ export {
   withdraw,
   wallet,
   pending,
+  txs,
+  settings,
+  connect,
 };

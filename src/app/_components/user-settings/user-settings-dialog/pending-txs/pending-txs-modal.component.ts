@@ -1,7 +1,11 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ExplorerPathsService } from 'src/app/_services/explorer-paths.service';
 import {
   TransactionStatusService,
   Tx,
@@ -13,7 +17,6 @@ import {
   MainViewsEnum,
 } from 'src/app/_services/overlays.service';
 import { Asset } from 'src/app/_classes/asset';
-import { environment } from 'src/environments/environment';
 import { User } from 'src/app/_classes/user';
 import { UserService } from 'src/app/_services/user.service';
 import { MidgardService } from 'src/app/_services/midgard.service';
@@ -25,6 +28,7 @@ import {
 } from 'src/app/_services/analytics.service';
 import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { MockClientService } from 'src/app/_services/mock-client.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 @Component({
   selector: 'app-pending-txs-modal',
@@ -55,7 +59,8 @@ export class PendingTxsModalComponent implements OnInit, OnDestroy {
     private midgardService: MidgardService,
     private analytics: AnalyticsService,
     private layout: LayoutObserverService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    public translate: TranslateService
   ) {
     this.back = new EventEmitter<null>();
     this.txs = [];
