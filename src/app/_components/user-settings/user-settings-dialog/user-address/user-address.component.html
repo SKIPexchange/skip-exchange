@@ -23,7 +23,7 @@
             <app-tag>
               <div (click)="copyToClipboard(address)">
                 <span *ngIf="!copied">{{ 'common.copy' | translate }}</span>
-                <span *ngIf="copied">{{ 'common.copy' | translate }}</span>
+                <span *ngIf="copied">{{ 'common.copied' | translate }}</span>
               </div>
             </app-tag>
             <div style="width: 5px"></div>
@@ -104,7 +104,7 @@
           aria-label="Close Connect Wallet Dialog"
           (click)="refreshBalances()"
         >
-          <span>{{ 'common.refresh' | translate }</span>
+          <span>{{ 'common.refresh' | translate }}</span>
         </button>
       </div>
     </div>

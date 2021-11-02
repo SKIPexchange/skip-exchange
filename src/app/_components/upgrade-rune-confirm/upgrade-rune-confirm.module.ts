@@ -12,6 +12,7 @@ import { AssetInputModule } from '../asset-input/asset-input.module';
 import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
 import { NoticeModule } from '../notice/notice.module';
 import { TransactionSuccessModalModule } from '../transaction-success-modal/transaction-success-modal.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [UpgradeRuneConfirmComponent],
@@ -28,6 +29,7 @@ import { TransactionSuccessModalModule } from '../transaction-success-modal/tran
     BreadcrumbModule,
     NoticeModule,
     ModalSectionHeaderModule,
+    TranslateModule,
   ],
   exports: [UpgradeRuneConfirmComponent],
 })

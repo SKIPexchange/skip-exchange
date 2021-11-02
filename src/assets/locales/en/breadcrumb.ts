@@ -48,4 +48,11 @@ export default {
   errorLogin: 'Keystore Login Incorrect',
   keystoreLogin: 'Upload keystore and Enter password',
   connectXdefi: 'Connect with Xdefi',
+  upgradeRune: 'Upgrade Rune',
+  selectRune: 'Select asset to Upgrade',
+  targetAddress: 'target {{chain}} address',
+  noUserFound: 'No User Found',
+  invalidAddress: 'Invalid {{chain}} Address',
+  type: 'Type',
+  selectType: 'Select Deposit Type',
 };

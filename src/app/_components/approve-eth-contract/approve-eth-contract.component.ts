@@ -57,27 +57,6 @@ export class ApproveEthContractComponent implements OnDestroy {
 
   openConfirmationDialog() {
     this.approveClicked.emit();
-    // const dialogRef = this.dialog.open(
-    //   ApproveEthContractModalComponent,
-    //   {
-    //     minWidth: '260px',
-    //     maxWidth: '420px',
-    //     width: '50vw',
-    //     data: {
-    //       routerAddress: this.contractAddress,
-    //       asset: this.asset
-    //     }
-    //   }
-    // );
-
-    // dialogRef.afterClosed().subscribe( (isApprovedTxHash: string) => {
-
-    //   if (isApprovedTxHash) {
-    //     this.isApprovedTxHash = isApprovedTxHash;
-    //     this.approving = true;
-    //   }
-
-    // });
   }
 
   approveHash(isApprovedTxHash) {

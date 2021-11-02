@@ -6,8 +6,8 @@
       <div class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'upgrade rune', disable: false, call: 'back' },
+            { name: 'common.skip', call: 'swap' },
+            { name: 'breadcrumb.upgradeRune', disable: false, call: 'back' },
             {
               name: asset.asset.chain + '.' + asset.asset.ticker,
               disable: true
@@ -22,7 +22,7 @@
 
       <div class="content-middle">
         <app-asset-input
-          label="Upgrade"
+          [label]="'common.upgrade' | translate"
           type="upgrade"
           [(selectedAsset)]="asset.asset"
           [(assetUnit)]="amount"
@@ -40,7 +40,7 @@
         <app-arrow [seperator]="true"></app-arrow>
 
         <app-asset-input
-          label="Receive"
+          [label]="'common.receive' | translate"
           [(selectedAsset)]="nativeRune.asset"
           [(assetUnit)]="amount"
           [balance]="nativeRune.balance.amount().toNumber()"
@@ -54,7 +54,7 @@
 
         <div class="swap-details">
           <div *ngIf="networkFee && asset.asset && amount" class="flex justify-between list-items white-text">
-            <span class="tx-detail-label">Network Fee:</span>
+            <span class="tx-detail-label">{{ 'common.fee' | translate }}</span>
             <span class="text-sm">
               {{ networkFee | number: "0.0-8" }} {{ getChainAssetCaller(asset.asset).chain }}.{{ getChainAssetCaller(asset.asset).ticker }}
               <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
@@ -73,7 +73,7 @@
           <div class="bottom-actions two-btn">
             <div class="left-btn">
               <button class="close-btn" (click)="close()">
-                <span>cancel</span>
+                <span>{{ 'common.cancel' | translate }}</span>
               </button>
             </div>
             <div class="divider"></div>
@@ -83,7 +83,7 @@
                 [disabled]="!amountSpendable"
                 (click)="upgradeConfirm()"
               >
-                <span>upgrade</span>
+                <span>{{ 'common.upgrade' | translate }}</span>
               </button>
             </div>
           </div>

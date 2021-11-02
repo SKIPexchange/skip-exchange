@@ -3,13 +3,13 @@
         <div class="menu-item-icon">
             <img [src]="getIcon('swap', active === 'swap')" alt="swap">
         </div>
-        <span class="menu-item-text" [ngClass]="{active: active === 'swap'}">Swap</span>
+        <span class="menu-item-text" [ngClass]="{active: active === 'swap'}">{{ 'common.swap' | translate }}</span>
     </div>
     <div class="menu-item" (click)="pool()">
         <div class="menu-item-icon">
             <img [src]="getIcon('pool', isPoolPage())" alt="pool">
         </div>
-        <span class="menu-item-text" [ngClass]="{active: isPoolPage()}">Pool</span>
+        <span class="menu-item-text" [ngClass]="{active: isPoolPage()}">{{ 'common.pool' | translate }}</span>
     </div>
     <div class="menu-item" (click)="wallet()">
         <div class="menu-item-icon">
@@ -21,18 +21,18 @@
         <div class="menu-item-icon" (click)="upgrade()">
             <img [src]="getIcon('upgrade', active === 'upgrade', hasRune && isTestnet)" alt="upgrade">
         </div>
-        <span class="menu-item-text " [ngClass]="{disconnect: !user || !hasRune, active: active === 'upgrade', 'graident-text': user}">Upgrade</span>
+        <span class="menu-item-text " [ngClass]="{disconnect: !user || !hasRune, active: active === 'upgrade', 'graident-text': user}">{{ 'common.upgrade' | translate }}</span>
     </div>
     <div class="menu-item">
         <div class="menu-item-icon" (click)="tranasactions()">
             <img [src]="getIcon('transactions', active === 'transactions')" alt="transactions">
         </div>
-        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'transactions'}">TX's</span>
+        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'transactions'}">{{ 'common.txs' | translate }}</span>
     </div>
     <div class="menu-item">
         <div class="menu-item-icon" (click)="settings()">
             <img [src]="getIcon('settings', active === 'settings')" alt="settings">
         </div>
-        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'settings'}">Settings</span>
+        <span class="menu-item-text" [ngClass]="{disconnect: !user, active: active === 'settings'}">{{ 'common.settings' | translate }}</span>
     </div>
 </div>

@@ -248,13 +248,13 @@
   <ng-container>
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'Pools', call: 'pool' },
-        { name: 'Deposit', disable: true },
+        { name: 'common.skip', call: 'swap' },
+        { name: 'common.pool', call: 'pool' },
+        { name: 'common.deposit', disable: true },
         { name: asset?.chain + '.' + asset?.ticker , disable: true },
-        { name: 'type', disable: true }
+        { name: 'breadcrumb.type', disable: true }
       ]"
-      message="select deposit type"
+      [message]="'breadcrumb.selectType' | translate"
       (funcCaller)="breadCrumbNav($event, 'deposit')"
     ></app-breadcrumb>
   </ng-container>

@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [MarketsModalComponent],
@@ -22,6 +23,7 @@ import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
     FormsModule,
     AssetsListModule,
     BreadcrumbModule,
+    TranslateModule,
   ],
   exports: [MarketsModalComponent],
 })

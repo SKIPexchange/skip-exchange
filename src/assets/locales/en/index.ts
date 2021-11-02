@@ -10,6 +10,7 @@ import pending from './pending';
 import txs from './txs';
 import settings from './settings';
 import connect from './connect';
+import header from './header';
 
 export {
   footer,
@@ -24,4 +25,5 @@ export {
   txs,
   settings,
   connect,
+  header,
 };

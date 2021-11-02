@@ -16,8 +16,8 @@
     <ng-container tags>
       <app-tag>
         <div (click)="copyToClipboard()">
-          <span *ngIf="!copied">COPY</span>
-          <span *ngIf="copied">COPIED</span>
+          <span *ngIf="!copied">{{ 'common.copy' | translate }}</span>
+          <span *ngIf="copied">{{ 'common.copied' | translate }}</span>
         </div>
       </app-tag>
       <div style="width: 5px"></div>
@@ -28,7 +28,7 @@
             style="text-decoration: none; color: inherit"
             [href]="explorerPath()"
             (click)="exploreEvent()"
-            >Explore</a
+            >{{ 'common.explore' | translate }}</a
           >
         </div>
       </app-tag>
@@ -37,7 +37,7 @@
 
   <div class="swap-details">
     <div class="flex justify-between white-text">
-      <span>This will add the {{data.asset.ticker}} to be used by THORChain smart contract.</span>
+      <span>{{ 'swap.approveHelp' | translate }}</span>
     </div>
     <!-- <div class="flex justify-between">
       <span class="tx-detail-label">Estimated ETH Fee:</span>
@@ -49,7 +49,7 @@
   <div class="bottom-actions two-btn">
     <div class="left-btn">
       <button class="close-btn" (click)="closeDialog()">
-        <span>cancel</span>
+        <span>{{ 'common.cancel' | translate }}</span>
       </button>
     </div>
     <div class="divider"></div>
@@ -59,7 +59,7 @@
         (click)="approve()"
         [disabled]="insufficientEthBalance || loading"
       >
-        <span>Approve</span>
+        <span>{{ 'common.approve' | translate }}</span>
       </button>
     </div>
   </div>

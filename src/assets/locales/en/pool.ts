@@ -11,4 +11,7 @@ export default {
   poolStats: 'Pool Stats',
   refresh: 'Refresh',
   joined: 'Joined',
+  depositable: 'Depositable',
+  withdrawable: 'Withdrawable',
+  noAsset: 'No ASSET',
 };

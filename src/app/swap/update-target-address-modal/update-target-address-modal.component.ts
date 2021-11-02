@@ -8,6 +8,7 @@ import {
 } from 'src/app/_services/overlays.service';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { UserService } from 'src/app/_services/user.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 @Component({
   selector: 'app-update-target-address-modal',
@@ -26,7 +27,8 @@ export class UpdateTargetAddressModalComponent implements OnInit {
     private userService: UserService,
     private oveService: OverlaysService,
     private analytics: AnalyticsService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -96,28 +98,44 @@ export class UpdateTargetAddressModalComponent implements OnInit {
 
   updateAddressBtnText() {
     if (!this.user?.clients) {
-      return { text: 'No User found', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.noUserFound'),
+        isError: true,
+      };
     }
 
     const client =
       this.userService.getChainClient(this.user, this.chain) ??
       this.mockClientService.getMockClientByChain(this.chain);
     if (!client) {
-      return { text: `No ${this.chain} Client Found`, isError: false };
+      return {
+        text: this.translate.format('breadcrumb.noClient', {
+          chain: this.chain,
+        }),
+        isError: false,
+      };
     }
 
     if (
       !client.validateAddress(this.targetAddress) &&
       this.targetAddress.length > 5
     ) {
-      return { text: `Invalid ${this.chain} Address`, isError: true };
+      return {
+        text: this.translate.format('breadcrumb.invalidAddress', {
+          chain: this.chain,
+        }),
+        isError: true,
+      };
     }
 
     if (!this.user) {
-      return 'No User found';
+      return this.translate.format('breadcrumb.noUserFound');
     }
 
-    return { text: 'PREPARE', isError: false };
+    return {
+      text: this.translate.format('breadcrumb.prepare'),
+      isError: false,
+    };
   }
 
   close() {

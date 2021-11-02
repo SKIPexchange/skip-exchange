@@ -9,6 +9,7 @@ import { UpgradeRuneConfirmModule } from '../upgrade-rune-confirm/upgrade-rune-c
 import { TransactionSuccessModalModule } from '../transaction-success-modal/transaction-success-modal.module';
 import { NotificationComponent } from '../notification/notification.component';
 import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
     UpgradeRuneConfirmModule,
     TransactionSuccessModalModule,
     BreadcrumbModule,
+    TranslateModule,
   ],
   exports: [NativeRunePromptComponent, NativeRunePromptModalComponent],
 })

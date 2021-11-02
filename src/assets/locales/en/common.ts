@@ -20,6 +20,7 @@ export default {
   seed: 'Seed Phrase',
   receive: 'Receive',
   prices: 'Prices:',
+  fee: 'Network Fee:',
   fees: 'Network Fees:',
   cancel: 'Cancel',
   search: 'Search',
@@ -46,4 +47,8 @@ export default {
   percentage: 'Percentage',
   xdefi: 'Xdefi Connect',
   create: 'Create',
+  approve: 'Approve',
+  upgrade: 'Upgrade',
+  txs: "TX's",
+  notFound: 'Not Found',
 };

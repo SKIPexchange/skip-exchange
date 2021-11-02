@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ModalSectionHeaderModule } from '../modal-section-header/modal-section-header.module';
 import { ArrowModule } from '../arrow/arrow.module';
 import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [UpgradeRuneComponent],
@@ -18,6 +19,7 @@ import { BreadcrumbModule } from '../breadcrumb/breadcrumb.module';
     ArrowModule,
     BreadcrumbModule,
     ModalSectionHeaderModule,
+    TranslateModule,
   ],
   exports: [UpgradeRuneComponent],
 })

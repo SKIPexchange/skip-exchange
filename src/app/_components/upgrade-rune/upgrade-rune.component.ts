@@ -15,6 +15,7 @@ import {
   OverlaysService,
 } from 'src/app/_services/overlays.service';
 import { TransactionUtilsService } from 'src/app/_services/transaction-utils.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
 
@@ -55,7 +56,8 @@ export class UpgradeRuneComponent implements OnInit {
     private overlaysService: OverlaysService,
     private analytics: AnalyticsService,
     private txUtilsService: TransactionUtilsService,
-    private currencyService: CurrencyService
+    private currencyService: CurrencyService,
+    private translate: TranslateService
   ) {
     this.back = new EventEmitter<null>();
     this.confirmUpgrade = new EventEmitter<{ amount: number }>();
@@ -97,14 +99,16 @@ export class UpgradeRuneComponent implements OnInit {
     this.insufficientChainBalance = this.balance < this.networkFee;
     if (this.insufficientChainBalance) {
       this.isError = true;
-      return `Insufficient ${this.asset.asset.chain}.${this.asset.asset.ticker} for Fees`;
+      return this.translate.format('breadcrumb.insufficient', {
+        asset: assetString(this.asset.asset),
+      });
     }
 
     if (this.amountSpendable) {
-      return 'ready';
+      return this.translate.format('breadcrumb.ready');
     }
 
-    return 'prepare';
+    return this.translate.format('breadcrumb.prepare');
   }
 
   breadcrumbNav(val: string): void {
