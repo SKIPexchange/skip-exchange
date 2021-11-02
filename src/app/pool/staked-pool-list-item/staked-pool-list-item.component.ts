@@ -316,7 +316,7 @@ export class StakedPoolListItemComponent implements OnDestroy, OnInit {
     ).assetAddress;
 
     return (
-      'https://app.runeyield.info/dashboard?' +
+      'https://app.thoryield.com/dashboard?' +
       (runeAddress ? `thor=${runeAddress}&` : '') +
       (assetAddress ? `${this.asset.chain.toLowerCase()}=${assetAddress}` : '')
     );

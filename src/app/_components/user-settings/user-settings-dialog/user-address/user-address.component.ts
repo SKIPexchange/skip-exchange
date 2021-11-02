@@ -194,6 +194,10 @@ export class UserAddressComponent implements OnInit {
 
     if (result) this.copied = true;
 
+    setTimeout(() => {
+      this.copied = false;
+    }, 2000);
+
     this.analytics.event(
       'wallet_asset_select',
       'tag_txid_copy_*WALLET*',
