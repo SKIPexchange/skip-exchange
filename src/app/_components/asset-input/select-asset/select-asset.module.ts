@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SelectAssetComponent } from './select-asset.component';
 import { MarketsModalModule } from '../../markets-modal/markets-modal.module';
 import { IconTickerModule } from '../../icon-ticker/icon-ticker.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [SelectAssetComponent],
@@ -20,6 +21,7 @@ import { IconTickerModule } from '../../icon-ticker/icon-ticker.module';
     IconTickerModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    TranslateModule,
   ],
   exports: [SelectAssetComponent],
 })

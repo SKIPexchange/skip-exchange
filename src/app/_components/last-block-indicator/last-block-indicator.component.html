@@ -51,7 +51,7 @@
           *ngIf="lastBlock"
           >{{ lastBlock | number: "1.0":"en-US" }}</span
         >
-        <span *ngIf="!lastBlock">CONNECTING</span>
+        <span *ngIf="!lastBlock">{{ 'breadcrumb.connecting' | translate }}</span>
       </div>
     </div>
   </a>

@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TagModule } from '../tag/tag.module';
 import { SelectAssetModule } from '../asset-input/select-asset/select-asset.module';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [DoubleAssetFieldComponent],
@@ -26,6 +27,7 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
     SelectAssetModule,
     AngularSvgIconModule,
     TagModule,
+    TranslateModule,
   ],
   exports: [DoubleAssetFieldComponent],
 })

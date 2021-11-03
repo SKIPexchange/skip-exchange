@@ -51,4 +51,5 @@ export default {
   upgrade: 'Upgrade',
   txs: "TX's",
   notFound: 'Not Found',
+  waitTXID: 'Waiting for TXID',
 };

@@ -9,7 +9,7 @@
 		class="flex items-center asset-selector select-token"
 		[ngClass]="{ disabled: disabledMarketSelect }"
 	>
-		<span style="font-size: 20px; line-height: 24px">SELECT</span>
+		<span style="font-size: 20px; line-height: 24px">{{ 'common.select' | translate }}</span>
 		<div
 			style="display: flex; margin-left: 10px"
 			*ngIf="!disabledMarketSelect"
