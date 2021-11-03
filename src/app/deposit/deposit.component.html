@@ -25,7 +25,7 @@
         <app-asset-input
           *ngIf="poolType === 'SYM' || poolType === 'ASYM_ASSET'"
           type="deposit"
-          [label]="translate.format('common.deposit')"
+          [label]="'common.deposit' | translate"
           [(selectedAsset)]="asset"
           [assetUnit]="assetAmount"
           (assetUnitChange)="updateValues('ASSET', $event)"
@@ -48,7 +48,7 @@
         <app-asset-input
           *ngIf="poolType === 'SYM' || poolType === 'ASYM_RUNE'"
           label="Deposit"
-          [label]="translate.format('common.deposit')"
+          [label]="'common.deposit' | translate"
           [(selectedAsset)]="rune"
           [assetUnit]="runeAmount"
           (assetUnitChange)="updateValues('RUNE', $event)"
@@ -200,13 +200,13 @@
       >
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'Pools', call: 'pool' },
-            { name: 'Deposit', call: 'deposit-back' },
+            { name: 'common.skip', call: 'swap' },
+            { name: 'common.pool', call: 'pool' },
+            { name: 'common.deposit', call: 'deposit-back' },
             { name: asset?.chain + '.' + asset?.ticker , disable: true },
-            { name: 'SEARCH', disable: true }
+            { name: 'common.search', disable: true }
           ]"
-          message="SELECT"
+          [message]="'common.select' | translate"
           (funcCaller)="breadCrumbNav($event, 'market')"
         ></app-breadcrumb>
       </app-markets-modal>

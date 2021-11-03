@@ -37,7 +37,7 @@
       <app-arrow></app-arrow>
 
       <app-double-asset-field
-        [label]="translate.format('withdraw.withdrawal')"
+        [label]="'withdraw.withdrawal' | translate"
         [selectedAssets]="[asset, rune]"
         [assetUnits]="[removeAssetAmount, removeRuneAmount]"
         [priceInputs]="[assetPrice, runePrice]"
@@ -127,13 +127,13 @@
 >
 <app-breadcrumb
   [path]="[
-    { name: 'skip', call: 'swap' },
-    { name: 'Pools', call: 'pool' },
-    { name: 'Withdraw', disable: true },
+    { name: 'common.skip', call: 'swap' },
+    { name: 'common.pool', call: 'pool' },
+    { name: 'common.withdraw', disable: true },
     { name: asset?.chain + '.' + asset?.ticker , disable: true },
-    { name: 'type', disable: true }
+    { name: 'breadcrumb.type', disable: true }
   ]"
-  message="select"
+  [message]="'common.select' | translate"
   (funcCaller)="breadcrumbNav($event)"
 ></app-breadcrumb>
 </app-pool-type-options>

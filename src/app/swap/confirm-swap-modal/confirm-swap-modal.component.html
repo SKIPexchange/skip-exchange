@@ -1,7 +1,7 @@
 <!-- <div class="container" *ngIf="swapData" [ngClass]="{'pending': txState === 'PENDING_CONFIRMATION', 'success': txState === 'SUCCESS', 'submit': txState === 'SUBMITTING'}"> -->
 <app-transaction-processing-modal
   *ngIf="txState == 'SUBMITTING'"
-  [label]="[translate.format('pending.sending'), translate.format('pending.receiving')]"
+  [label]="['pending.sending' | translate, 'pending.receiving' | translate]"
   [isSending]="false"
   [asset]="[swapData.sourceAsset, swapData.targetAsset]"
   [amount]="[swapData.inputValue, swapData.outputValue]"
@@ -13,7 +13,7 @@
       { name: 'common.skip', call: 'skip' },
       { name: 'coomon.swap', call: 'swap' }
     ]"
-    [message]="translate.format('common.processing')"
+    [message]="'common.processing' | translate"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>
@@ -48,7 +48,7 @@
           { name: 'common.skip', call: 'skip' },
           { name: 'common.swap', call: 'swap' }
         ]"
-        [message]="translate.format('common.confirm')"
+        [message]="'common.confirm' | translate"
         (funcCaller)="breadcrumbNav($event, 'pending')"
       ></app-breadcrumb>
     </div>
@@ -78,7 +78,7 @@
   <div class="main-content">
 
     <app-asset-input
-      [label]="translate.format('common.send')"
+      [label]="'common.send' | translate"
       type="swap"
       [(selectedAsset)]="swapData.sourceAsset.asset"
       [(assetUnit)]="swapData.inputValue"
@@ -93,7 +93,7 @@
     <app-arrow></app-arrow>
 
     <app-asset-input
-      [label]="translate.format('common.receive')"
+      [label]="'common.receive' | translate"
       [(selectedAsset)]="swapData.targetAsset.asset"
       [(assetUnit)]="swapData.outputValue"
       [balance]="swapData.targetAsset?.balance?.amount().toNumber()"
@@ -103,7 +103,7 @@
       [disabledMarketSelect]="true"
       [targetAddress]="swapData.targetAddress"
       [hideMax]="true"
-      [extraLabel]="translate.format('common.estimated')"
+      [extraLabel]="'common.estimated' | translate"
     ></app-asset-input>
 
     <div>
@@ -206,7 +206,7 @@
           >
             <span *ngIf="!insufficientChainBalance">{{ 'common.confirm' | translate }}</span>
             <span *ngIf="insufficientChainBalance">
-              Insufficient {{ swapData.sourceAsset.asset.chain }}
+              {{ 'breadcrumb.insufficientBalance' | translate }}
             </span>
           </button>
         </div>

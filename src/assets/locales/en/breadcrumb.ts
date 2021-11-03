@@ -41,6 +41,7 @@ export default {
   dAppsSome: 'Some dApps are disabled !',
   reconnectOrForget: 'Reconnect or forget',
   createKeystore: 'Create Keystore',
+  secureSeedPhrase: 'Secure your Seed Phrase',
   errorKeystore: 'Error Creating Keystore',
   errorMatch: "Passwords Don't Match",
   phraseKeystore: 'Create wallet from phrase',

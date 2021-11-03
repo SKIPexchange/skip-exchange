@@ -15,8 +15,8 @@
           <div class="top-right" *ngIf="!isMobile">
             <app-right-option
               [switchField]="{
-                right: { text: 'Pool', tag: '', disable: false },
-                left: { text: 'Swap', tag: '', disable: false }
+                right: { text: 'common.pool', tag: '', disable: false },
+                left: { text: 'common.swap', tag: '', disable: false }
               }"
               (clickCaller)="switchNav($event)"
             ></app-right-option>
@@ -26,7 +26,7 @@
         <div class="main-content">
           <!-- SOURCE -->
           <app-asset-input
-            label="Send"
+            [label]="'common.send' | translate"
             type="swap"
             [(selectedAsset)]="selectedSourceAsset"
             [(assetUnit)]="sourceAssetUnit"
@@ -52,8 +52,8 @@
 
           <!-- TARGET -->
           <app-asset-input
-            label="Receive"
-            [extraLabel]="selectedTargetAsset ? '(estimated)' : undefined"
+            [label]="'common.receive' | translate"
+            [extraLabel]="selectedTargetAsset ? ('common.estimated' | translate) : undefined"
             [(selectedAsset)]="selectedTargetAsset"
             [(assetUnit)]="targetAssetUnitDisplay"
             [balance]="targetBalance"
@@ -222,7 +222,7 @@
             { name: 'common.swap', call: 'swap' },
             { name: 'common.search', disable: true }
           ]"
-          message="SELECT"
+          [message]="'common.select' | translate"
           (funcCaller)="marketNav($event)"
         ></app-breadcrumb>
       </app-markets-modal>
@@ -249,7 +249,7 @@
             { name: 'common.swap', call: 'swap' },
             { name: 'common.search', disable: true }
           ]"
-          message="SELECT"
+          [message]="'common.select' | translate"
           (funcCaller)="marketNav($event)"
         ></app-breadcrumb>
       </app-markets-modal>
