@@ -33,6 +33,10 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { environment } from 'src/environments/environment';
 import { decodeAddress } from '@binance-chain/javascript-sdk/lib/crypto';
 import { Asset } from '../_classes/asset';
+import {
+  DEPOSIT_GAS_VALUE,
+  DEFAULT_GAS_VALUE,
+} from '@xchainjs/xchain-thorchain';
 
 const qrcodeModalOptions = {
   mobileLinks: ['trust'],
@@ -83,8 +87,8 @@ export const THORCHAIN_NETWORK = CoinType.thorchain;
 
 export const BINANCE_CHAIN_ID = 'Binance-Chain-Tigris';
 export const THORCHAIN_ID = 'thorchain';
-const THORCHAIN_DEPOSIT_GAS_FEE = '20000000';
-const THORCHAIN_SEND_GAS_FEE = '2000000';
+const THORCHAIN_DEPOSIT_GAS_FEE = DEPOSIT_GAS_VALUE;
+const THORCHAIN_SEND_GAS_FEE = DEFAULT_GAS_VALUE;
 
 export type Coin = {
   denom: string;
