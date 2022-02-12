@@ -236,6 +236,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
         chain: this.data.rune.chain,
         symbol: this.data.rune.symbol,
         ticker: this.data.rune.ticker,
+        synth: false,
       };
 
       const hash = await thorClient.deposit({
@@ -374,6 +375,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
               chain: asset.chain,
               symbol: asset.symbol,
               ticker: asset.ticker,
+              synth: false
             },
             amount: minAmount,
             recipient: matchingInboundAddress.address,

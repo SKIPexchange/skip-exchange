@@ -198,6 +198,7 @@ export class ConfirmPoolCreateComponent implements OnDestroy {
           chain: asset.chain,
           symbol: asset.symbol,
           ticker: asset.ticker,
+          synth: false
         },
         amount: assetToBase(assetAmount(this.data.assetAmount)),
         recipient: recipientPool.address,

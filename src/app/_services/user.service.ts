@@ -332,7 +332,8 @@ export class UserService {
         },
       ]);
 
-      const assetsToQuery: { chain: Chain; ticker: string; symbol: string }[] =
+      // fix the type asset
+      const assetsToQuery: { chain: Chain; ticker: string; symbol: string; synth: boolean }[] =
         [];
 
       /**

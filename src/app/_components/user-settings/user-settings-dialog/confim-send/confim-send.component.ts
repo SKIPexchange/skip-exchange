@@ -427,6 +427,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
               chain: asset.chain,
               symbol: asset.symbol,
               ticker: asset.ticker,
+              synth: false
             },
             amount: assetToBase(assetAmount(this.amount, decimal)),
             recipient: this.recipientAddress,
