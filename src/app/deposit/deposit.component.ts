@@ -659,9 +659,9 @@ export class DepositComponent implements OnInit, OnDestroy {
       } else {
         // prettier-ignore
         const totalPooledRune = +(network as NetworkSummary).totalPooledRune / (10 ** 8);
-        if (mimir && mimir['mimir//MAXIMUMLIQUIDITYRUNE']) {
+        if (mimir && mimir['MAXIMUMLIQUIDITYRUNE']) {
           // prettier-ignore
-          const maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
+          const maxLiquidityRune = mimir['MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
           this.depositsDisabled = totalPooledRune / maxLiquidityRune >= 0.99;
         }
       }

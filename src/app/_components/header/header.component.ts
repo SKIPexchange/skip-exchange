@@ -121,14 +121,13 @@ export class HeaderComponent implements OnDestroy {
 
       this.error = false;
       this.totalPooledRune = +network?.totalPooledRune / 10 ** 8;
-
       if (
         mimir &&
-        mimir['mimir//MAXIMUMLIQUIDITYRUNE'] &&
+        mimir['MAXIMUMLIQUIDITYRUNE'] &&
         this.totalPooledRune != null &&
         this.totalPooledRune != NaN
       ) {
-        this.maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / 10 ** 8;
+        this.maxLiquidityRune = mimir['MAXIMUMLIQUIDITYRUNE'] / 10 ** 8;
         this.depositsDisabled =
           this.totalPooledRune / this.maxLiquidityRune >= 0.99;
 
