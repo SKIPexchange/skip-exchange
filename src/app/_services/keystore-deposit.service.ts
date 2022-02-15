@@ -131,6 +131,7 @@ export class KeystoreDepositService {
         chain: asset.chain,
         symbol: asset.symbol,
         ticker: asset.ticker,
+        synth: false
       },
       amount: assetToBase(assetAmount(inputAmount)),
       recipient: recipientPool.address,
@@ -178,6 +179,7 @@ export class KeystoreDepositService {
         chain: asset.chain,
         symbol: asset.symbol,
         ticker: asset.ticker,
+        synth: false
       },
       amount: baseAmount(amount),
       recipient: recipientPool.address,
@@ -226,6 +228,7 @@ export class KeystoreDepositService {
         chain: asset.chain,
         symbol: asset.symbol,
         ticker: asset.ticker,
+        synth: false
       },
       amount: baseAmount(amount),
       recipient: recipientPool.address,
@@ -276,6 +279,7 @@ export class KeystoreDepositService {
           chain: asset.chain,
           symbol: asset.symbol,
           ticker: asset.ticker,
+          synth: false
         },
         amount: baseAmount(amount),
         recipient: recipientPool.address,

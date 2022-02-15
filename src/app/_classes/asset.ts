@@ -1,5 +1,5 @@
 import { CoinIconsFromTrustWallet } from 'src/app/_const/icon-list';
-import { assetToString, Chain } from '@xchainjs/xchain-util';
+import { assetToString, Chain, Asset as XCAsset } from '@xchainjs/xchain-util';
 import { ethers } from 'ethers';
 import { ethToken } from '../_const/eth-token';
 import { environment } from '../../environments/environment';
@@ -8,6 +8,7 @@ export class Asset {
   chain: Chain;
   symbol: string;
   ticker: string;
+  synth: boolean;
   iconPath: string;
 
   constructor(poolName: string) {
@@ -17,6 +18,7 @@ export class Asset {
     this.chain = chain;
     this.symbol = symbol;
     this.ticker = ticker;
+    this.synth = false;
 
     const trustWalletMatch = CoinIconsFromTrustWallet[this.ticker];
 
@@ -136,7 +138,7 @@ export class Asset {
 
 export const checkSummedAsset = (
   poolName: string
-): { chain: Chain; ticker: string; symbol: string } => {
+): { chain: Chain; ticker: string; symbol: string; synth: boolean } => {
   const asset = new Asset(poolName);
   const assetAddress = asset.symbol.slice(asset.ticker.length + 1);
   const strip0x =
@@ -148,14 +150,11 @@ export const checkSummedAsset = (
     chain: asset.chain,
     ticker: asset.ticker,
     symbol: `${asset.ticker}-${checkSummedAddress}`,
+    synth: false,
   };
 };
 
-export const isNonNativeRuneToken = (asset: {
-  chain: Chain;
-  ticker: string;
-  symbol: string;
-}): boolean => {
+export const isNonNativeRuneToken = (asset: XCAsset): boolean => {
   const runeTokens = [
     'BNB.RUNE-B1A', // chaosnet
     'BNB.RUNE-67C', // testnet

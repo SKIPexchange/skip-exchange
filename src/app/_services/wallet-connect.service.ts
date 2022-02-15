@@ -12,10 +12,8 @@ import { auth, BaseAccount, StdTx } from 'cosmos-client/x/auth';
 import { CosmosSDKClient } from '@xchainjs/xchain-cosmos';
 import { AccAddress } from 'cosmos-client';
 import {
-  getDenomWithChain,
-  MsgNativeTx,
+  getDenom,
   msgNativeTxFromJson,
-  ThorchainDepositResponse,
 } from '@xchainjs/xchain-thorchain';
 import { MidgardService } from './midgard.service';
 import {
@@ -172,7 +170,6 @@ export class WalletConnectService {
     };
 
     const connector = new WalletConnect(options);
-
     // Check if connection is already established
     if (!connector.connected) {
       // create new session
@@ -263,7 +260,7 @@ export class WalletConnectService {
       throw new Error(errorCodes.ERROR_SESSION_DISCONNECTED);
     }
 
-    // see if all walletconnects support get_accounts extension
+    // see if all walletconnects support get_accounts extension (TRUST WALLET)
     if (accounts && !this.supportWC(name)) {
       const isEth = this.mockClientService
         .getMockClientByChain(Chain.Ethereum)
@@ -282,9 +279,21 @@ export class WalletConnectService {
       return this.accounts;
     } else {
       try {
-        const accounts = await this.connector.sendCustomRequest({
+        const accountsReq = this.connector.sendCustomRequest({
           jsonrpc: '2.0',
           method: 'get_accounts',
+        })
+
+        const accounts = await Promise.race([
+          accountsReq,
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(new Error('timeout'));
+            }, 2000)
+          })
+        ]).catch(err => {
+          console.log(err);
+          this.killSession();
         });
 
         const supportedAccounts = accounts.filter((account) =>
@@ -641,7 +650,7 @@ export class WalletConnectService {
       const msgNativeTx = msgNativeTxFromJson({
         coins: [
           {
-            asset: getDenomWithChain(asset),
+            asset: getDenom(asset),
             amount: amount.amount().toString(),
           },
         ],
