@@ -29,6 +29,7 @@ export class MockClientService {
     const network =
       environment.network === 'testnet' ? Network.Testnet : Network.Mainnet;
     const phrase = this.MOCK_PHRASE;
+    const chainIds = {[Network.Mainnet]: 'thorchain-mainnet-v1', [Network.Stagenet]: 'thorchain-stagenet-v1', [Network.Testnet]: 'thorchain-testnet-v1'}
 
     this.mockBinanceClient = new binanceClient({ network, phrase });
     this.mockBtcClient = new bitcoinClient({
@@ -37,7 +38,7 @@ export class MockClientService {
       sochainUrl: 'https://sochain.com/api/v2',
       blockstreamUrl: 'https://blockstream.info',
     });
-    this.mockThorchainClient = new thorchainClient({ network, phrase });
+    this.mockThorchainClient = new thorchainClient({ network, phrase, chainIds });
     this.mockEthereumClient = new ethereumClient({
       network,
       phrase,
