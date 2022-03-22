@@ -42,7 +42,7 @@
 >
   <div class="container" *ngIf="swapData">
   <div class="content-top">
-    <div *ngIf="txState === 'PENDING_CONFIRMATION'">
+    <ng-container *ngIf="txState === 'PENDING_CONFIRMATION'">
       <app-breadcrumb
         [path]="[
           { name: 'common.skip', call: 'skip' },
@@ -51,8 +51,8 @@
         [message]="'common.confirm' | translate"
         (funcCaller)="breadcrumbNav($event, 'pending')"
       ></app-breadcrumb>
-    </div>
-    <div *ngIf="txState === 'ERROR'">
+    </ng-container>
+    <ng-container *ngIf="txState === 'ERROR'">
       <app-breadcrumb
         [path]="[
           {
@@ -72,7 +72,7 @@
         [isError]="true"
         (funcCaller)="navCaller($event)"
       ></app-breadcrumb>
-    </div>
+    </ng-container>
   </div>
 
   <div class="main-content">
