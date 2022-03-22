@@ -206,7 +206,7 @@
             { name: asset?.chain + '.' + asset?.ticker , disable: true },
             { name: 'common.search', disable: true }
           ]"
-          [message]="'common.select' | translate"
+          [message]="'breadcrumb.select' | translate"
           (funcCaller)="breadCrumbNav($event, 'market')"
         ></app-breadcrumb>
       </app-markets-modal>
