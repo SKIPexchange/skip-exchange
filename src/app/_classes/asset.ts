@@ -107,7 +107,7 @@ export class Asset {
 
   private _setEthIconPath(assetSymbol: string, assetTicker: string): string {
     const assetAddress = assetSymbol.slice(assetTicker.length + 1);
-    const strip0x = assetAddress.substr(2);
+    const strip0x = assetAddress.substring(2);
     const checkSummedAddress = ethers.utils.getAddress(strip0x);
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummedAddress}/logo.png`;
   }
