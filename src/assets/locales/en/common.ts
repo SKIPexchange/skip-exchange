@@ -52,4 +52,6 @@ export default {
   txs: "TX's",
   notFound: 'Not Found',
   waitTXID: 'Waiting for TXID',
+  testnet: 'Testnet',
+  mainnet: 'Mainnet'
 };

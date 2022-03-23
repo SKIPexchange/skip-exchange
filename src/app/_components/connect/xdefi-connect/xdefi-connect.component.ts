@@ -68,8 +68,8 @@ export class XDEFIConnectComponent implements OnInit {
 
     if (!this.isValidNetwork) {
       return {
-        text: this.translate.format('xdefiNet', {
-          network: this.isTestnet ? 'Testnet' : 'Mainnet',
+        text: this.translate.format('breadcrumb.xdefiNet', {
+          network: this.isTestnet ? 'testnet' : 'mainnet',
         }),
         isError: true,
       };

@@ -12,7 +12,7 @@ import { User } from '../_classes/user';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ethers } from 'ethers';
 import { erc20ABI } from '../_abi/erc20.abi';
-import { AssetETH, assetToString } from '@xchainjs/xchain-util';
+import { AssetETH, AssetRuneNative, assetToString } from '@xchainjs/xchain-util';
 import { toUtf8Bytes } from '@ethersproject/strings';
 import { Address } from '@xchainjs/xchain-client';
 import { hexlify } from '@ethersproject/bytes';
@@ -118,28 +118,13 @@ export class XDEFIService {
     return !invalidNetworkProvider;
   }
 
+  //isn't being used atm
   providerIsEmpty(value) {
     return Object.keys(value).length === 0 && value?.constructor === Object;
   }
 
   checkTheProviders(provider) {
-    if (provider.providerPath !== 'ethereum') {
-      return (
-        get(window, provider.providerPath) &&
-        !this.providerIsEmpty(get(window, provider.providerPath)) &&
-        get(window, provider.providerPath)
-          .constructor.name.toUpperCase()
-          .includes('XDEFI')
-      );
-    } else {
-      return (
-        get(window, provider.providerPath) &&
-        !this.providerIsEmpty(get(window, provider.providerPath)) &&
-        get(window, provider.providerPath)
-          .constructor.name.toUpperCase()
-          .includes('XDEFI')
-      );
-    }
+    return get(window, provider.providerPath);
   }
 
   listEnabledXDFIProviders() {
@@ -586,6 +571,7 @@ export class XDEFIService {
       const params = [
         {
           ...depositParams,
+          asset: AssetRuneNative,
           from: thorAddress,
           amount: {
             amount: depositParams.amount.amount().toNumber(),
@@ -621,6 +607,7 @@ export class XDEFIService {
             params: [
               {
                 ...transferParams,
+                asset: AssetRuneNative,
                 from: thorAddress,
                 amount: {
                   amount: transferParams.amount.amount().toString(),
