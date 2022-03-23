@@ -18,7 +18,7 @@ import { environment } from 'src/environments/environment';
 export class ReconnectXDEFIDialogComponent implements OnInit {
   connecting: boolean;
   connectingError: boolean;
-  listProviders: typeof XDEFIService.listProvider;
+  listProviders: any;
   isValidNetwork: boolean;
   isTestnet: boolean;
   subs: Subscription[];

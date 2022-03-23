@@ -19,7 +19,7 @@ export class XDEFIConnectComponent implements OnInit {
   xdefi;
   xdefiConnecting: boolean;
   xdefiError: boolean;
-  listProviders: typeof XDEFIService.listProvider;
+  listProviders: any;
   isValidNetwork: boolean;
   @Output() back: EventEmitter<null>;
   @Output() closeModal: EventEmitter<null>;
