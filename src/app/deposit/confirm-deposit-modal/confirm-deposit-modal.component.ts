@@ -670,7 +670,7 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
       modalType: 'DEPOSIT',
       poolType: this.data.poolTypeOption,
       asset: assets, 
-      label: this.depositSuccess ? [this.translate.format('pending.deposited'), this.translate.format('pending.deposited')] : [this.translate.format('pending.depostiting'), this.translate.format('pending.depostiting')],
+      label: this.depositSuccess ? [this.translate.format('pending.deposited'), this.translate.format('pending.deposited')] : [this.translate.format('pending.depositing'), this.translate.format('pending.depositing')],
       amount: amounts, 
       balances: this.balances,
       hashes: this.hashes,
