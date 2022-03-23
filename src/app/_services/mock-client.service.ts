@@ -35,8 +35,6 @@ export class MockClientService {
     this.mockBtcClient = new bitcoinClient({
       network,
       phrase,
-      sochainUrl: 'https://sochain.com/api/v2',
-      blockstreamUrl: 'https://blockstream.info',
     });
     this.mockThorchainClient = new thorchainClient({ network, phrase, chainIds });
     this.mockEthereumClient = new ethereumClient({
@@ -46,7 +44,15 @@ export class MockClientService {
       infuraCreds: { projectId: environment.infuraProjectId },
     });
     this.mockLtcClient = new litecoinClient({ network, phrase });
-    this.mockBchClient = new bitcoinCashClient({ network, phrase });
+    this.mockBchClient = new bitcoinCashClient({ 
+      network, 
+      phrase,
+      haskoinUrl: {
+        [Network.Testnet]: 'https://api.haskoin.com/bchtest',
+        [Network.Mainnet]: 'https://haskoin.ninerealms.com/bch',
+        [Network.Stagenet]: 'https://haskoin.ninerealms.com/bch',
+      }
+    });
 
     this.mockThorchainClient.getAddress = () => undefined;
     this.mockBinanceClient.getAddress = () => undefined;

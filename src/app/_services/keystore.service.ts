@@ -27,7 +27,6 @@ export class KeystoreService {
       network,
       phrase,
       sochainUrl: 'https://sochain.com/api/v2',
-      blockstreamUrl: 'https://blockstream.info',
     });
     const userThorchainClient = new thorchainClient({ network, phrase, chainIds });
     const thorAddress = await userThorchainClient.getAddress();
@@ -38,7 +37,15 @@ export class KeystoreService {
       infuraCreds: { projectId: environment.infuraProjectId },
     });
     const userLtcClient = new litecoinClient({ network, phrase });
-    const userbchClient = new bitcoinCashClient({ network, phrase });
+    const userbchClient = new bitcoinCashClient({ 
+      network, 
+      phrase,
+      haskoinUrl: {
+        [Network.Testnet]: 'https://api.haskoin.com/bchtest',
+        [Network.Mainnet]: 'https://haskoin.ninerealms.com/bch',
+        [Network.Stagenet]: 'https://haskoin.ninerealms.com/bch',
+      }
+    });
 
     return new User({
       type: 'keystore',
