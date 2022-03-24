@@ -81,7 +81,7 @@ export class ReconnectXDEFIDialogComponent implements OnInit {
 
     if (!this.isValidNetwork) {
       return {
-        text: this.translate.format('xdefiNet', {
+        text: this.translate.format('breadcrumb.xdefiNet', {
           network: this.isTestnet ? 'Testnet' : 'Mainnet',
         }),
         isError: true,
