@@ -649,22 +649,18 @@ export class DepositComponent implements OnInit, OnDestroy {
   }
 
   getPoolCap() {
-    const mimir$ = this.midgardService.mimir$;
     const network$ = this.midgardService.network$;
-    const combined = combineLatest([mimir$, network$]);
-    const sub = combined.subscribe(([mimir, network]) => {
+    const sub = network$.subscribe((network) => {
       if (
-        network instanceof HttpErrorResponse ||
-        mimir instanceof HttpErrorResponse
+        network instanceof HttpErrorResponse
       ) {
         this.depositsDisabled = true;
       } else {
         // prettier-ignore
-        const totalPooledRune = +(network as NetworkSummary).totalPooledRune / (10 ** 8);
-        if (mimir && mimir['MAXIMUMLIQUIDITYRUNE']) {
-          // prettier-ignore
-          const maxLiquidityRune = mimir['MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
-          this.depositsDisabled = totalPooledRune / maxLiquidityRune >= 0.99;
+        const totalPooledRune = +(network as NetworkSummary).totalPooledRune;
+        const totalActiveBond = +network?.bondMetrics?.totalActiveBond;
+        if (totalPooledRune && totalActiveBond) {
+          this.depositsDisabled = totalPooledRune >= totalActiveBond;
         }
       }
     });
@@ -920,7 +916,7 @@ export class DepositComponent implements OnInit, OnDestroy {
 
     if (this.depositsDisabled) {
       this.formValidation = {
-        message: this.translate.format('breadcrumb.capReached'),
+        message: this.translate.format('breadcrumb.depositDisabled'),
         isValid: false,
         isError: true,
       };

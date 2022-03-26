@@ -24,7 +24,7 @@ export class TranslateService {
       .split('.')
       .reduce((p, c) => (p && p[c]) || null, this.intl);
     const regex = /{{.*?}}/g;
-    intlString.match(regex)?.forEach((match): void => {
+    intlString?.match(regex)?.forEach((match): void => {
       intlString =
         intlString.replace(match, params[match.replace(/[{}]/g, '')]) ??
         intlString;

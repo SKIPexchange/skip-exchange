@@ -39,6 +39,7 @@ export class HeaderComponent implements OnDestroy {
   isUnderstood: boolean;
   topbar: string;
   totalPooledRune: number;
+  totalActiveBond: number;
   maxLiquidityRune: number;
   depositsDisabled: boolean;
   error: boolean;
@@ -109,7 +110,7 @@ export class HeaderComponent implements OnDestroy {
       return;
     }
 
-    this.topbar = this.translate.format('header.loadingCaps');
+    this.topbar = this.translate.format('header.loading');
     const sub = combined.subscribe(([mimir, network]) => {
       if (
         network instanceof HttpErrorResponse ||
@@ -122,28 +123,32 @@ export class HeaderComponent implements OnDestroy {
       }
 
       this.error = false;
-      this.totalPooledRune = +network?.totalPooledRune / 10 ** 8;
+      this.totalActiveBond = +network?.bondMetrics?.totalActiveBond;
+      this.totalPooledRune = +network?.totalPooledRune;
       if (
-        mimir &&
-        mimir['MAXIMUMLIQUIDITYRUNE'] &&
+        this.totalActiveBond &&
         this.totalPooledRune != null &&
         this.totalPooledRune != NaN
       ) {
-        this.maxLiquidityRune = mimir['MAXIMUMLIQUIDITYRUNE'] / 10 ** 8;
-        this.depositsDisabled =
-          this.totalPooledRune / this.maxLiquidityRune >= 0.99;
+        const incentivePendulum = (this.totalPooledRune * 2) / this.totalActiveBond;
+        this.depositsDisabled = this.totalPooledRune >= this.totalActiveBond;
+        let incentivePendulumText = '';
+        if (incentivePendulum === 1) {
+          incentivePendulumText = 'Ideal'
+        }
+        else if (incentivePendulum <= 1) {
+          incentivePendulumText = 'Under Bonded'
+        }
+        else if (incentivePendulum >= 1) {
+          incentivePendulumText = 'Over Bonded'
+        }
 
-        this.topbar = this.translate.format('header.pooledRune', {
-          pooled: this._decimalPipe.transform(this.totalPooledRune, '0.0-0'),
-          total: this._decimalPipe.transform(this.maxLiquidityRune, '0.0-0'),
-          percentage: this._decimalPipe.transform(
-            (this.totalPooledRune / this.maxLiquidityRune) * 100,
-            '0.2-2'
-          ),
+        this.topbar = this.translate.format('header.incentivePendulum', {
+          status: incentivePendulumText,
         });
 
         if (this.depositsDisabled) {
-          this.topbar += this.translate.format('header.capsReached');
+          this.topbar += this.translate.format('header.depositDisabled');
         }
       }
     });
