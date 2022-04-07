@@ -179,6 +179,9 @@ export class UserAssetComponent {
         this.explorerPath = `${this.explorerPathsService.bchExplorerUrl}/address/${this.address}`;
         break;
 
+      case 'DOGE':
+        this.explorerPath = this.userService.getChainClient(this.user, this.asset.asset.chain).getExplorerAddressUrl(this.address);
+
       default:
         break;
     }

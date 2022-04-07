@@ -88,6 +88,11 @@ export class Asset {
             'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png';
           break;
 
+        case 'DOGE':
+          this.iconPath =
+            'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png';
+          break;
+
         default:
           break;
       }
@@ -184,6 +189,9 @@ export const getChainAsset = (chain: Chain): Asset => {
 
     case 'THOR':
       return new Asset('THOR.RUNE');
+
+    case 'DOGE':
+      return new Asset('DOGE.DOGE');
 
     default:
       return null;

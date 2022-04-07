@@ -169,7 +169,7 @@ export class UserAddressComponent implements OnInit {
         break;
 
       default:
-        break;
+        this.explorerPath = this.userService.getChainClient(this.user, this.chain).getExplorerAddressUrl(this.address);
     }
   }
 

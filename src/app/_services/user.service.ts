@@ -201,6 +201,8 @@ export class UserService {
       case 'THOR':
         key = 'thorchain';
         break;
+      case 'DOGE':
+        key = 'doge';
     }
     return key;
   }
@@ -432,6 +434,7 @@ export class UserService {
       case 'LTC.LTC':
       case 'BCH.BCH':
       case 'BNB.BNB':
+      case 'DOGE.DOGE':
         fee = this.txUtilsService.calculateNetworkFee(
           asset,
           inboundAddresses,
@@ -607,6 +610,10 @@ export class UserService {
         case 'THOR':
           const thorClient = clients.thorchain;
           return thorClient.getAddress();
+        
+        case 'DOGE':
+          const dogeClient = clients.doge;
+          return dogeClient.getAddress();
 
         default:
           console.error(`${chain} does not match getting token address`);
@@ -634,6 +641,9 @@ export class UserService {
 
       case 'THOR':
         return user.clients.thorchain;
+      
+      case 'DOGE':
+        return user.clients.doge;
     }
 
     throw new Error(`no matching client for chain: ${chain}`);
@@ -665,6 +675,8 @@ export class UserService {
         availableChains.push(Chain.BitcoinCash);
       } else if (key === 'litecoin' && _value) {
         availableChains.push(Chain.Litecoin);
+      } else if (key === 'doge' && _value) {
+        availableChains.push(Chain.Doge);
       }
     }
     return availableChains;
@@ -694,7 +706,8 @@ export class UserService {
             pool.asset.chain === 'BTC' ||
             pool.asset.chain === 'ETH' ||
             pool.asset.chain === 'LTC' ||
-            pool.asset.chain === 'BCH'
+            pool.asset.chain === 'BCH' ||
+            pool.asset.chain === 'DOGE'
         );
     }
   }

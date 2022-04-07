@@ -233,7 +233,9 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       return {
         text: this.translate.format(
           'breadcrumb.insufficient',
-          assetString(chainAsset)
+          {
+            asset: assetString(chainAsset)
+          }
         ),
         isError: true,
       };

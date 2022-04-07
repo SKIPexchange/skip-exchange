@@ -61,6 +61,7 @@ export class TransactionUtilsService {
         case 'BTC':
         case 'LTC':
         case 'BCH':
+        case 'DOGE':
           // prettier-ignore
           return (250 * (+matchingInboundAddress.gas_rate) * multiplier) / (10 ** 8);
 

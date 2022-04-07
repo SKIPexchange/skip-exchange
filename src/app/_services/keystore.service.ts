@@ -8,6 +8,7 @@ import { Client as thorchainClient } from '@xchainjs/xchain-thorchain';
 import { Client as ethereumClient } from '@xchainjs/xchain-ethereum/lib';
 import { Client as litecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as bitcoinCashClient } from '@xchainjs/xchain-bitcoincash';
+import { Client as dogeClient } from '@xchainjs/xchain-doge';
 import { Network } from '@xchainjs/xchain-client';
 
 @Injectable({
@@ -46,6 +47,7 @@ export class KeystoreService {
         [Network.Stagenet]: 'https://haskoin.ninerealms.com/bch',
       }
     });
+    const userDogeClient = new dogeClient({network, phrase});
 
     return new User({
       type: 'keystore',
@@ -58,6 +60,7 @@ export class KeystoreService {
         thorchain: userThorchainClient,
         ethereum: userEthereumClient,
         litecoin: userLtcClient,
+        doge: userDogeClient
       },
     });
   }

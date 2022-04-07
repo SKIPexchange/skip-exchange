@@ -25,8 +25,8 @@ export class ExplorerPathsService {
 
     this.thorchainExplorerUrl =
       environment.network === 'testnet'
-        ? 'https://testnet.thorchain.net/#' // flutter web beta
-        : 'https://thorchain.net/#';
+        ? 'https://testnet.thorchain.net/' // flutter web beta
+        : 'https://thorchain.net/';
 
     this.ethereumExplorerUrl =
       environment.network === 'testnet'

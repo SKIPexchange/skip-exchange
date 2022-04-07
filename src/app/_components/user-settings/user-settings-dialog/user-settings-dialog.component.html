@@ -119,6 +119,23 @@
                 <span class="chain-usd" *ngIf="chainUsdValue['BCH'] && chainUsdValue['BCH'].value !== 0">{{chainUsdValue['BCH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
               </div>
             </div>
+
+            <!-- DOGE -->
+            <div class="w-address" *ngIf="dogeAddress" (click)="selectAddress(dogeAddress, 'DOGE')">
+              <div class="icon-addr flex-grow">
+                <div class="asset-icon-container">
+                  <img
+                    class="asset-icon"
+                    src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png"
+                  />
+                </div>
+                <label>DOGE</label>
+                <span class="chain-address">({{dogeAddress.substring(0, 5) + '...' + dogeAddress.substring(dogeAddress.length - 5, dogeAddress.length)}})</span>
+              </div>
+              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                <span class="chain-usd" *ngIf="chainUsdValue['DOGE'] && chainUsdValue['DOGE'].value !== 0">{{chainUsdValue['DOGE'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+              </div>
+            </div>
           </div>
       </div>
 
