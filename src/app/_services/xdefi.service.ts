@@ -20,6 +20,7 @@ import { MockClientService } from './mock-client.service';
 import { BehaviorSubject } from 'rxjs';
 import { UserService } from './user.service';
 import { take } from 'rxjs/operators';
+import { TransactionResponse } from '@ethersproject/abstract-provider';
 
 declare global {
   interface Window {
@@ -87,7 +88,6 @@ export class XDEFIService {
 
         (window as any)?.ethereum?.on('accountsChanged', (accounts) => {
           // Time to reload your interface with accounts[0]!
-          console.log((window as any).ethereum);
           this.userService.user$.pipe(take(1)).subscribe((user) => {
             if (user) {
               this.connectXDEFI().then((user) => {
@@ -201,10 +201,8 @@ export class XDEFIService {
     if (!(window as any).ethereum) {
       return;
     }
-    return (window as any).ethereum.request({
-      method: 'eth_requestAccounts',
-      params: [],
-    });
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    return await provider.send("eth_requestAccounts", []);
   }
 
   async getThorChainAddress(): Promise<string> {
@@ -357,6 +355,7 @@ export class XDEFIService {
         );
       });
     };
+
     // Eth
     userEthereumClient.approve = async ({
       // spender,
@@ -400,38 +399,41 @@ export class XDEFIService {
         }
       );
       unsignedTx.from = ethAddresses[0];
-      return (window as any).ethereum
-        .request({
-          method: 'eth_sendTransaction',
-          params: [unsignedTx],
-        })
-        .then((hash: string) => {
-          return {
-            hash,
-          };
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      return provider
+        .send(
+          'eth_sendTransaction',
+          [unsignedTx],
+        )
+        .then((tx: TransactionResponse)  => {
+          return tx;
         });
     };
     const oldWallet = userEthereumClient.getWallet();
     oldWallet.getAddress = async () => ethAddresses[0];
     oldWallet.sendTransaction = (unsignedTx) => {
       unsignedTx.value = hexlify(BigNumber.from(unsignedTx.value || 0));
-      return (window as any).ethereum
-        .request({
-          method: 'eth_sendTransaction',
-          params: [unsignedTx],
-        })
-        .then((hash: string) => {
-          return {
-            hash,
-          };
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      return provider
+        .send(
+          'eth_sendTransaction',
+          [unsignedTx],
+        )
+        .then((tx: TransactionResponse) => {
+          return tx;
         });
     };
     oldWallet.signTransaction = (unsignedTx) => {
       unsignedTx.value = hexlify(BigNumber.from(unsignedTx.value || 0));
 
-      return (window as any).ethereum.request({
-        method: 'eth_signTransaction',
-        params: [unsignedTx],
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      return provider
+      .send(
+        'eth_sendTransaction',
+        [unsignedTx],
+      )
+      .then((tx: TransactionResponse) => {
+        return tx.hash;
       });
     };
     const newGetWallet = () => {
@@ -500,6 +502,7 @@ export class XDEFIService {
         }
 
         let txResult;
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
         if (assetAddress && !isETHAddress) {
           // Transfer ERC20
           const contract = new ethers.Contract(assetAddress, erc20ABI);
@@ -509,10 +512,10 @@ export class XDEFIService {
             Object.assign({}, overrides)
           );
           unsignedTx.from = ethAddresses[0];
-          txResult = await (window as any).ethereum.request({
-            method: 'eth_sendTransaction',
-            params: [unsignedTx],
-          });
+          txResult = provider.send(
+            'eth_sendTransaction',
+            [unsignedTx],
+          );
         } else {
           // Transfer ETH
           const transactionRequest = Object.assign(
@@ -523,12 +526,13 @@ export class XDEFIService {
               from: userEthereumClient.getAddress(),
             }
           );
-          txResult = await (window as any).ethereum.request({
-            method: 'eth_sendTransaction',
-            params: [transactionRequest],
-          });
-        }
 
+          txResult = provider.send(
+            'eth_sendTransaction',
+            [transactionRequest],
+          );
+        }
+        console.log(txResult);
         return txResult.hash || txResult;
       } catch (error) {
         console.error(error);

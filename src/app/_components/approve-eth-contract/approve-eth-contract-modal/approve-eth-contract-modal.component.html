@@ -11,8 +11,12 @@
   </div>
 
   <app-notice [isMono]="true">
-    <span *ngIf="!isMobile ; else elseBlock" text style="font-family: inherit">{{ data.routerAddress.substring(0, 16) + "..." + data.routerAddress.substring( data.routerAddress.length - 16, data.routerAddress.length ) }}</span>
-    <span text style="font-family: inherit" #elseBlock>{{ data.routerAddress.substring(0, 8) + "..." + data.routerAddress.substring( data.routerAddress.length - 8, data.routerAddress.length ) }}</span>
+    <span *ngIf="!isMobile ; else elseBlock" text style="font-family: inherit">{{ data.routerAddress.slice(0, 16) + "..." + data.routerAddress.slice(-16) }}</span>
+    <ng-template #elseBlock>
+      <span text style="font-family: inherit">
+        {{ data.routerAddress.substring(0, 8) + "..." + data.routerAddress.substring( data.routerAddress.length - 8, data.routerAddress.length ) }}
+      </span>
+    </ng-template>
     <ng-container tags>
       <app-tag>
         <div (click)="copyToClipboard()">
@@ -37,7 +41,7 @@
 
   <div class="swap-details">
     <div class="flex justify-between white-text">
-      <span>{{ 'swap.approveHelp' | translate }}</span>
+      <span>{{ 'swap.approveHelp' | translate: {asset: data.asset.chain + '.' + data.asset.ticker} }}</span>
     </div>
     <!-- <div class="flex justify-between">
       <span class="tx-detail-label">Estimated ETH Fee:</span>
