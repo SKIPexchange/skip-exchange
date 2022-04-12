@@ -6,6 +6,7 @@ import { Client as litecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as bitcoinCashClient } from '@xchainjs/xchain-bitcoincash';
 import { Client as ethereumClient } from '@xchainjs/xchain-ethereum/lib';
 import { Client as dogeClient } from '@xchainjs/xchain-doge';
+import { Client as terraClient } from '@xchainjs/xchain-terra';
 import { Chain } from '@xchainjs/xchain-util';
 import { environment } from 'src/environments/environment';
 import { Network } from '@xchainjs/xchain-client';
@@ -26,6 +27,7 @@ export class MockClientService {
   mockLtcClient: litecoinClient;
   mockBchClient: bitcoinCashClient;
   mockDogeClient: dogeClient;
+  mockTerraClient: terraClient;
 
   constructor() {
     const network =
@@ -56,6 +58,7 @@ export class MockClientService {
       }
     });
     this.mockDogeClient = new dogeClient({network, phrase});
+    this.mockTerraClient = new terraClient({network, phrase})
 
     this.mockThorchainClient.getAddress = () => undefined;
     this.mockBinanceClient.getAddress = () => undefined;
@@ -64,6 +67,7 @@ export class MockClientService {
     this.mockEthereumClient.getAddress = () => undefined;
     this.mockLtcClient.getAddress = () => undefined;
     this.mockDogeClient.getAddress = () => undefined;
+    this.mockTerraClient.getAddress = () => undefined;
   }
 
   getMockClientByChain(chain: Chain) {
@@ -88,6 +92,9 @@ export class MockClientService {
 
       case 'DOGE':
         return this.mockDogeClient;
+      
+      case 'TERRA':
+        return this.mockTerraClient;
     }
 
     throw new Error(`mock client no matching client for chain: ${chain}`);

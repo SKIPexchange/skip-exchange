@@ -11,6 +11,8 @@ import { Client as BitcoinClient } from '@xchainjs/xchain-bitcoin';
 import { Client as LitecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as BchClient } from '@xchainjs/xchain-bitcoincash';
 import { Client as ThorClient } from '@xchainjs/xchain-thorchain';
+import { Client as DogeClient } from '@xchainjs/xchain-doge';
+import { Client as TerraClient } from '@xchainjs/xchain-terra';
 import { PoolTypeOption } from '../_const/pool-type-options';
 
 export interface EthDepositParams {
@@ -58,6 +60,28 @@ export interface BchDepositParams {
   asset: Asset;
   inputAmount: number;
   client: BchClient;
+  thorchainAddress?: string;
+  recipientPool: PoolAddressDTO;
+  balances: Balance[];
+  estimatedFee: number;
+  poolType: PoolTypeOption;
+}
+
+export interface DogeDepositParams {
+  asset: Asset;
+  inputAmount: number;
+  client: DogeClient;
+  thorchainAddress?: string;
+  recipientPool: PoolAddressDTO;
+  balances: Balance[];
+  estimatedFee: number;
+  poolType: PoolTypeOption;
+}
+
+export interface TerraDepositParams {
+  asset: Asset;
+  inputAmount: number;
+  client: TerraClient;
   thorchainAddress?: string;
   recipientPool: PoolAddressDTO;
   balances: Balance[];
@@ -285,6 +309,112 @@ export class KeystoreDepositService {
         recipient: recipientPool.address,
         memo,
         feeRate: +recipientPool.gas_rate,
+      });
+
+      return hash;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async dogeDeposit({
+    asset,
+    inputAmount,
+    client,
+    balances,
+    thorchainAddress,
+    recipientPool,
+    estimatedFee,
+    poolType,
+  }: DogeDepositParams): Promise<string> {
+    // deposit token
+    try {
+      const memo =
+        poolType === 'SYM' && thorchainAddress
+          ? this._buildDepositMemo(asset, thorchainAddress)
+          : this._buildDepositMemo(asset);
+
+      // TODO -> consolidate this with BTC, BCH, LTC
+      const balanceAmount = this.userService.findRawBalance(balances, asset);
+      const toBase = assetToBase(assetAmount(inputAmount));
+      const feeToBase = assetToBase(assetAmount(estimatedFee));
+      const amount = balanceAmount
+        // subtract fee
+        .minus(feeToBase.amount())
+        // subtract amount
+        .minus(toBase.amount())
+        .isGreaterThan(0)
+        ? toBase.amount() // send full amount, fee can be deducted from remaining balance
+        : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
+
+      if (amount.isLessThan(0)) {
+        throw new Error('Insufficient funds. Try sending a smaller amount');
+      }
+      // TODO -> consolidate this with BTC, BCH, LTC
+
+      const hash = await client.transfer({
+        asset: {
+          chain: asset.chain,
+          symbol: asset.symbol,
+          ticker: asset.ticker,
+          synth: false
+        },
+        amount: baseAmount(amount),
+        recipient: recipientPool.address,
+        memo,
+        feeRate: +recipientPool.gas_rate,
+      });
+
+      return hash;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async terraDeposit({
+    asset,
+    inputAmount,
+    client,
+    balances,
+    thorchainAddress,
+    recipientPool,
+    estimatedFee,
+    poolType,
+  }: TerraDepositParams): Promise<string> {
+    // deposit token
+    try {
+      const memo =
+        poolType === 'SYM' && thorchainAddress
+          ? this._buildDepositMemo(asset, thorchainAddress)
+          : this._buildDepositMemo(asset);
+
+      // TODO -> consolidate this with BTC, BCH, LTC
+      const balanceAmount = this.userService.findRawBalance(balances, asset);
+      const toBase = assetToBase(assetAmount(inputAmount));
+      const feeToBase = assetToBase(assetAmount(estimatedFee));
+      const amount = balanceAmount
+        // subtract fee
+        .minus(feeToBase.amount())
+        // subtract amount
+        .minus(toBase.amount())
+        .isGreaterThan(0)
+        ? toBase.amount() // send full amount, fee can be deducted from remaining balance
+        : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
+
+      if (amount.isLessThan(0)) {
+        throw new Error('Insufficient funds. Try sending a smaller amount');
+      }
+
+      const hash = await client.transfer({
+        asset: {
+          chain: asset.chain,
+          symbol: asset.symbol,
+          ticker: asset.ticker,
+          synth: false
+        },
+        amount: baseAmount(amount),
+        recipient: recipientPool.address,
+        memo,
       });
 
       return hash;

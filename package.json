@@ -46,7 +46,7 @@
     "@xchainjs/xchain-doge": "^0.2.0",
     "@xchainjs/xchain-ethereum": "^0.23.3",
     "@xchainjs/xchain-litecoin": "^0.8.0",
-    "@xchainjs/xchain-terra": "^0.1.0-alpha.2",
+    "@xchainjs/xchain-terra": "0.1.0-alpha.5",
     "@xchainjs/xchain-thorchain": "0.24.0-alpha.2",
     "@xchainjs/xchain-util": "^0.5.1",
     "angular-svg-icon": "^11.2.0",
@@ -114,9 +114,13 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
     "terser-webpack-plugin": "^4.1.0",
     "ts-node": "~8.3.0",
-    "typescript": "^4.1.5"
+    "typescript": "^4.1.5",
+    "@terra-money/terra.js": "^3.0.10"
   },
   "browser": {
-    "crypto": false
+    "crypto": false,
+    "fs": false,
+    "path": false,
+    "os": false
   }
 }

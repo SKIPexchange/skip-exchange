@@ -361,6 +361,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
         case 'BCH':
         case 'LTC':
         case 'BNB':
+        case 'DOGE':
           const client = this.userService.getChainClient(
             this.data.user,
             asset.chain

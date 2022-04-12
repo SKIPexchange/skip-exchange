@@ -168,6 +168,8 @@ export class UserAddressComponent implements OnInit {
         this.explorerPath = `${this.explorerPathsService.bchExplorerUrl}/address/${this.address}`;
         break;
 
+      case 'TERRA':
+      case 'DOGE':
       default:
         this.explorerPath = this.userService.getChainClient(this.user, this.chain).getExplorerAddressUrl(this.address);
     }

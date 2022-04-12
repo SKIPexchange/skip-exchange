@@ -203,6 +203,8 @@ export class UserService {
         break;
       case 'DOGE':
         key = 'doge';
+      case 'TERRA':
+        key = 'terra'
     }
     return key;
   }
@@ -615,6 +617,10 @@ export class UserService {
           const dogeClient = clients.doge;
           return dogeClient.getAddress();
 
+        case 'TERRA':
+          const terraClient = clients.terra;
+          return terraClient.getAddress();
+
         default:
           console.error(`${chain} does not match getting token address`);
           return;
@@ -644,6 +650,9 @@ export class UserService {
       
       case 'DOGE':
         return user.clients.doge;
+
+      case 'TERRA':
+        return user.clients.terra;
     }
 
     throw new Error(`no matching client for chain: ${chain}`);
@@ -677,6 +686,8 @@ export class UserService {
         availableChains.push(Chain.Litecoin);
       } else if (key === 'doge' && _value) {
         availableChains.push(Chain.Doge);
+      } else if (key === 'terra' && _value) {
+        availableChains.push(Chain.Terra);
       }
     }
     return availableChains;
@@ -707,7 +718,9 @@ export class UserService {
             pool.asset.chain === 'ETH' ||
             pool.asset.chain === 'LTC' ||
             pool.asset.chain === 'BCH' ||
-            pool.asset.chain === 'DOGE'
+            pool.asset.chain === 'DOGE' 
+            // disabled for now
+            // || pool.asset.chain === 'TERRA'
         );
     }
   }

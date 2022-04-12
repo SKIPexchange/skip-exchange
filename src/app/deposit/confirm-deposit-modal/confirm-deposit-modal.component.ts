@@ -445,6 +445,34 @@ export class ConfirmDepositModalComponent implements OnInit, OnDestroy {
           });
 
           break;
+        
+        case 'DOGE':
+          hash = await this.keystoreDepositService.dogeDeposit({
+            asset: this.data.asset.asset as Asset,
+            inputAmount: this.data.assetAmount,
+            client: this.data.user.clients.doge,
+            balances: this.balances,
+            thorchainAddress,
+            recipientPool,
+            estimatedFee: this.data.estimatedFee,
+            poolType: this.data.poolTypeOption,
+          });
+
+          break;
+
+        case 'TERRA':
+          hash = await this.keystoreDepositService.terraDeposit({
+            asset: this.data.asset.asset as Asset,
+            inputAmount: this.data.assetAmount,
+            client: this.data.user.clients.terra,
+            balances: this.balances,
+            thorchainAddress,
+            recipientPool,
+            estimatedFee: this.data.estimatedFee,
+            poolType: this.data.poolTypeOption,
+          });
+
+          break;
 
         case 'ETH':
           hash = await this.keystoreDepositService.ethereumDeposit({

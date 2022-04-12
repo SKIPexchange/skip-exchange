@@ -56,6 +56,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
   litecoinAddress: string;
   bchAddress: string;
   dogeAddress: string;
+  terraAddress: string;
   loading: boolean;
   pendingTxCount: number;
   mode:
@@ -138,6 +139,7 @@ export class UserSettingsDialogComponent implements OnInit, OnDestroy {
             await this.user.clients?.litecoin?.getAddress();
           this.bchAddress = await this.user.clients?.bitcoinCash?.getAddress();
           this.dogeAddress = await this.user.clients?.doge?.getAddress();
+          this.terraAddress = await this.user.clients?.terra?.getAddress();
         }
 
         this.loading = false;

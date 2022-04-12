@@ -12,129 +12,151 @@
       <div class="top-right"></div>
     </div>
     <div>
-      <div>
+      <div class="long-content">
           <div *ngIf="loading" class="icon-container main-content">
             <span>Loading</span>
           </div>
 
-          <div class="wallets main-content" *ngIf="!loading">
-            <!-- THORChain -->
-            <div class="w-address" *ngIf="thorAddress" (click)="selectAddress(thorAddress, 'THOR')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="/assets/icons/logo-thor-rune.svg"
-                  />
+          <div class="lists-wrapper long-content" *ngIf="!loading">
+            <div class="wallets short">
+              <!-- THORChain -->
+              <div class="w-address" *ngIf="thorAddress" (click)="selectAddress(thorAddress, 'THOR')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="/assets/icons/logo-thor-rune.svg"
+                    />
+                  </div>
+                  <label>THOR</label>
+                  <span class="chain-address">({{thorAddress.substring(0, 5) + '...' + thorAddress.substring(thorAddress.length - 5, thorAddress.length)}})</span>
                 </div>
-                <label>THOR</label>
-                <span class="chain-address">({{thorAddress.substring(0, 5) + '...' + thorAddress.substring(thorAddress.length - 5, thorAddress.length)}})</span>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['THOR'] && chainUsdValue['THOR'].value !== 0">{{chainUsdValue['THOR'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
               </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['THOR'] && chainUsdValue['THOR'].value !== 0">{{chainUsdValue['THOR'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+              <!-- Bitcoin -->
+              <div class="w-address" *ngIf="bitcoinAddress" (click)="selectAddress(bitcoinAddress, 'BTC')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BTCB-1DE/logo.png"
+                    />
+                  </div>
+                  <label>BTC</label>
+                  <span class="chain-address">({{bitcoinAddress.substring(0, 5) + '...' + bitcoinAddress.substring(bitcoinAddress.length - 5, bitcoinAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['BTC'] && chainUsdValue['BTC'].value !== 0">{{chainUsdValue['BTC'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
               </div>
+              <!-- Ethereum -->
+              <div class="w-address" *ngIf="ethereumAddress" (click)="selectAddress(ethereumAddress, 'ETH')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
+                    />
+                  </div>
+                  <label>ETH</label>
+                  <span class="chain-address">({{ethereumAddress.substring(0, 5) + '...' + ethereumAddress.substring(ethereumAddress.length - 5, ethereumAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['ETH'] && chainUsdValue['ETH'].value !== 0">{{chainUsdValue['ETH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
+              </div>
+              <!-- Binance -->
+              <div class="w-address" *ngIf="binanceAddress" (click)="selectAddress(binanceAddress, 'BNB')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="assets/images/token-icons/bnb.png"
+                    />
+                  </div>
+                  <label>BNB</label>
+                  <span class="chain-address">({{binanceAddress.substring(0, 5) + '...' + binanceAddress.substring(binanceAddress.length - 5, binanceAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['BNB'] && chainUsdValue['BNB'].value !== 0">{{chainUsdValue['BNB'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
+              </div>
+              <!-- Litecoin -->
+              <div class="w-address" *ngIf="litecoinAddress" (click)="selectAddress(litecoinAddress, 'LTC')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/litecoin/info/logo.png"
+                    />
+                  </div>
+                  <label>LTC</label>
+                  <span class="chain-address">({{litecoinAddress.substring(0, 5) + '...' + litecoinAddress.substring(litecoinAddress.length - 5, litecoinAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['LTC'] && chainUsdValue['LTC'].value !== 0">{{chainUsdValue['LTC'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
+              </div>
+              <!-- Bitcoin Cash -->
+              <div class="w-address" *ngIf="bchAddress" (click)="selectAddress(bchAddress, 'BCH')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png"
+                    />
+                  </div>
+                  <label>BCH</label>
+                  <span class="chain-address">({{bchAddress.substring(0, 5) + '...' + bchAddress.substring(bchAddress.length - 5, bchAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['BCH'] && chainUsdValue['BCH'].value !== 0">{{chainUsdValue['BCH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
+              </div>
+              <!-- DOGE -->
+              <div class="w-address" *ngIf="dogeAddress" (click)="selectAddress(dogeAddress, 'DOGE')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png"
+                    />
+                  </div>
+                  <label>DOGE</label>
+                  <span class="chain-address">({{dogeAddress.substring(0, 5) + '...' + dogeAddress.substring(dogeAddress.length - 5, dogeAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['DOGE'] && chainUsdValue['DOGE'].value !== 0">{{chainUsdValue['DOGE'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
+              </div>
+              <!-- TERRA -->
+              <div class="w-address" *ngIf="terraAddress" (click)="selectAddress(terraAddress, 'TERRA')">
+                <div class="icon-addr flex-grow">
+                  <div class="asset-icon-container">
+                    <img
+                      class="asset-icon"
+                      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png"
+                    />
+                  </div>
+                  <label>TERRA</label>
+                  <span class="chain-address">({{terraAddress.substring(0, 5) + '...' + terraAddress.substring(dogeAddress.length - 5, dogeAddress.length)}})</span>
+                </div>
+                <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
+                  <span class="chain-usd" *ngIf="chainUsdValue['TERRA'] && chainUsdValue['TERRA'].value !== 0">{{chainUsdValue['TERRA'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
+                </div>
+              </div>
+            
             </div>
-
-            <!-- Bitcoin -->
-            <div class="w-address" *ngIf="bitcoinAddress" (click)="selectAddress(bitcoinAddress, 'BTC')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BTCB-1DE/logo.png"
-                  />
-                </div>
-                <label>BTC</label>
-                <span class="chain-address">({{bitcoinAddress.substring(0, 5) + '...' + bitcoinAddress.substring(bitcoinAddress.length - 5, bitcoinAddress.length)}})</span>
-              </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['BTC'] && chainUsdValue['BTC'].value !== 0">{{chainUsdValue['BTC'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
-              </div>
-            </div>
-
-            <!-- Ethereum -->
-            <div class="w-address" *ngIf="ethereumAddress" (click)="selectAddress(ethereumAddress, 'ETH')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
-                  />
-                </div>
-                <label>ETH</label>
-                <span class="chain-address">({{ethereumAddress.substring(0, 5) + '...' + ethereumAddress.substring(ethereumAddress.length - 5, ethereumAddress.length)}})</span>
-              </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['ETH'] && chainUsdValue['ETH'].value !== 0">{{chainUsdValue['ETH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
-              </div>
-            </div>
-
-            <!-- Binance -->
-            <div class="w-address" *ngIf="binanceAddress" (click)="selectAddress(binanceAddress, 'BNB')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="assets/images/token-icons/bnb.png"
-                  />
-                </div>
-                <label>BNB</label>
-                <span class="chain-address">({{binanceAddress.substring(0, 5) + '...' + binanceAddress.substring(binanceAddress.length - 5, binanceAddress.length)}})</span>
-              </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['BNB'] && chainUsdValue['BNB'].value !== 0">{{chainUsdValue['BNB'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
-              </div>
-            </div>
-
-            <!-- Litecoin -->
-            <div class="w-address" *ngIf="litecoinAddress" (click)="selectAddress(litecoinAddress, 'LTC')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/litecoin/info/logo.png"
-                  />
-                </div>
-                <label>LTC</label>
-                <span class="chain-address">({{litecoinAddress.substring(0, 5) + '...' + litecoinAddress.substring(litecoinAddress.length - 5, litecoinAddress.length)}})</span>
-              </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['LTC'] && chainUsdValue['LTC'].value !== 0">{{chainUsdValue['LTC'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
-              </div>
-            </div>
-
-            <!-- Bitcoin Cash -->
-            <div class="w-address" *ngIf="bchAddress" (click)="selectAddress(bchAddress, 'BCH')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png"
-                  />
-                </div>
-                <label>BCH</label>
-                <span class="chain-address">({{bchAddress.substring(0, 5) + '...' + bchAddress.substring(bchAddress.length - 5, bchAddress.length)}})</span>
-              </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['BCH'] && chainUsdValue['BCH'].value !== 0">{{chainUsdValue['BCH'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
-              </div>
-            </div>
-
-            <!-- DOGE -->
-            <div class="w-address" *ngIf="dogeAddress" (click)="selectAddress(dogeAddress, 'DOGE')">
-              <div class="icon-addr flex-grow">
-                <div class="asset-icon-container">
-                  <img
-                    class="asset-icon"
-                    src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png"
-                  />
-                </div>
-                <label>DOGE</label>
-                <span class="chain-address">({{dogeAddress.substring(0, 5) + '...' + dogeAddress.substring(dogeAddress.length - 5, dogeAddress.length)}})</span>
-              </div>
-              <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
-                <span class="chain-usd" *ngIf="chainUsdValue['DOGE'] && chainUsdValue['DOGE'].value !== 0">{{chainUsdValue['DOGE'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
-              </div>
+            <div
+              class="scroll-for-more"
+            >
+              <img
+                style="padding: 12px 0"
+                src="assets/images/mouse-scroll.svg"
+                alt="scroll for more"
+              />
             </div>
           </div>
       </div>

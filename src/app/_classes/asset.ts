@@ -93,6 +93,12 @@ export class Asset {
             'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png';
           break;
 
+        case 'TERRA':
+          if (this.ticker.toUpperCase() === 'LUNA')
+            this.iconPath =
+              'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png';
+          break;
+
         default:
           break;
       }
@@ -193,6 +199,9 @@ export const getChainAsset = (chain: Chain): Asset => {
     case 'DOGE':
       return new Asset('DOGE.DOGE');
 
+    case 'TERRA':
+      return new Asset('TERRA.LUNA');
+        
     default:
       return null;
   }

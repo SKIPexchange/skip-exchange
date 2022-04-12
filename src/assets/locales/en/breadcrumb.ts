@@ -56,4 +56,5 @@ export default {
   invalidAddress: 'Invalid {{chain}} Address',
   type: 'Type',
   selectType: 'Select Deposit Type',
+  terraDisable: 'Send for Terra chain is disabled'
 };

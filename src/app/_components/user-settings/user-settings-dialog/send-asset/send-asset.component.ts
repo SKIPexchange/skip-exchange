@@ -6,7 +6,6 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { address } from 'bitcoinjs-lib';
 import { Subscription } from 'rxjs';
 import { getChainAsset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
@@ -25,6 +24,8 @@ import {
   assetString,
 } from 'src/app/_services/analytics.service';
 import { TranslateService } from 'src/app/_services/translate.service';
+import { environment } from 'src/environments/environment';
+import { Chain } from '@xchainjs/xchain-util';
 
 @Component({
   selector: 'app-send-asset',
@@ -145,6 +146,7 @@ export class SendAssetComponent implements OnInit, OnDestroy {
     }
 
     if (
+      environment.network !== 'testnet' &&
       this.chainBalance <
       this.txUtilsService.calculateNetworkFee(
         getChainAsset(this.asset.asset.chain),
@@ -153,6 +155,10 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       )
     ) {
       return true;
+    }
+
+    if (this.asset.asset.chain === Chain.Terra) {
+      return true
     }
 
     return (
@@ -194,6 +200,13 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       };
     }
 
+    if (this.asset.asset.chain === Chain.Terra) {
+      return {
+        text: this.translate.format('breadcrumb.terraDisable'),
+        isError: true,
+      }
+    }
+
     if (this.isMaxError) {
       return {
         text: this.translate.format('breadcrumb.inputFee'),
@@ -222,6 +235,7 @@ export class SendAssetComponent implements OnInit, OnDestroy {
 
     /** Insufficient Chain balance */
     if (
+      environment.network !== 'testnet' &&
       this.chainBalance <
       this.txUtilsService.calculateNetworkFee(
         getChainAsset(this.asset.asset.chain),

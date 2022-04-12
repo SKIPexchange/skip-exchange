@@ -102,7 +102,7 @@ export class EthUtilsService {
       hash = typeof(resp) === 'string' ? resp : resp?.hash || '';
     } else {
       const assetAddress = asset.symbol.slice(asset.ticker.length + 1);
-      const strip0x = assetAddress.substr(2);
+      const strip0x = assetAddress.slice(2);
       const checkSummedAddress = ethers.utils.getAddress(strip0x);
       const params = [
         inboundAddress.address, // vault

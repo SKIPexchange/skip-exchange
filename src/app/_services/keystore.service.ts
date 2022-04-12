@@ -9,6 +9,7 @@ import { Client as ethereumClient } from '@xchainjs/xchain-ethereum/lib';
 import { Client as litecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as bitcoinCashClient } from '@xchainjs/xchain-bitcoincash';
 import { Client as dogeClient } from '@xchainjs/xchain-doge';
+import { Client as terraClient } from '@xchainjs/xchain-terra';
 import { Network } from '@xchainjs/xchain-client';
 
 @Injectable({
@@ -48,6 +49,7 @@ export class KeystoreService {
       }
     });
     const userDogeClient = new dogeClient({network, phrase});
+    const userTerraClient = new terraClient({network, phrase});
 
     return new User({
       type: 'keystore',
@@ -60,7 +62,8 @@ export class KeystoreService {
         thorchain: userThorchainClient,
         ethereum: userEthereumClient,
         litecoin: userLtcClient,
-        doge: userDogeClient
+        doge: userDogeClient,
+        terra: userTerraClient,
       },
     });
   }
