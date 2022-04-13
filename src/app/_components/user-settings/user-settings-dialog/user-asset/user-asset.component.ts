@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Tx, TxsPage } from '@xchainjs/xchain-client';
-import { Chain } from '@xchainjs/xchain-util';
+import { AssetLUNA, Chain } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { Asset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
@@ -18,6 +18,7 @@ import {
   MainViewsEnum,
   OverlaysService,
 } from 'src/app/_services/overlays.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 
 @Component({
@@ -63,7 +64,8 @@ export class UserAssetComponent {
     private currencyService: CurrencyService,
     private userService: UserService,
     private analytics: AnalyticsService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.back = new EventEmitter();
     this.send = new EventEmitter();
@@ -105,6 +107,9 @@ export class UserAssetComponent {
       address: client.getAddress(),
     });
     this.txs = txsPage.txs.filter((el) => {
+      //hotfix for luna transactions
+      if (this.asset.asset.chain === AssetLUNA.chain)
+        return true
       return (
         el.asset.chain === this.asset.asset.chain &&
         el.asset.ticker === this.asset.asset.ticker
@@ -176,6 +181,10 @@ export class UserAssetComponent {
       case 'BCH':
         this.explorerPath = `${this.explorerPathsService.bchExplorerUrl}/address/${this.address}`;
         break;
+
+      case 'DOGE':
+      case 'TERRA':
+        this.explorerPath = this.userService.getChainClient(this.user, this.asset.asset.chain).getExplorerAddressUrl(this.address);
 
       default:
         break;

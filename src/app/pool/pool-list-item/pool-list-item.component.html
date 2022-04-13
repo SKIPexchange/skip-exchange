@@ -14,8 +14,8 @@
         [ticker]="asset.ticker"
       ></app-icon-ticker>
       <span class="extra-info" *ngIf="poolData && !activate">
-        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% APY<span *ngIf="!isMobile"> /
-        {{ assetDepth | shortNumber }} {{ currency.code }} DEPTH</span>)
+        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% {{ 'pool.apy' | translate }}<span *ngIf="!isMobile"> /
+        {{ assetDepth | shortNumber }} {{ currency.code }} {{ 'pool.depth' | translate }}</span>)
       </span>
     </div>
 
@@ -26,14 +26,14 @@
             [href]="getPoolUrl()"
             (click)="statEvent()"
             target="_blank"
-            >POOL STATS</a
+            >{{ 'pool.poolStats' | translate }}</a
           >
         </app-tag>
         <div *ngIf="!isMobile" style="width: 5px"></div>
         <app-tag *ngIf="!depositsDisabled && !isPending">
           <a [routerLink]="['/', 'deposit', asset.chain + '.' + asset.symbol]"
             (click)="depositEvent()"
-            >Deposit</a
+            >{{ 'common.deposit' | translate }}</a
           >
         </app-tag>
       </ng-container>

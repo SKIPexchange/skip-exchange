@@ -40,6 +40,7 @@ import { TextFieldModule } from './_components/text-field/text-field.module';
 import { BreadcrumbModule } from './_components/breadcrumb/breadcrumb.module';
 import { TagModule } from './_components/tag/tag.module';
 import { PhraseWordsListModule } from './_components/phrase-words-list/phrase-words-list.module';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
 /** SERVICES */
 import { BinanceService } from './_services/binance.service';
@@ -100,6 +101,7 @@ import { LayoutObserverService } from './_services/layout-observer.service';
 import { FooterMenuComponent } from './_components/footer-menu/footer-menu.component';
 import { CustomPipesModule } from './_pipes/custom-pipes.module';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { LanguageLoader } from './_classes/translate-loader';
 
 @NgModule({
   declarations: [
@@ -168,6 +170,10 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
     CustomPipesModule,
     HttpClientModule,
     AngularSvgIconModule.forRoot(),
+    TranslateModule.forRoot({
+      loader: { provide: TranslateLoader, useClass: LanguageLoader },
+      defaultLanguage: 'en',
+    }),
   ],
   providers: [
     BinanceService,

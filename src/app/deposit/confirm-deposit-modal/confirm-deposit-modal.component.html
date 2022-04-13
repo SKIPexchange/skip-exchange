@@ -8,11 +8,11 @@
         <nav class="content-top">
           <app-breadcrumb
             [path]="[
-              { name: 'skip', call: 'swap' },
-              { name: 'Pools', call: 'pool' },
-              { name: 'Deposit', disable: true },
+              { name: 'common.skip', call: 'swap' },
+              { name: 'common.pool', call: 'pool' },
+              { name: 'common.deposit', disable: true },
               { name: data.asset.asset.chain + '.' + data.asset.asset.ticker, disable: true },
-              { name: data.poolTypeOption === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
+              { name: data.poolTypeOption === 'SYM' ? 'deposit.symetrical' : 'deposit.assymetrical', disable: true }
             ]"
             [isError]="error"
             [message]="getMessage()"
@@ -23,7 +23,7 @@
         <div class="main-content">
           <app-asset-input
             *ngIf="data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_ASSET'"
-            label="Deposit"
+            [label]="translate.format('common.deposit')"
             type="deposit"
             [(selectedAsset)]="data.asset.asset"
             [(assetUnit)]="data.assetAmount"
@@ -40,7 +40,7 @@
           <app-arrow *ngIf="data.poolTypeOption === 'SYM'" [isPlus]="true" [isError]="txState === 'ERROR'"></app-arrow>
           <app-asset-input
             *ngIf="data.poolTypeOption === 'SYM' || data.poolTypeOption === 'ASYM_RUNE'"
-            label="Deposit"
+            [label]="translate.format('common.deposit')"
             type="deposit"
             [(selectedAsset)]="data.rune.asset"
             [(assetUnit)]="data.runeAmount"
@@ -57,7 +57,7 @@
           <div class="swap-details" *ngIf="txState !== 'ERROR'">
             <ng-container *ngIf="data.poolTypeOption === 'SYM'">
               <div class="flex justify-between">
-                <span class="tx-detail-label">Prices:</span>
+                <span class="tx-detail-label">{{ 'common.prices'| translate }}</span>
                 <span>
                   1 {{ data.rune.asset.ticker }} = {{ data.assetBasePrice | number: "1.2-4" }} {{ data.asset.asset.ticker }}
                   <span *ngIf="data.runePrice">({{ data.runePrice * currency.value | number: '0.2-2'}} {{ currency.code }})</span>
@@ -72,11 +72,11 @@
               </div>
             </ng-container>
             <div *ngIf="data.depositValue" class="flex justify-between primary-text">
-              <span class="tx-detail-label">Total Deposit:</span>
+              <span class="tx-detail-label">{{ 'deposit.total' | translate }}</span>
               <span>{{ data.depositValue | number: '0.2-2' }} {{currency.code}}</span>
             </div>
             <div class="flex justify-between white-text">
-              <span class="tx-detail-label">Network Fees:</span>
+              <span class="tx-detail-label">{{ 'common.fees' | translate }}</span>
               <div [ngClass]="{'text-right': isMobile}">
                 <span *ngIf="data.estimatedFee && data.poolTypeOption != 'ASYM_RUNE'"> 
                   {{ data.estimatedFee| number: "1.0-8" }} {{ data.asset.asset.ticker }} 
@@ -117,7 +117,7 @@
       <div class="bottom-actions two-btn">
         <div class="left-btn">
           <button class="close-btn" (click)="closeDialog()">
-            <span>Cancel</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -127,15 +127,15 @@
             class="next-btn"
             [disabled]="loading || insufficientChainBalance"
           >
-            <span>Confirm</span>
+            <span>{{ 'common.confirm' | translate }}</span>
           </button>
         </div>
       </div>
       <div *ngIf="txState === 'ERROR'" class="bottom-actions">
         <button class="next-btn graident-btn" (click)="closeDialog()">
-          <span *ngIf="this.data.poolTypeOption === 'ASYM_ASSET'">Retry <span class="small-1">{{this.data.asset.asset.chain}}.</span>{{this.data.asset.asset.ticker}}</span>
-          <span *ngIf="this.data.poolTypeOption === 'ASYM_RUNE'">Retry <span class="small-1">{{this.data.rune.asset.chain}}.</span>{{this.data.rune.asset.ticker}}</span>
-          <span *ngIf="this.data.poolTypeOption === 'SYM'">Retry Deposit</span>
+          <span *ngIf="this.data.poolTypeOption === 'ASYM_ASSET'">{{ 'common.retry' | translate }} <span class="small-1">{{this.data.asset.asset.chain}}.</span>{{this.data.asset.asset.ticker}}</span>
+          <span *ngIf="this.data.poolTypeOption === 'ASYM_RUNE'">{{ 'common.retry' | translate }} <span class="small-1">{{this.data.rune.asset.chain}}.</span>{{this.data.rune.asset.ticker}}</span>
+          <span *ngIf="this.data.poolTypeOption === 'SYM'">{{ 'deposit.retry' | translate }}</span>
         </button>
       </div>
     </div>
@@ -155,11 +155,8 @@
   <app-transaction-processing-modal
     *ngIf="txState == 'SUBMITTING'"
     [asset]="[data.asset, data.rune]"
-    [label]="['Depositing', 'Depositing']"
+    [label]="[translate.format('pending.depositing'), translate.format('pending.depositing')]"
     [amount]="[data.assetAmount, data.runeAmount]"
-    transactionDetail="Depositing {{ +data.assetAmount | number: '0.0-4' }} {{
-      data.asset.asset.ticker
-    }} + {{ +data.runeAmount | number: '0.0-2' }} {{ data.rune.asset.ticker }}"
     (closeDialog)="closeDialog()"
     [isPlus]="true"
     [poolType]="data.poolTypeOption"
@@ -167,13 +164,13 @@
   >
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'Pools', call: 'pool' },
-        { name: 'Deposit', disable: true },
+        { name: 'common.skip', call: 'swap' },
+        { name: 'common.pool', call: 'pool' },
+        { name: 'common.deposit', disable: true },
         { name: data.asset.asset.chain + '.' + data.asset.asset.ticker, disable: true },
-        { name: data.poolTypeOption === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
+        { name: data.poolTypeOption === 'SYM' ? 'deposit.symetrical' : 'deposit.assymetrical', disable: true }
       ]"
-      message="PROCESSING"
+      [message]="translate.format('common.processing')"
       (funcCaller)="breadcrumbNav($event, 'process')"
     ></app-breadcrumb>
   </app-transaction-processing-modal>
@@ -185,11 +182,11 @@
   >
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'Pools', call: 'pool' },
-        { name: 'Deposit', call: 'deposit-back' },
+        { name: 'common.skip', call: 'swap' },
+        { name: 'common.pool', call: 'pool' },
+        { name: 'common.deposit', call: 'deposit-back' },
         { name: data.asset.asset.chain + '.' + data.asset.asset.ticker, disable: true },
-        { name: data.poolTypeOption === 'SYM' ? 'SYMETRICAL' : 'ASSYMETRICAL', disable: true }
+        { name: data.poolTypeOption === 'SYM' ? 'deposit.symetrical' : 'deposit.assymetrical', disable: true }
       ]"
       [message]="successMessage"
       (funcCaller)="breadcrumbNav($event, 'success')"

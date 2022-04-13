@@ -20,7 +20,7 @@ export class AssetsListComponent {
   @Input() displayAddTokenButton: boolean;
   @Output() selectAsset: EventEmitter<Asset>;
   @Output() addToken: EventEmitter<null>;
-  @Input() noAssets: string = 'NO ASSETS';
+  @Input() noAssets: string = 'pool.noAsset';
   @Input() showApy: boolean = false;
   @Input() showPrice: boolean = false;
 

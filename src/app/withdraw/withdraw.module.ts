@@ -18,6 +18,7 @@ import { ArrowModule } from '../_components/arrow/arrow.module';
 import { DoubleAssetFieldModule } from '../_components/double-asset-field/double-asset-field.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PoolTypeOptionsModule } from '../_components/pool-type-options/pool-type-options.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [WithdrawComponent, ConfirmWithdrawModalComponent],
@@ -38,6 +39,7 @@ import { PoolTypeOptionsModule } from '../_components/pool-type-options/pool-typ
     DoubleAssetFieldModule,
     MatTooltipModule,
     PoolTypeOptionsModule,
+    TranslateModule,
     RouterModule.forChild([
       {
         path: ':asset',

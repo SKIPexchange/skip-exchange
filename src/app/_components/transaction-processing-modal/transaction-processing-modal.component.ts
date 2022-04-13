@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Asset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
 import { PoolTypeOption } from 'src/app/_const/pool-type-options';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 type ProcessingType =
   | 'Swap'
@@ -33,7 +34,7 @@ export class TransactionProcessingModalComponent {
   @Input() type: ProcessingType;
   @Input() poolType: PoolTypeOption;
 
-  constructor() {
+  constructor(public transalte: TranslateService) {
     this.closeDialog = new EventEmitter<null>();
   }
 

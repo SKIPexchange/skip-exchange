@@ -14,18 +14,18 @@
         [ngClass]="{ disable: p.disable, wider: isMobile }"
         (click)="navHandler(p)"
       >
-        {{ p.name }}
+        {{ p.name | translate }}
       </div>
       <div>></div>
     </ng-container>
     <ng-container *ngIf="backName">
-      <div class="path" [ngClass]="{wider: isMobile}" (click)="backFunc.emit()">{{ backName }}</div>
+      <div class="path" [ngClass]="{wider: isMobile}" (click)="backFunc.emit()">{{ backName | translate }}</div>
       <div>></div>
     </ng-container>
     <div class="path path--active" [ngClass]="{wider: isMobile}">
-      {{ message.text || message }}
+      {{ (message.text || message) | translate }}
     </div>
     <div class="cursor" #cursor></div>
   </div>
-  <div class="shadow"></div>
+  <div *ngIf="isMobile" class="shadow"></div>
 </div>

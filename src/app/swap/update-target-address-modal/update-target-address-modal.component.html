@@ -2,9 +2,9 @@
   <div class="content-top">
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'skip' },
-        { name: 'swap', call: 'swap' },
-        { name: 'TARGET ' + data?.chain + ' ADDRESS', disable: true }
+        { name: 'common.skip', call: 'skip' },
+        { name: 'common.swap', call: 'swap' },
+        { name: 'breadcrumb.targetAddress' | translate: {chain: data?.chain}, disable: true }
       ]"
       [message]="updateAddressBtnText()"
       (funcCaller)="breadcurmbNav($event)"
@@ -14,7 +14,7 @@
   <div>
     <div mat-dialog-content style="height: 365px">
       <app-text-field
-        label="Recipient Address"
+        [label]="'wallet.recipient' | translate"
         [(textOfField)]="targetAddress"
         name="target-address"
       ></app-text-field>
@@ -29,13 +29,13 @@
         aria-label="Close Markets Dialog"
         (click)="backEmit()"
       >
-        <span>CANCEL</span>
+        <span>{{ 'common.cancel' | translate }}</span>
       </button>
     </div>
     <div class="divider"></div>
     <div class="right-btn">
       <button class="next-btn" (click)="updateAddress()" [disabled]="formDisabled()">
-        <span>SAVE</span>
+        <span>{{ 'common.save' | translate }}</span>
       </button>
     </div>
   </div>

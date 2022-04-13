@@ -5,6 +5,8 @@ import { Client as thorchainClient } from '@xchainjs/xchain-thorchain';
 import { Client as litecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as bitcoinCashClient } from '@xchainjs/xchain-bitcoincash';
 import { Client as ethereumClient } from '@xchainjs/xchain-ethereum/lib';
+import { Client as dogeClient } from '@xchainjs/xchain-doge';
+import { Client as terraClient } from '@xchainjs/xchain-terra';
 import { Chain } from '@xchainjs/xchain-util';
 import { environment } from 'src/environments/environment';
 import { Network } from '@xchainjs/xchain-client';
@@ -24,20 +26,21 @@ export class MockClientService {
   mockEthereumClient: ethereumClient;
   mockLtcClient: litecoinClient;
   mockBchClient: bitcoinCashClient;
+  mockDogeClient: dogeClient;
+  mockTerraClient: terraClient;
 
   constructor() {
     const network =
       environment.network === 'testnet' ? Network.Testnet : Network.Mainnet;
     const phrase = this.MOCK_PHRASE;
+    const chainIds = {[Network.Mainnet]: 'thorchain-mainnet-v1', [Network.Stagenet]: 'thorchain-stagenet-v1', [Network.Testnet]: 'thorchain-testnet-v1'}
 
     this.mockBinanceClient = new binanceClient({ network, phrase });
     this.mockBtcClient = new bitcoinClient({
       network,
       phrase,
-      sochainUrl: 'https://sochain.com/api/v2',
-      blockstreamUrl: 'https://blockstream.info',
     });
-    this.mockThorchainClient = new thorchainClient({ network, phrase });
+    this.mockThorchainClient = new thorchainClient({ network, phrase, chainIds });
     this.mockEthereumClient = new ethereumClient({
       network,
       phrase,
@@ -45,7 +48,17 @@ export class MockClientService {
       infuraCreds: { projectId: environment.infuraProjectId },
     });
     this.mockLtcClient = new litecoinClient({ network, phrase });
-    this.mockBchClient = new bitcoinCashClient({ network, phrase });
+    this.mockBchClient = new bitcoinCashClient({ 
+      network, 
+      phrase,
+      haskoinUrl: {
+        [Network.Testnet]: 'https://api.haskoin.com/bchtest',
+        [Network.Mainnet]: 'https://haskoin.ninerealms.com/bch',
+        [Network.Stagenet]: 'https://haskoin.ninerealms.com/bch',
+      }
+    });
+    this.mockDogeClient = new dogeClient({network, phrase});
+    this.mockTerraClient = new terraClient({network, phrase})
 
     this.mockThorchainClient.getAddress = () => undefined;
     this.mockBinanceClient.getAddress = () => undefined;
@@ -53,6 +66,8 @@ export class MockClientService {
     this.mockBchClient.getAddress = () => undefined;
     this.mockEthereumClient.getAddress = () => undefined;
     this.mockLtcClient.getAddress = () => undefined;
+    this.mockDogeClient.getAddress = () => undefined;
+    this.mockTerraClient.getAddress = () => undefined;
   }
 
   getMockClientByChain(chain: Chain) {
@@ -74,6 +89,12 @@ export class MockClientService {
 
       case 'THOR':
         return this.mockThorchainClient;
+
+      case 'DOGE':
+        return this.mockDogeClient;
+      
+      case 'TERRA':
+        return this.mockTerraClient;
     }
 
     throw new Error(`mock client no matching client for chain: ${chain}`);

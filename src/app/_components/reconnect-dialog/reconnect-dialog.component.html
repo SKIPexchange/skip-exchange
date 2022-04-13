@@ -8,17 +8,17 @@
       <div class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'skip' },
-            { name: 'connect', call: 'connect' },
-            { name: 'keystore found', disable: true }
+            { name: 'common.skip', call: 'skip' },
+            { name: 'common.connect', call: 'connect' },
+            { name: 'common.keystoreFound', disable: true }
           ]"
           [isError]="keystoreError"
           [message]="
             keystoreError
-              ? 'Keystore Login Incorrect'
+              ? ('breadcrumb.incorrectPass' | translate) 
               : keystoreConnecting
-              ? 'connecting'
-              : 'enter password or forget'
+              ? ('breadcrumb.connecting' | translate) 
+              : ('breadcrumb.enterPassOrForget' | translate) 
           "
           (funcCaller)="breadcrumbNav($event)"
         ></app-breadcrumb>
@@ -36,7 +36,7 @@
           [isTag]="false"
           [isCenter]="true"
         >
-          <div text><span class="small-1">Reconnect from</span> previous session?</div>
+          <div text [innerHTML]="'connect.reconnectKeystore' | translate"></div>
         </app-notice>
 
         <div>
@@ -47,7 +47,7 @@
           [(textOfField)]="keystorePassword"
           mode="Single"
           selectedType="Password"
-          label="Password"
+          [label]="'common.password' | translate"
           name="keystore-password"
           (keyup.enter)="initUnlock()"
         ></app-text-field>
@@ -60,7 +60,7 @@
             (click)="forgetKeystore()"
             [disabled]="keystoreConnecting"
           >
-            <span>Forget</span>
+            <span>{{ 'common.forget' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -71,7 +71,7 @@
               (click)="initUnlock()"
               [disabled]="keystoreConnecting || !keystorePassword"
             >
-              <span>CONNECT</span>
+              <span>{{ 'common.connect' | translate }}</span>
             </button>
           </div>
         </div>

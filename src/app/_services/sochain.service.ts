@@ -40,7 +40,10 @@ export class SochainService {
       sochainNetwork = network === 'testnet' ? 'LTCTEST' : 'LTC';
     } else if (chain === 'BTC') {
       sochainNetwork = network === 'testnet' ? 'BTCTEST' : 'BTC';
-    } else {
+    } else if (chain === 'DOGE') {
+      sochainNetwork = network === 'testnet' ? 'DOGETEST' : 'DOGE'
+    }
+    else {
       console.error('no chains match');
       return;
     }

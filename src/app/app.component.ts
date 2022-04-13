@@ -22,6 +22,7 @@ import { User } from './_classes/user';
 import { MetamaskService } from './_services/metamask.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LayoutObserverService } from './_services/layout-observer.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -57,7 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
     private userService: UserService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    translate: TranslateService
   ) {
     this.layout.isMobile.subscribe((res) => (this.isMobile = res));
 

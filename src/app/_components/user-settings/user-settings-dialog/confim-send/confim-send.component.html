@@ -6,11 +6,11 @@
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'wallet', call: 'wallet' },
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.wallet', call: 'wallet' },
           { name: asset.asset.chain, call: 'chain' },
           { name: asset.asset.chain + '.' + asset.asset.ticker, call: 'asset' },
-          { name: 'send', disable: true }
+          { name: 'common.send', disable: true }
         ]"
         [message]="message"
         (funcCaller)="breadcrumbNav($event)"
@@ -22,7 +22,7 @@
     <div mat-dialog-content>
       <div class="modal-head confirm-modal-head">
         <app-asset-input
-          label="Send"
+          [label]="'common.send' | translate"
           type="send"
           [(selectedAsset)]="asset.asset"
           [(assetUnit)]="amount"
@@ -41,7 +41,7 @@
           *ngIf="asset.asset.chain !== 'BNB'"
           selectedType="Text"
           mode="Single"
-          label="Recipient Address"
+          [label]="'wallet.recipient' | translate"
           [(textOfField)]="recipientAddress"
           [disable]="true"
         ></app-text-field>
@@ -50,8 +50,8 @@
           selectedType="Text"
           mode="Double"
           typeTwo="text"
-          label="Recipient Address"
-          labelTwo="Memo"
+          [label]="'wallet.recipient' | translate"
+          [labelTwo]="'wallet.memo' | translate"
           [(textOfField)]="recipientAddress"
           [(textOfFieldTwo)]="memo"
           [disable]="true"
@@ -64,7 +64,7 @@
       <div class="right-btn">
         <div>
           <button class="close-btn" (click)="backNav()">
-            <span>cancel</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
       </div>
@@ -75,7 +75,7 @@
             (click)="submitTransaction()"
             class="next-btn"
           >
-            <span>confirm</span>
+            <span>{{ 'common.confirm' | translate }}</span>
           </button>
         </div>
       </div>
@@ -112,7 +112,7 @@
 <app-transaction-processing-modal
   *ngIf="txState === 'SUBMITTING' && asset"
   [isSending]="true"
-  [label]="['Sending']"
+  [label]="['pending.sending' | translate]"
   [asset]="[asset]"
   [amount]="[amount]"
   [memo]="memo"
@@ -121,13 +121,13 @@
 >
   <app-breadcrumb
     [path]="[
-      { name: 'skip', call: 'swap' },
-      { name: 'wallet', call: 'wallet' },
+      { name: 'common.skip', call: 'swap' },
+      { name: 'common.wallet', call: 'wallet' },
       { name: asset.asset.chain, call: 'chain' },
       { name: asset.asset.chain + '.' + asset.asset.ticker, call: 'asset' },
-      { name: 'send', disable: true }
+      { name: 'common.send', disable: true }
     ]"
-    message="PROCESSING"
+    [message]="'common.processing' | translate"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>
@@ -140,13 +140,13 @@
 >
   <app-breadcrumb
     [path]="[
-      { name: 'skip', call: 'swap' },
-      { name: 'wallet', call: 'wallet' },
+      { name: 'common.skip', call: 'swap' },
+      { name: 'common.wallet', call: 'wallet' },
       { name: asset.asset.chain, call: 'chain' },
       { name: asset.asset.chain + '.' + asset.asset.ticker, call: 'asset' },
-      { name: 'send', disable: true }
+      { name: 'common.send', disable: true }
     ]"
-    message="SUCCESS"
+    [message]="'common.success' | translate"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

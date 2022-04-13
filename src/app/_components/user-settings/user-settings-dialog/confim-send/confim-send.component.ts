@@ -13,6 +13,8 @@ import {
   assetAmount,
   Asset,
   assetToString,
+  Chain,
+  AssetLUNA,
 } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { erc20ABI } from 'src/app/_abi/erc20.abi';
@@ -43,6 +45,9 @@ import {
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
+import { TranslateService } from 'src/app/_services/translate.service';
+import { environment } from 'src/environments/environment';
+import { TERRA_DECIMAL } from '@xchainjs/xchain-terra';
 
 @Component({
   selector: 'app-confim-send',
@@ -106,14 +111,15 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
     private mockClientService: MockClientService,
     private midgardService: MidgardService,
     private txUtilsService: TransactionUtilsService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    public translate: TranslateService
   ) {
     this.back = new EventEmitter<null>();
     this.close = new EventEmitter<null>();
-    this.message = 'Confirm';
+    this.message = this.translate.format('breadcrumb.confirm');
     this.transactionSuccessful = new EventEmitter<null>();
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
-    this.hash = 'No Txid !';
+    this.hash = this.translate.format('pending.noTX');
 
     const user$ = this.userService.user$.subscribe(
       (user) => (this.user = user)
@@ -236,8 +242,22 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
       const matchingAddress = inboundAddresses.find(
         (pool) => pool.chain === this.asset.asset.chain
       );
-      if (!matchingAddress && this.asset.asset.chain !== 'THOR') {
+      if (
+        !matchingAddress && 
+        this.asset.asset.chain !== 'THOR' &&
+        !(
+          environment.network === 'testnet' &&
+          (
+            this.asset.asset.chain === Chain.Terra ||
+            this.asset.asset.chain === Chain.Doge
+          ) 
+        )
+      ) {
         console.error('no recipient pool found');
+        this.message = 'no recipient pool found';
+        this.txState = TransactionConfirmationState.ERROR;
+        this.mode = 'ERROR';
+        this.modeChange.emit(this.mode);
         return;
       }
 
@@ -427,6 +447,7 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
               chain: asset.chain,
               symbol: asset.symbol,
               ticker: asset.ticker,
+              synth: false
             },
             amount: assetToBase(assetAmount(this.amount, decimal)),
             recipient: this.recipientAddress,
@@ -494,6 +515,82 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
           this.mode = 'SUCCESS';
           this.txState = TransactionConfirmationState.SUCCESS;
         } catch (error) {
+          console.error('error making transfer: ', error);
+          this.message = error.message || error;
+          this.txState = TransactionConfirmationState.ERROR;
+          this.mode = 'ERROR';
+          this.modeChange.emit(this.mode);
+        }
+      } else if (this.asset.asset.chain === 'DOGE') {
+        const dogeClient = this.user.clients.doge;
+
+        try {
+          // TODO -> consolidate this with BTC, BCH, LTC
+          const asset = new AsgrsxAsset(`DOGE.DOGE`);
+          const estimatedFee = this.txUtilsService.calculateNetworkFee(
+            asset,
+            inboundAddresses,
+            'INBOUND'
+          );
+          const balanceAmount = this.userService.findRawBalance(
+            this.balances,
+            asset
+          );
+          const toBase = assetToBase(assetAmount(this.amount));
+          const feeToBase = assetToBase(assetAmount(estimatedFee));
+          const amount = balanceAmount
+            // subtract fee
+            .minus(feeToBase.amount())
+            // subtract amount
+            .minus(toBase.amount())
+            .isGreaterThan(0)
+            ? toBase.amount() // send full amount, fee can be deducted from remaining balance
+            : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
+
+          if (amount.isLessThan(0)) {
+            this.message = 'Insufficient funds. Try sending a smaller amount';
+            this.txState = TransactionConfirmationState.ERROR;
+            return;
+          }
+          console.log(amount,this.recipientAddress)
+          const hash = await dogeClient.transfer({
+            amount: baseAmount(amount),
+            recipient: this.recipientAddress,
+            feeRate: environment.network === 'testnet'? undefined : +matchingAddress.gas_rate,
+          });
+          console.log(hash)
+          this.hash = hash;
+          this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
+          this.transactionSuccessful.next();
+          this.mode = 'SUCCESS';
+          this.txState = TransactionConfirmationState.SUCCESS;
+        } catch (error) {
+          console.error('error making transfer: ', error);
+          this.message = error.message || error;
+          this.txState = TransactionConfirmationState.ERROR;
+          this.mode = 'ERROR';
+          this.modeChange.emit(this.mode);
+        }
+      } else if (this.asset.asset.chain === 'TERRA') {
+        //TODO: doesn't work atm. will need to update the xchainjs-terra
+        const terraClient = this.user.clients.terra;
+
+        try {
+          console.log(this.asset.asset);
+          const hash = await terraClient.transfer({
+            asset: AssetLUNA,
+            amount: assetToBase(assetAmount(this.amount, TERRA_DECIMAL)),
+            recipient: this.recipientAddress,
+          });
+          this.hash = hash;
+          this.pushTxStatus(hash, this.asset.asset, false);
+          this.makeHashes(this.asset.asset);
+          this.transactionSuccessful.next();
+          this.mode = 'SUCCESS';
+          this.txState = TransactionConfirmationState.SUCCESS;
+        }
+        catch (error) {
           console.error('error making transfer: ', error);
           this.message = error.message || error;
           this.txState = TransactionConfirmationState.ERROR;

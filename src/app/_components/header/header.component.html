@@ -1,7 +1,5 @@
 <div class="top-bar">
-  <a *ngIf="isTestnet"
-    >TESTNET • YOUR ASSETS WILL BE LOST IF YOU DON’T SEND TESTNET ASSETS TO YOUR THESE WALLETS • TESTNET</a
-  >
+  <a *ngIf="isTestnet" [innerText]="'header.testnetHeader' | translate"></a>
   <a
     href="https://viewblock.io/thorchain/pools"
     target="_blank"
@@ -16,8 +14,8 @@
     target="_blanck"
     class="gradient red"
     *ngIf="!isTestnet && appLocked"
+    [innerText]="'header.downTime' | translate"
   >
-    CLICK TO READ ABOUT OUR PLANNED DOWNTIME
   </a>
 </div>
 <header>
@@ -48,11 +46,9 @@
       [user]="user"
       [(overlay)]="overlay"
     ></app-user-settings>
-    <!-- <span id="testnet-indicator" *ngIf="isTestnet">Testnet</span> -->
     <div class="flex thorchain-indicator">
       <app-last-block-indicator></app-last-block-indicator>
     </div>
-    <!-- <app-connect *ngIf="!user"></app-connect> -->
   </div>
 </header>
 

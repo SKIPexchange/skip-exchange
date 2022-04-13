@@ -70,7 +70,7 @@
           getMax() !== assetUnit
         "
       >
-        <app-tag (click)="setMax()">MAX</app-tag>
+        <app-tag (click)="setMax()">{{ 'common.max' | translate | uppercase }}</app-tag>
       </div>
 
       <div
@@ -78,7 +78,7 @@
         style="margin-right: 8px"
         *ngIf="isWallet && hasWallet"
       >
-        <app-tag (click)="gotoWallet()">WALLET</app-tag>
+        <app-tag (click)="gotoWallet()">{{ 'common.wallet' | translate | uppercase }}</app-tag>
       </div>
 
       <app-select-asset
@@ -98,14 +98,14 @@
           [ngClass]="{ processing: processing }"
           *ngIf="selectedAsset && balance && !disableUser && showBalance"
         >
-          <ng-container *ngIf="(hasAddress || targetAddress) && (!disableUser && selectedAsset) && isMobile; else elseBlock">{{ balance | balanceNumber }} BALANCE</ng-container>
-          <ng-template #elseBlock>{{ balance }} BALANCE</ng-template>
+          <ng-container *ngIf="(hasAddress || targetAddress) && (!disableUser && selectedAsset) && isMobile; else elseBlock">{{ balance | balanceNumber }} {{ 'common.balance' | translate | uppercase }}</ng-container>
+          <ng-template #elseBlock>{{ balance }} {{ 'common.balance' | translate | uppercase }}</ng-template>
         </span>
         <span 
           class="usd-est processing"
           *ngIf="selectedAsset && !balance && !disableUser && showBalance && processing"
         >
-          LOADING BALANCE 
+          {{ 'common.loadingBalance' | translate | uppercase }} 
         </span>
         <span class="usd-est seprator" [ngClass]="{ processing: processing }" *ngIf="balance && showBalance && selectedAsset && (priceInput || inputUsdValue || !assetUnit) && showPrice && !(hasAddress || targetAddress)"> / </span>
         <span class="usd-est" [ngClass]="{ processing: processing }" *ngIf="showPrice && inputUsdValue && !(hasAddress || targetAddress) && selectedAsset">

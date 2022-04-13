@@ -1,16 +1,11 @@
 <div class="inner-container">
-  <!-- <app-modal-section-header
-    sectionTitle="XDEFI Connect"
-    [displayBackBtn]="true"
-  ></app-modal-section-header> -->
-
   <div class="dialog-content">
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'connect', call: 'connect' },
-          { name: 'connect with xdefi', disable: true }
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.connect', call: 'connect' },
+          { name: 'breadcrumb.xdefi', disable: true }
         ]"
         (funcCaller)="breadcrumbNav($event)"
         [message]="getBreadcrumbText()"
@@ -46,27 +41,31 @@
         </app-notice>
       </div>
 
-      <div class="descriptive" style="color: #fff">
-        In XDEFI, go to:
-        <span style="color: var(--primary-default)">Settings > dApps</span> to
-        verify if the above dApps injection Providers are enabled before
-        connecting below.
-        <br/>
-        <span style="color: var(--primary-red);">
-          If you enabled them all now, reload this page in your browser before
-          checking connect.
-        </span>
-        <br />
-        <span style="color: var(--primary-default);">
-          If they were already enabled, you may click the connect button below.
-        </span>
+      
+      <div class="swap-details" style="color: #fff">
+        <div style="margin-bottom: 5px; font-size: 14px" >
+          {{ ('connect.xdefiHelp' | translate)[0] }}
+          <span style="color: var(--primary-default)">{{ ('connect.xdefiHelp' | translate)[1] }}</span>
+          {{ ('connect.xdefiHelp' | translate)[2] }}
+        </div>
+        <div
+          style=" margin-bottom: 5px; font-size: 14px; color: var(--primary-red); "
+        >
+          {{ ('connect.xdefiHelp' | translate)[3] }}
+        </div>
+        <div
+          style=" margin-bottom: 5px; font-size: 14px; color: var(--primary-default); "
+        >
+          {{ ('connect.xdefiHelp' | translate)[4] }}
+        </div>
       </div>
+
     </div>
 
     <div class="bottom-actions two-btn">
       <div class="left-btn">
         <button class="close-btn" (click)="backNav()">
-          <span>Cancel</span>
+          <span>{{ 'common.cancel' | translate }}</span>
         </button>
       </div>
       <div class="divider"></div>
@@ -77,60 +76,10 @@
             (click)="initUnlock()"
             [disabled]="xdefiConnecting || !isValidNetwork || loading || providersDisabled()"
           >
-            <span>Connect</span>
+            <span>{{ 'common.connect' | translate }}</span>
           </button>
         </div>
       </div>
     </div>
-
-    <!--
-    <div class="dialog-content">
-      <div mat-dialog-content>
-        <ul>
-          <li *ngFor="let providerInfo of listProviders" class="flex align-item">
-            <span>- {{ providerInfo.title }}</span>
-            <mat-icon
-              [ngStyle]="{ color: providerInfo.enabled ? 'green' : 'red' }"
-            >
-              {{ providerInfo.enabled ? "check" : "close" }}
-            </mat-icon>
-          </li>
-        </ul>
-        <br />
-        <small
-          >You need to enable all dApps Injection Providers in
-          <b>Settings > dApps Settings </b> then reload the page.</small
-        >
-        <br />
-      </div>
-
-      <div class="flex justify-between items-center" style="height: 38px">
-        <div>
-          <span *ngIf="xdefiError" style="font-size: 0.8rem; color: #2172e5"
-            >XDEFI Login Incorrect</span
-          >
-          <span *ngIf="!isValidNetwork" style="font-size: 0.8rem; color: #2172e5"
-            >Incorrect network!</span
-          >
-        </div>
-        <br />
-        <div>
-          <button
-            *ngIf="!xdefiConnecting"
-            mat-flat-button
-            color="accent"
-            (click)="initUnlock()"
-            [disabled]="xdefiConnecting || !isValidNetwork"
-          >
-            <span>Connect</span>
-          </button>
-          <mat-progress-spinner
-            mode="indeterminate"
-            diameter="30"
-            *ngIf="xdefiConnecting"
-          ></mat-progress-spinner>
-        </div>
-      </div>
-    </div>
-  --></div>
+  </div>
 </div>

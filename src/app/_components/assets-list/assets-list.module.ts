@@ -8,6 +8,7 @@ import { DirectivesModule } from 'src/app/_directives/directives.module';
 import { IconTickerModule } from '../icon-ticker/icon-ticker.module';
 import { ArrowModule } from '../arrow/arrow.module';
 import { CustomPipesModule } from 'src/app/_pipes/custom-pipes.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [AssetsListComponent],
@@ -20,6 +21,7 @@ import { CustomPipesModule } from 'src/app/_pipes/custom-pipes.module';
     ArrowModule,
     DirectivesModule,
     CustomPipesModule,
+    TranslateModule,
   ],
   exports: [AssetsListComponent],
 })

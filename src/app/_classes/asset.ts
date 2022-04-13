@@ -1,5 +1,5 @@
 import { CoinIconsFromTrustWallet } from 'src/app/_const/icon-list';
-import { assetToString, Chain } from '@xchainjs/xchain-util';
+import { assetToString, Chain, Asset as XCAsset } from '@xchainjs/xchain-util';
 import { ethers } from 'ethers';
 import { ethToken } from '../_const/eth-token';
 import { environment } from '../../environments/environment';
@@ -8,6 +8,7 @@ export class Asset {
   chain: Chain;
   symbol: string;
   ticker: string;
+  synth: boolean;
   iconPath: string;
 
   constructor(poolName: string) {
@@ -17,6 +18,7 @@ export class Asset {
     this.chain = chain;
     this.symbol = symbol;
     this.ticker = ticker;
+    this.synth = false;
 
     const trustWalletMatch = CoinIconsFromTrustWallet[this.ticker];
 
@@ -86,6 +88,17 @@ export class Asset {
             'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png';
           break;
 
+        case 'DOGE':
+          this.iconPath =
+            'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png';
+          break;
+
+        case 'TERRA':
+          if (this.ticker.toUpperCase() === 'LUNA')
+            this.iconPath =
+              'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png';
+          break;
+
         default:
           break;
       }
@@ -105,7 +118,7 @@ export class Asset {
 
   private _setEthIconPath(assetSymbol: string, assetTicker: string): string {
     const assetAddress = assetSymbol.slice(assetTicker.length + 1);
-    const strip0x = assetAddress.substr(2);
+    const strip0x = assetAddress.substring(2);
     const checkSummedAddress = ethers.utils.getAddress(strip0x);
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummedAddress}/logo.png`;
   }
@@ -136,7 +149,7 @@ export class Asset {
 
 export const checkSummedAsset = (
   poolName: string
-): { chain: Chain; ticker: string; symbol: string } => {
+): { chain: Chain; ticker: string; symbol: string; synth: boolean } => {
   const asset = new Asset(poolName);
   const assetAddress = asset.symbol.slice(asset.ticker.length + 1);
   const strip0x =
@@ -148,14 +161,11 @@ export const checkSummedAsset = (
     chain: asset.chain,
     ticker: asset.ticker,
     symbol: `${asset.ticker}-${checkSummedAddress}`,
+    synth: false,
   };
 };
 
-export const isNonNativeRuneToken = (asset: {
-  chain: Chain;
-  ticker: string;
-  symbol: string;
-}): boolean => {
+export const isNonNativeRuneToken = (asset: XCAsset): boolean => {
   const runeTokens = [
     'BNB.RUNE-B1A', // chaosnet
     'BNB.RUNE-67C', // testnet
@@ -186,6 +196,12 @@ export const getChainAsset = (chain: Chain): Asset => {
     case 'THOR':
       return new Asset('THOR.RUNE');
 
+    case 'DOGE':
+      return new Asset('DOGE.DOGE');
+
+    case 'TERRA':
+      return new Asset('TERRA.LUNA');
+        
     default:
       return null;
   }

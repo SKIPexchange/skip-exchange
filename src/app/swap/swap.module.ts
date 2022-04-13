@@ -34,6 +34,7 @@ import { RightOptionModule } from '../_components/right-option/right-option.modu
 import { PhraseWordsListModule } from '../_components/phrase-words-list/phrase-words-list.module';
 import { ApproveEthContractModalModule } from '../_components/approve-eth-contract/approve-eth-contract-modal/approve-eth-contract-modal.module';
 import { TextFieldModule } from '../_components/text-field/text-field.module';
+import { TranslateModule } from '@ngx-translate/core';
 @NgModule({
   declarations: [
     SwapComponent,
@@ -64,6 +65,7 @@ import { TextFieldModule } from '../_components/text-field/text-field.module';
     RightOptionModule,
     PhraseWordsListModule,
     ConnectModule,
+    TranslateModule,
     RouterModule.forChild([
       {
         path: ':sourceAsset/:targetAsset',

@@ -7,9 +7,9 @@
       <nav class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'Pools', call: 'pool' },
-            { name: 'Withdraw', disable: true },
+            { name: 'common.skip', call: 'swap' },
+            { name: 'common.pool', call: 'pool' },
+            { name: 'common.withdraw', disable: true },
             { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
           ]"
           [isError]="txState === 'ERROR'"
@@ -20,7 +20,7 @@
     </div>
 
     <div class="percent-container">
-      <span class="percent-label">Percentage</span>
+      <span class="percent-label">{{'withdraw.percentage' | translate}}</span>
       <span class="unstake-percent">{{ data.unstakePercent }}%</span>
       <mat-slider
         class="slider"
@@ -37,7 +37,7 @@
     <app-arrow></app-arrow>
 
     <app-double-asset-field
-      label="Withdrawal"
+      [label]="translate.format('withdraw.withdrawal')"
       [selectedAssets]="[data.asset, data.rune]"
       [assetUnits]="[data.assetAmount, data.runeAmount]"
       [priceInputs]="[data.assetPrice, data.runePrice]"
@@ -61,14 +61,14 @@
         </span>
       </div> -->
       <div *ngIf="data.withdrawalValue" class="flex justify-between primary-text">
-          <span class="tx-detail-label">Total Withdrawal:</span>
+          <span class="tx-detail-label">{{ 'withdraw.total' | translate }}</span>
           <span>{{ data.withdrawalValue | number: '0.2-2' }} {{currency.code}}</span>
       </div>
       <div
         *ngIf="data.withdrawType !== 'ASYM_ASSET'"
         class="flex justify-between text-white"
       >
-        <span class="tx-detail-label">Network Fees:</span>
+        <span class="tx-detail-label">{{ 'common.fees' | translate }}</span>
         <span *ngIf="data.runeFee">
           {{ data.runeFee }} RUNE
           <span *ngIf="currency && data.runePrice">({{this.currency.value * data.runePrice * data.runeFee | number: '0.2-2'}} {{currency.code}})</span>
@@ -79,7 +79,7 @@
         *ngIf="data.withdrawType === 'ASYM_ASSET'"
         class="flex justify-between items-center text-white"
       >
-        <span class="tx-detail-label">Network Fees:</span>
+        <span class="tx-detail-label">{{ 'common.fees' | translate }}</span>
         <span *ngIf="data.networkFee">
           {{ data.networkFee | number: "1.0-4" }} {{ data.asset.ticker }}
           <span *ngIf="currency && data.assetPrice">({{this.currency.value * data.networkFee * data.assetPrice | number: '0.2-2'}} {{currency.code}})</span>
@@ -97,13 +97,13 @@
     <div class="bottom-actions two-btn">
       <div class="left-btn">
         <button class="close-btn" (click)="closeDialog()">
-          <span>Cancel</span>
+          <span>{{ 'common.cancel' | translate }}</span>
         </button>
       </div>
       <div class="divider"></div>
       <div class="right-btn">
         <button (click)="submitTransaction()" class="next-btn">
-          <span>Confirm</span>
+          <span>{{ 'common.confirm' | translate }}</span>
         </button>
       </div>
     </div>
@@ -117,29 +117,26 @@
 <app-transaction-processing-modal
   *ngIf="txState == 'SUBMITTING'"
   [isWithdraw]="true"
-  [label]="['Withdrawing', data.poolShareMessage]"
+  [label]="[this.translate.format('withdraw.withdrawing'), data.poolShareMessage]"
   [asset]="[
     { asset: data.asset, balance: 0, assetPriceUSD: 0 },
     { asset: data.rune, balance: 0, assetPriceUSD: 0 }
   ]"
   [amount]="[data.assetAmount, data.runeAmount]"
   [percentage]="data.unstakePercent"
-  transactionDetail="Withdrawing {{ data.assetAmount }} {{
-    data.asset.ticker
-  }} + {{ data.runeAmount }} {{ data.rune.ticker }}"
   (closeDialog)="closeDialog()"
   type="Withdraw"
   [disabledAsset]="disabledAsset()"
 >
   <app-breadcrumb
     [path]="[
-      { name: 'skip', call: 'swap' },
-      { name: 'Pools', call: 'pool' },
-      { name: 'Withdraw', disable: true },
+      { name: 'common.skip', call: 'swap' },
+      { name: 'common.pool', call: 'pool' },
+      { name: 'common.withdraw', disable: true },
       { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
     ]"
     [isError]=""
-    [message]="'PROCESSING'"
+    [message]="translate.format('common.processing')"
     (funcCaller)="breadcrumbNav($event, 'processing')"
   ></app-breadcrumb>
 </app-transaction-processing-modal>
@@ -154,13 +151,13 @@
 >
   <app-breadcrumb
     [path]="[
-      { name: 'skip', call: 'swap' },
-      { name: 'Pools', call: 'pool' },
-      { name: 'Withdraw', disable: true },
+      { name: 'common.skip', call: 'swap' },
+      { name: 'common.pool', call: 'pool' },
+      { name: 'common.withdraw', disable: true },
       { name: data.asset?.chain + '.' + data.asset?.ticker , disable: true },
     ]"
     [isError]=""
-    [message]="hashSuccess ? 'SUCCESS' : 'Processing'"
+    [message]="hashSuccess ? translate.format('common.success') : translate.format('common.processing')"
     (funcCaller)="breadcrumbNav($event, 'success')"
   ></app-breadcrumb>
 </app-transaction-success-modal>

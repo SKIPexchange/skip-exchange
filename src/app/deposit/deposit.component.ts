@@ -60,6 +60,7 @@ import { NetworkQueueService } from '../_services/network-queue.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NetworkSummary } from '../_classes/network';
 import { LayoutObserverService } from '../_services/layout-observer.service';
+import { TranslateService } from '../_services/translate.service';
 
 @Component({
   selector: 'app-deposit',
@@ -173,6 +174,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   queue: ThorchainQueue;
   appLocked: boolean;
   isMobile: boolean;
+  hasUser: boolean;
 
   constructor(
     private userService: UserService,
@@ -188,7 +190,8 @@ export class DepositComponent implements OnInit, OnDestroy {
     private metaMaskService: MetamaskService,
     private slipLimitService: SlippageToleranceService,
     private networkQueueService: NetworkQueueService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.appLocked = environment.appLocked;
     this.poolNotFoundErr = false;
@@ -207,6 +210,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       isValid: false,
       isError: false,
     };
+    this.hasUser = !!userService.ThorAddress;
   }
 
   ngOnInit(): void {
@@ -270,9 +274,7 @@ export class DepositComponent implements OnInit, OnDestroy {
 
           if (this.selectableMarkets) {
             this.assetPrice = this.selectableMarkets.find(
-              (item) =>
-                item.asset.chain === this.asset.chain &&
-                item.asset.ticker === this.asset.ticker
+              (item) => assetToString(item.asset) === assetToString(this.asset)
             ).assetPriceUSD;
           }
         }
@@ -647,22 +649,18 @@ export class DepositComponent implements OnInit, OnDestroy {
   }
 
   getPoolCap() {
-    const mimir$ = this.midgardService.mimir$;
     const network$ = this.midgardService.network$;
-    const combined = combineLatest([mimir$, network$]);
-    const sub = combined.subscribe(([mimir, network]) => {
+    const sub = network$.subscribe((network) => {
       if (
-        network instanceof HttpErrorResponse ||
-        mimir instanceof HttpErrorResponse
+        network instanceof HttpErrorResponse
       ) {
         this.depositsDisabled = true;
       } else {
         // prettier-ignore
-        const totalPooledRune = +(network as NetworkSummary).totalPooledRune / (10 ** 8);
-        if (mimir && mimir['mimir//MAXIMUMLIQUIDITYRUNE']) {
-          // prettier-ignore
-          const maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / (10 ** 8);
-          this.depositsDisabled = totalPooledRune / maxLiquidityRune >= 0.99;
+        const totalPooledRune = +(network as NetworkSummary).totalPooledRune;
+        const totalActiveBond = +network?.bondMetrics?.totalActiveBond;
+        if (totalPooledRune && totalActiveBond) {
+          this.depositsDisabled = totalPooledRune >= totalActiveBond;
         }
       }
     });
@@ -880,7 +878,7 @@ export class DepositComponent implements OnInit, OnDestroy {
   validate(): void {
     if (this.appLocked) {
       this.formValidation = {
-        message: 'MAINTENANCE ENABLED',
+        message: this.translate.format('breadcrumb.maintenance'),
         isValid: false,
         isError: false,
       };
@@ -889,7 +887,9 @@ export class DepositComponent implements OnInit, OnDestroy {
 
     if (this.isHalted) {
       this.formValidation = {
-        message: `${this.asset.chain} chain is Halted`,
+        message: this.translate.format('breadcrumb.halted', {
+          chain: this.asset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -899,16 +899,16 @@ export class DepositComponent implements OnInit, OnDestroy {
     /** Wallet not connected */
     if (!this.user) {
       this.formValidation = {
-        message: 'connect wallet',
+        message: this.translate.format('breadcrumb.connect'),
         isValid: false,
         isError: false,
       };
       return;
     }
 
-    if (!this.balances) {
+    if (!this.balances || this.loadingBalances) {
       this.formValidation = {
-        message: 'loading balances',
+        message: this.translate.format('breadcrumb.loadingBalance'),
         isValid: false,
         isError: false,
       };
@@ -916,28 +916,9 @@ export class DepositComponent implements OnInit, OnDestroy {
 
     if (this.depositsDisabled) {
       this.formValidation = {
-        message: 'Cap Reached',
+        message: this.translate.format('breadcrumb.depositDisabled'),
         isValid: false,
         isError: true,
-      };
-      return;
-    }
-
-    if (this.isHalted) {
-      this.formValidation = {
-        message: 'Pool Halted',
-        isValid: false,
-        isError: true,
-      };
-      return;
-    }
-
-    /** Wait for the balance loading */
-    if (this.loadingBalances) {
-      this.formValidation = {
-        message: 'Loading Balances',
-        isValid: false,
-        isError: false,
       };
       return;
     }
@@ -945,7 +926,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     /** User either lacks asset balance or RUNE balance */
     if (this.balances && !this.runeAmount && !this.assetAmount) {
       this.formValidation = {
-        message: 'Prepare',
+        message: this.translate.format('breadcrumb.prepare'),
         isValid: false,
         isError: false,
       };
@@ -955,7 +936,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     /** Asset amount is greater than balance */
     if (this.requiresAsset() && this.assetBalance < this.assetAmount) {
       this.formValidation = {
-        message: `Insufficient ${this.asset.ticker}`,
+        message: this.translate.format('breadcrumb.insufficientBalance'),
         isValid: false,
         isError: true,
       };
@@ -968,7 +949,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.runeBalance - this.runeAmount < 3
     ) {
       this.formValidation = {
-        message: 'Min 3 RUNE in Wallet',
+        message: this.translate.format('breadcrumb.minRune'),
         isValid: false,
         isError: true,
       };
@@ -982,7 +963,9 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.sourceChainBalance
     ) {
       this.formValidation = {
-        message: `Insufficient ${this.asset.chain} for fees`,
+        message: this.translate.format('breadcrumb.insufficient', {
+          asset: this.asset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -1005,7 +988,9 @@ export class DepositComponent implements OnInit, OnDestroy {
         )
     ) {
       this.formValidation = {
-        message: `Insufficient ${this.asset.chain}.${this.asset.ticker} for fees`,
+        message: this.translate.format('breadcrumb.insufficient', {
+          asset: this.asset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -1015,7 +1000,9 @@ export class DepositComponent implements OnInit, OnDestroy {
     /** Rune balance is suffient for fees */
     if (this.runeBalance <= this.runeFee && this.poolType !== 'ASYM_ASSET') {
       this.formValidation = {
-        message: `Insufficient ${this.rune.chain}.${this.rune.ticker} for fees`,
+        message: this.translate.format('breadcrumb.insufficient', {
+          asset: this.asset.chain,
+        }),
         isValid: false,
         isError: true,
       };
@@ -1024,7 +1011,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     /** Amount is too low, considered "dusting" */
     if (this.assetAmount <= this.userService.minimumSpendable(this.asset)) {
       this.formValidation = {
-        message: 'Amount too low',
+        message: this.translate.format('breadcrumb.amountTooLow'),
         isValid: false,
         isError: true,
       };
@@ -1040,7 +1027,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.poolType !== 'ASYM_RUNE'
     ) {
       this.formValidation = {
-        message: 'Amount too low',
+        message: this.translate.format('breadcrumb.amountTooLow'),
         isValid: false,
         isError: true,
       };
@@ -1052,7 +1039,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.metaMaskNetwork !== environment.network
     ) {
       this.formValidation = {
-        message: 'Change MetaMask Network',
+        message: this.translate.format('breadcrumb.metamaskNetwork'),
         isValid: false,
         isError: true,
       };
@@ -1068,7 +1055,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.assetAmount <= this.assetBalance
     ) {
       this.formValidation = {
-        message: 'Prepare',
+        message: this.translate.format('breadcrumb.prepare'),
         isValid: true,
         isError: false,
       };
@@ -1084,7 +1071,7 @@ export class DepositComponent implements OnInit, OnDestroy {
         : this.assetAmount <= this.assetBalance)
     ) {
       this.formValidation = {
-        message: 'Prepare',
+        message: this.translate.format('breadcrumb.prepare'),
         isValid: true,
         isError: false,
       };
@@ -1098,7 +1085,7 @@ export class DepositComponent implements OnInit, OnDestroy {
       this.runeAmount + this.runeFee <= this.runeBalance
     ) {
       this.formValidation = {
-        message: 'Prepare',
+        message: this.translate.format('breadcrumb.prepare'),
         isValid: true,
         isError: false,
       };
@@ -1106,7 +1093,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     }
 
     this.formValidation = {
-      message: 'Invalid',
+      message: this.translate.format('breadcurmb.invalid'),
       isValid: false,
       isError: true,
     };

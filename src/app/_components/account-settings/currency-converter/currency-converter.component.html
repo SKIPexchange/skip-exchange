@@ -5,12 +5,12 @@
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'SETTINGS', call: 'settings' },
-          { name: 'CURRENCY', disable: true }
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.settings', call: 'settings' },
+          { name: 'common.currency', disable: true }
         ]"
         (funcCaller)="breadcrumbNav($event)"
-        [message]="message"
+        [message]="message | translate"
       ></app-breadcrumb>
       <div class="top-right" *ngIf="!isMobile">
         <div
@@ -21,7 +21,7 @@
             class="search-input focus:ring-0"
             [(ngModel)]="searchTerm"
             name="currecny"
-            placeholder="search here..."
+            [placeholder]="'common.search' | translate"
           />
         </div>
       </div>
@@ -63,17 +63,17 @@
       <span
         class="no-item"
         style="text-transform: uppercase; text-align: center"
-        >NO CURRENCIES</span
+        >{{ 'settingss' | translate }}</span
       >
     </div>
 
     <div class="bottom-actions two-btn">
       <button class="left-btn close-btn" (click)="closeNav()">
-        <span>close</span>
+        <span>{{ 'common.close' | translate }}</span>
       </button>
       <div class="divider"></div>
       <button class="right-btn next-btn" (click)="saveCurrency()">
-        <span>Save</span>
+        <span>{{ 'common.save' | translate }}</span>
       </button>
     </div>
   </div>

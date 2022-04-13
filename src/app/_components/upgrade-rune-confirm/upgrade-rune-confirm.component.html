@@ -1,7 +1,7 @@
 <div *ngIf="asset">
   <app-transaction-processing-modal
     *ngIf="txState === 'SUBMITTING' && asset"
-    [label]="['Upgrading', 'Receiving']"
+    [label]="['pending.upgrading' | translate, 'pending.receiving' | translate]"
     [isSending]="false"
     [asset]="[asset, nativeRune]"
     [amount]="[amount, amount]"
@@ -9,12 +9,12 @@
   >
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'upgrade rune', call: 'back' },
+        { name: 'common.skip', call: 'swap' },
+        { name: 'breadcrumb.upgradeRune', call: 'back' },
         { name: asset.asset.chain + '.' + asset.asset.ticker, disable: true }
       ]"
       (funcCaller)="breadcrumbNav($event, 'processing')"
-      message="PROCESSING"
+      [message]="'common.processing' | translate"
     ></app-breadcrumb>
   </app-transaction-processing-modal>
 
@@ -25,12 +25,12 @@
   >
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'upgrade rune', disable: false, call: 'back' },
+        { name: 'common.skip', call: 'swap' },
+        { name: 'breadcrumb.upgradeRune', disable: false, call: 'back' },
         { name: asset.asset.chain + '.' + asset.asset.ticker, disable: true }
       ]"
       (funcCaller)="breadcrumbNav($event, 'success')"
-      message="SUCCESS"
+      [message]="'common.success' | translate"
     ></app-breadcrumb>
   </app-transaction-success-modal>
 
@@ -43,8 +43,8 @@
         <div class="content-top">
           <app-breadcrumb
             [path]="[
-              { name: 'skip', call: 'swap' },
-              { name: 'upgrade rune', disable: false, call: 'back' },
+              { name: 'common.skip', call: 'swap' },
+              { name: 'breadcrumb.upgradeRune', disable: false, call: 'back' },
               {
                 name: asset.asset.chain + '.' + asset.asset.ticker,
                 disable: true
@@ -59,7 +59,7 @@
 
         <div class="content-middle">
           <app-asset-input
-            label="Upgrade"
+            [label]="'common.upgrade' | translate"
             type="upgrade"
             [(selectedAsset)]="asset.asset"
             [(assetUnit)]="amount"
@@ -75,7 +75,7 @@
           <app-arrow [seperator]="true"></app-arrow>
 
           <app-asset-input
-            label="Receive"
+            [label]="'common.receive' | translate"
             [(selectedAsset)]="nativeRune.asset"
             [(assetUnit)]="amount"
             [balance]="nativeRune.balance.amount().toNumber()"
@@ -89,7 +89,7 @@
 
           <div class="swap-details">
             <div *ngIf="networkFee && asset" class="flex justify-between list-items white-text">
-              <span class="tx-detail-label">Network Fee:</span>
+              <span class="tx-detail-label">{{ 'common.fee' | translate }}</span>
               <span class="text-sm">
                 {{ networkFee | number: "0.0-8" }} {{ getChainAssetCaller(asset.asset).chain }}.{{getChainAssetCaller(asset.asset).ticker}}
                 <span *ngIf="currency && asset.assetPriceUSD">({{currency.value * networkFee * asset.assetPriceUSD | number: '0.2-4'}} {{currency.code}})</span>
@@ -111,7 +111,7 @@
             <div class="bottom-actions two-btn">
               <div class="left-btn">
                 <button class="close-btn" (click)="cancelButton()">
-                  <span>cancel</span>
+                  <span>{{ 'common.cancel' | translate }}</span>
                 </button>
               </div>
               <div class="divider"></div>
@@ -121,7 +121,7 @@
                   [disabled]="insufficientChainBalance || loading"
                   (click)="submitTransaction()"
                 >
-                  <span>confirm</span>
+                  <span>{{ 'common.confirm' | translate }}</span>
                 </button>
               </div>
             </div>

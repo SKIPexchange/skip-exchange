@@ -5,8 +5,8 @@
         <nav class="content-top">
           <app-breadcrumb
             [path]="[
-              { name: 'skip', call: 'swap' },
-              { name: 'Pools', disable: true }
+              { name: 'common.skip', call: 'swap' },
+              { name: 'common.pool', disable: true }
             ]"
             [message]="getBreadcrumbText()"
             (funcCaller)="breadcrumbNav($event)"
@@ -14,8 +14,8 @@
           <div class="top-right" *ngIf="!isMobile">
             <app-right-option
               [switchField]="{
-                right: { text: 'Pool', tag: '', disable: false },
-                left: { text: 'Swap', tag: '', disable: false }
+                right: { text: 'common.pool', tag: '', disable: false },
+                left: { text: 'common.swap', tag: '', disable: false }
               }"
               (clickCaller)="switchNav($event)"
             ></app-right-option>
@@ -37,32 +37,32 @@
             <span
               style="color: var(--primary-grey-color); font-size: 22px"
               *ngIf="(!memberPools || !pools) && !userPoolError"
-              >FETCHING POOLS</span
+              >{{ 'pool.fetching' | translate }}</span
             >
             <span
               style="color: var(--primary-grey-color); font-size: 22px"
               *ngIf="userPoolError"
-              >ERROR OCCURRED</span
+              >{{ 'pool.error' | translate }}</span
             >
           </div>
           <div class="swap-details">
             <ng-container *ngIf="poolType !== 'notMember'">
               <div *ngIf="pooledAmountRune" class="flex justify-between" style="color: var(--primary-default);">
-                <span class="tx-detail-label">Pooled THOR.RUNE:</span>
+                <span class="tx-detail-label">{{ 'pool.pooledRune' | translate }}</span>
                 <span>
                   {{ pooledAmountRune | number: "0.0-6" }}
                   <span *ngIf="runePrice && currency"> ({{runePrice * pooledAmountRune * currency.value | number: '0.0-2'}} {{currency.code}})</span>
                 </span>
               </div>
               <div *ngIf="pooledAsset && pooledAmountAsset" class="flex justify-between" style="color: var(--primary-default);">
-                <span class="tx-detail-label"> Pooled <span *ngIf="pooledAsset"> {{ pooledAsset.chain }}.{{ pooledAsset.ticker }}</span><span *ngIf="!pooledAsset">Asset</span>:</span>
+                <span class="tx-detail-label"> {{ 'pool.pooledAsset' | translate: { asset: pooledAsset ? pooledAsset.chain : 'Asset' } }}</span>
                 <span>
                   {{ pooledAmountAsset | number: "0.0-6" }}
                   <span *ngIf="assetPriceUSD && currency"> ({{assetPriceUSD * pooledAmountAsset * currency.value | number: '0.0-2'}} {{currency.code}})</span>
                 </span>
               </div>
               <div *ngIf="pooledShare" class="flex justify-between text-white">
-                <span class="tx-detail-label">Pool Share:</span>
+                <span class="tx-detail-label">{{ 'pool.share' | translate }}</span>
                 <span *ngIf="pooledShare">
                   {{ pooledShare * 100 | number: "0.0-6" }}%
                 </span>
@@ -70,13 +70,13 @@
             </ng-container>
             <ng-container>
               <div *ngIf="pooledDayAverage !== undefined && pooledDayAverage !== null" class="flex justify-between">
-                <span class="tx-detail-label">Average 24H Volume:</span>
+                <span class="tx-detail-label">{{ 'pool.volume' | translate }}</span>
                 <span>
                   {{ pooledDayAverage | number: "0.0-2" }} {{ currency.code }}
                 </span>
               </div>
               <div *ngIf="pooledDepth" class="flex justify-between">
-                <span class="tx-detail-label">Depth:</span>
+                <span class="tx-detail-label">{{ 'pool.depth' | translate }}</span>
                 <span>
                   {{ pooledDepth | number: "0.0-2" }} {{ currency.code }}
                 </span>
@@ -94,7 +94,7 @@
             [disabled]="!user || loading"
             (click)="buttonRefresh()"
           >
-            <span>Refresh</span>
+            <span>{{ 'pool.refresh' | translate }}</span>
           </button>
         </div>
         <!-- <div class="divider"></div> -->
@@ -124,7 +124,7 @@
       
       <div class="bottom-actions" *ngIf="appLocked">
         <button class="next-btn bug-btn" [disabled]="true">
-          <span>UNDER MAINTENANCE</span>
+          <span>{{'common.maintenance' | translate }}</span>
         </button>
       </div>
 

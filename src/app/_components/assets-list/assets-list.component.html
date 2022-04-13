@@ -28,13 +28,13 @@
     <!-- <div *ngIf="loading" class="flex items-center justify-center" style="height: 100%; width: 100%"> -->
     <!-- <mat-progress-spinner diameter="16" color="primary" mode="indeterminate"></mat-progress-spinner> -->
     <!-- </div> -->
-    <span *ngIf="loading" class="loading">Loading</span>
+    <span *ngIf="loading" class="loading">{{ 'breadcrumb.loading' | translate }}</span>
     <!-- <div class="flex items-center justify-center " style="flex-direction: column; flex: 1 1 auto; height: 100%;" > -->
     <span *ngIf="!loading && assetListItems && assetListItems.length == 0">{{
-      noAssets
+      noAssets | translate
     }}</span>
 
-    <span *ngIf="!loading && !assetListItems">NO ASSET</span>
+    <span *ngIf="!loading && !assetListItems">{{ 'pool.noAsset' | translate }}</span>
     <!-- </div> -->
     <ul
       *ngIf="!loading && assetListItems && assetListItems.length > 0"
@@ -57,7 +57,7 @@
                 alt="plus icon"
               />
             </div>
-            <span class="item-text">ADD <span class="small-1">TOKEN</span></span>
+            <span class="item-text" [innerHTML]="'wallet.addToken' | translate"></span>
           </div>
         </div>
       </li>
@@ -74,7 +74,7 @@
               [ticker]="item.asset.ticker"
               [iconPath]="item.asset.iconPath"
             ></app-icon-ticker>
-            <span *ngIf="showApy && hasAPY(item)" class="side-asset small-1 mono">({{+hasAPY(item).apy * 100 | number: '0.0-2'}}% APY)</span>
+            <span *ngIf="showApy && hasAPY(item)" class="side-asset small-1 mono">({{+hasAPY(item).apy * 100 | number: '0.0-2'}}% {{ 'pool.apy' | translate }})</span>
           </div>
           <div
             *ngIf="item.balance"

@@ -33,6 +33,7 @@ import {
   TxStatus,
 } from 'src/app/_services/transaction-status.service';
 import { TransactionUtilsService } from 'src/app/_services/transaction-utils.service';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 import { Currency } from '../account-settings/currency-converter/currency-converter.component';
 import { noticeData } from '../success-notice/success-notice.component';
@@ -79,7 +80,8 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
     private txUtilsService: TransactionUtilsService,
     private curService: CurrencyService,
     private analytics: AnalyticsService,
-    private overlaysService: OverlaysService
+    private overlaysService: OverlaysService,
+    private translate: TranslateService
   ) {
     this.insufficientChainBalance = false;
     this.back = new EventEmitter<null>();
@@ -149,7 +151,7 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
     return {
       modalType: 'UPGRADE',
       asset: [this.asset, this.nativeRune], 
-      label: ['Upgraded', 'Received'],
+      label: [this.translate.format('pending.upgraded'), this.translate.format('pending.received')],
       amount: [this.amount, this.amount], 
       balances: this.balances,
       hashes: this.hashes,
@@ -167,7 +169,9 @@ export class UpgradeRuneConfirmComponent implements OnInit, OnDestroy {
       this.insufficientChainBalance = balance < this.networkFee;
       if (this.insufficientChainBalance) {
         const chainAsset = getChainAsset(this.asset.asset.chain);
-        this.message = `Insufficient ${chainAsset.chain}.${chainAsset.ticker} for Fees`;
+        this.message = this.translate.format('breadcrumb.insufficient', {
+          asset: assetString(this.asset.asset),
+        });
         this.isError = true;
       }
 

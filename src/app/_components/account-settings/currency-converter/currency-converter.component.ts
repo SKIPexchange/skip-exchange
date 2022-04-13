@@ -87,7 +87,7 @@ export class CurrencyConverterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.message = 'select';
+    this.message = 'breadcurmb.select';
 
     this.filterdCurrencies = this.currencies;
   }
@@ -120,7 +120,7 @@ export class CurrencyConverterComponent implements OnInit {
       `active_currency`,
       JSON.stringify(this.filterdCurrencies[this.activeIndex])
     );
-    this.message = 'saved';
+    this.message = 'breadcrumb.saved';
     this.close.emit();
   }
 

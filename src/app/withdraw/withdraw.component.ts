@@ -44,6 +44,7 @@ import { PoolDTO } from '../_classes/pool';
 import { Liquidity } from '../_classes/liquidiyt';
 import { BreadcrumbComponent } from '../_components/breadcrumb/breadcrumb.component';
 import { number } from 'yargs';
+import { TranslateService } from '../_services/translate.service';
 
 @Component({
   selector: 'app-withdraw',
@@ -143,7 +144,8 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     private txUtilsService: TransactionUtilsService,
     private curService: CurrencyService,
     private analytics: AnalyticsService,
-    private metaMaskService: MetamaskService
+    private metaMaskService: MetamaskService,
+    public translate: TranslateService
   ) {
     this.withdrawPercent = 0;
     this.removeAssetAmount = 0;
@@ -791,45 +793,49 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     /** No user connected */
     if (!this.user) {
       this.isError = false;
-      return 'Please Connect Wallet';
+      return this.translate.format('breadcrumb.connect');
     }
 
     if (this.sliderDisabled) {
       this.isError = false;
-      return 'Loading';
+      return this.translate.format('breadcrumb.loading');
     }
 
     if (this.isHalted) {
       this.isError = true;
-      return `${this.asset.chain} chain is Halted`;
+      return this.translate.format('breadcrumb.halted', {
+        chain: this.asset.chain,
+      });
     }
 
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 12) {
       this.isError = true;
-      return 'THORChain TX QUEUE FILLED.';
+      return this.translate.format('breadcrumb.txQueue');
     }
 
     /** When amount is only zero */
     if (!this.removeAssetAmount) {
       this.isError = false;
-      return 'PICK PERCENTAGE WITH SLIDER';
+      return this.translate.format('breadcrumb.pickSlider');
     }
 
     /** No asset amount set */
     if (this.removeAssetAmount && this.removeAssetAmount <= 0) {
       this.isError = true;
-      return 'Enter an Amount';
+      return this.translate.format('breadcrumb.anterAmount');
     }
 
     /** Still fetching pool details */
     if (!this.poolStatus) {
-      return 'Loading';
+      return this.translate.format('breadcrumb.loading');
     }
 
     /** Pool is not Available */
     if (this.poolStatus !== 'available') {
-      return `Pool ${this.poolStatus}`;
+      return this.translate.format('breadcrumb.poolStatus', {
+        status: this.poolStatus,
+      });
     }
 
     /**
@@ -845,7 +851,9 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
     if (this.remainingTime) {
       this.isError = true;
-      return `Withdraw enabled in ${this.remainingTime}`;
+      return this.translate.format('breadcrumb.remainingTime', {
+        time: this.remainingTime,
+      });
     }
 
     if (
@@ -853,26 +861,28 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       assetIsChainAsset(this.asset) &&
       this.assetBalance < this.networkFee
     ) {
-      return 'Insufficient Balance for Fees';
+      return this.translate.format('breadcrumb.insufficient', {
+        asset: assetString(this.asset),
+      });
     }
 
     if (
       this.withdrawType !== 'ASYM_ASSET' &&
       this.runeBalance - this.runeFee < 3
     ) {
-      return 'Min 3 RUNE in Wallet Required';
+      return this.translate.format('breadcrumb.minRune');
     }
 
     if (
       this.user?.type === 'metamask' &&
       this.metaMaskNetwork !== environment.network
     ) {
-      return 'Change MetaMask Network';
+      return this.translate.format('breadcrumb.metamaskNetwork');
     }
 
     /** Good to go */
     this.isError = false;
-    return 'Ready';
+    return this.translate.format('breadcrumb.ready');
   }
 
   openConfirmationDialog(): void {
@@ -1077,7 +1087,12 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return `${withdrawPoolShare}% OF ${poolShared}% POOL SHARE`;
+    let poolShare = this.translate.format('withdraw.poolShare', {
+      withdrawPoolShare: withdrawPoolShare,
+      poolShared: poolShared,
+    });
+
+    return poolShare;
   }
 
   ngOnDestroy() {

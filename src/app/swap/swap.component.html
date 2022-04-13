@@ -5,8 +5,8 @@
         <nav class="content-top">
           <app-breadcrumb
             [path]="[
-              { name: 'skip', call: 'skip'},
-              { name: 'swap', disable: true }
+              { name: 'common.skip', call: 'skip'},
+              { name: 'common.swap', disable: true }
             ]"
             [isError]="formValidation.isError"
             [message]="formValidation.message"
@@ -15,8 +15,8 @@
           <div class="top-right" *ngIf="!isMobile">
             <app-right-option
               [switchField]="{
-                right: { text: 'Pool', tag: '', disable: false },
-                left: { text: 'Swap', tag: '', disable: false }
+                right: { text: 'common.pool', tag: '', disable: false },
+                left: { text: 'common.swap', tag: '', disable: false }
               }"
               (clickCaller)="switchNav($event)"
             ></app-right-option>
@@ -26,7 +26,7 @@
         <div class="main-content">
           <!-- SOURCE -->
           <app-asset-input
-            label="Send"
+            [label]="'common.send' | translate"
             type="swap"
             [(selectedAsset)]="selectedSourceAsset"
             [(assetUnit)]="sourceAssetUnit"
@@ -52,8 +52,8 @@
 
           <!-- TARGET -->
           <app-asset-input
-            label="Receive"
-            [extraLabel]="selectedTargetAsset ? '(estimated)' : undefined"
+            [label]="'common.receive' | translate"
+            [extraLabel]="selectedTargetAsset ? ('common.estimated' | translate) : undefined"
             [(selectedAsset)]="selectedTargetAsset"
             [(assetUnit)]="targetAssetUnitDisplay"
             [balance]="targetBalance"
@@ -91,7 +91,7 @@
 
           <div class="swap-details">
             <div class="flex justify-between" *ngIf="basePrice && selectedTargetAsset && selectedSourceAsset">
-              <span class="tx-detail-label">Price:</span>
+              <span class="tx-detail-label">{{ 'swap.price' | translate }}</span>
               <span>
                 1 {{ selectedTargetAsset.ticker }} = {{ basePrice | number: "1.2-4" }} {{ selectedSourceAsset.ticker }}
                 <span
@@ -106,7 +106,7 @@
               >
             </div>
             <div *ngIf="selectedSourceAsset && networkFeeInSource" class="flex justify-between text-white">
-              <span class="tx-detail-label">Network Fee:</span>
+              <span class="tx-detail-label">{{'swap.fee' | translate }}</span>
               <span>
                 {{ networkFeeInSource | number: "1.0-8" }} {{ selectedSourceAsset.ticker }}
                 <span
@@ -121,7 +121,7 @@
               >
             </div>
             <div class="flex justify-between" *ngIf="slip">
-              <span class="tx-detail-label">Slip:</span>
+              <span class="tx-detail-label">{{ 'swap.slip' | translate }}</span>
               <span
                 [ngStyle]="{
                   color:
@@ -140,7 +140,7 @@
           <div *ngIf="user && slip" class="flex justify-between">
             <span>Settings:</span>
             <span (click)="goToSettings()" class="hoverable-item">
-              {{ slippageTolerance }}% slip tolerance
+              {{ slippageTolerance }}{{'swap.slipTolerance' | translate}}
               <svg
                 class="expand-more"
                 [ngClass]="{ disable: !user }"
@@ -179,7 +179,7 @@
           </button>
 
           <button *ngIf="appLocked" class="next-btn bug-btn" [disabled]="true">
-            <span>UNDER MAINTENANCE</span>
+            <span>{{ 'common.maintenance' | translate }}</span>
           </button>
 
           <div
@@ -218,11 +218,11 @@
       >
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'skip' },
-            { name: 'swap', call: 'swap' },
-            { name: 'SEARCH', disable: true }
+            { name: 'common.skip', call: 'skip' },
+            { name: 'common.swap', call: 'swap' },
+            { name: 'common.search', disable: true }
           ]"
-          message="SELECT"
+          [message]="'breadcrumb.select' | translate"
           (funcCaller)="marketNav($event)"
         ></app-breadcrumb>
       </app-markets-modal>
@@ -245,11 +245,11 @@
       >
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'skip' },
-            { name: 'swap', call: 'swap' },
-            { name: 'SEARCH', disable: true }
+            { name: 'common.skip', call: 'skip' },
+            { name: 'common.swap', call: 'swap' },
+            { name: 'common.search', disable: true }
           ]"
-          message="SELECT"
+          [message]="'breadcrumb.select' | translate"
           (funcCaller)="marketNav($event)"
         ></app-breadcrumb>
       </app-markets-modal>

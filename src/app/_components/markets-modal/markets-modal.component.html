@@ -11,7 +11,7 @@
             class="search-input focus:ring-0"
             [(ngModel)]="searchTerm"
             name="keystore-password"
-            placeholder="search here..."
+            [placeholder]="'common.search' | translate"
           />
         </div>
       </div>
@@ -27,7 +27,7 @@
         (selectAsset)="selectItem($event)"
         [showApy]="showApy"
         [showPrice]="isMobile ? false : true"
-        noAssets="NOT FOUND"
+        [noAssets]="'common.notFound' | translate"
       >
       </app-assets-list>
     </div>
@@ -40,7 +40,7 @@
       aria-label="Close Markets Dialog"
       (click)="closeDialog()"
     >
-      <span>CANCEL</span>
+      <span>{{ 'common.cancel' | translate }}</span>
     </button>
   </div>
 </div>

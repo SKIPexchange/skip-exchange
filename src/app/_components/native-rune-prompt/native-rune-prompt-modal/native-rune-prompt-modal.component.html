@@ -4,10 +4,10 @@
       <div class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'Upgrade Rune', disable: true }
+            { name: 'common.skip', call: 'swap' },
+            { name: 'breadcrumb.upgradeRune', disable: true }
           ]"
-          message="SELECT ASSET TO UPGRADE"
+          [message]="'breadcrumb.selectRune' | translate"
           (funcCaller)="breadcrumbNav($event)"
         ></app-breadcrumb>
         <div class="top-right"></div>
@@ -28,7 +28,7 @@
     <!-- close dialog -->
     <div *ngIf="!isMobile" class="bottom-actions two-btn">
       <button class="close-btn" aria-label="close the prompt" (click)="close()">
-        <span>close</span>
+        <span>{{ 'common.close' | translate }}</span>
       </button>
     </div>
   </div>

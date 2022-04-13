@@ -8,7 +8,7 @@
   <div class="p-4">
     <div *ngIf="!passwordAccepted">
       <div class="uni-input">
-        <label>Password</label>
+        <label>{{ 'common.password' | translate }}</label>
         <input
           class="focus:outline-none focus:ring-0"
           [(ngModel)]="keystorePassword"
@@ -32,7 +32,7 @@
             (click)="unlock()"
             [disabled]="keystoreConnecting"
           >
-            <span>Unlock</span>
+            <span>{{ 'common.unlock' | translate }}</span>
           </button>
           <mat-progress-spinner
             mode="indeterminate"

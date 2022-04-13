@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './import-phrase.component.html',
   styleUrls: ['./import-phrase.component.scss'],
 })
-export class ImportPhraseComponent implements OnInit {
+export class ImportPhraseComponent {
   @Output() back: EventEmitter<null>;
   @Output() closeModal: EventEmitter<null>;
   @Output() keystoreCreated: EventEmitter<{ phrase: string; label: string }>;
@@ -34,7 +34,7 @@ export class ImportPhraseComponent implements OnInit {
     private analytics: AnalyticsService
   ) {
     this.loading = false;
-    this.message = 'PREPARE';
+    this.message = 'breadcrumb.prepare';
     this.back = new EventEmitter<null>();
     this.closeModal = new EventEmitter<null>();
     this.keystoreCreated = new EventEmitter<{
@@ -42,8 +42,6 @@ export class ImportPhraseComponent implements OnInit {
       label: string;
     }>();
   }
-
-  ngOnInit(): void {}
 
   breadcrumbNav(val: string) {
     if (val === 'swap') {

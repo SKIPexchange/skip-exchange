@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 
 import { Asset } from 'src/app/_classes/asset';
 import { User } from 'src/app/_classes/user';
+import { TranslateService } from 'src/app/_services/translate.service';
 import { UserService } from 'src/app/_services/user.service';
 
 @Component({
@@ -38,7 +39,11 @@ export class RetryRuneDepositComponent implements OnInit, OnDestroy {
   processingMessage: string;
   retryCount: number;
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    public translate: TranslateService
+  ) {
     this.rune = new Asset('THOR.RUNE');
     this.retrySuccess = new EventEmitter<string>();
     this.withdrawSuccess = new EventEmitter<string>();

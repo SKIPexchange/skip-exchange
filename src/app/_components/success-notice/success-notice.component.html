@@ -3,7 +3,7 @@
       <div class="text-content">
         <span style="font-family: 'Roboto'">{{ item.asset.chain }}: </span>
         <span *ngIf="!!item.show">{{item.show}}</span>
-        <span *ngIf="!item.show">Waiting for TXID</span>
+        <span *ngIf="!item.show">{{ 'common.waitTXID' | translate }}</span>
       </div>
       <div class="tags">
         <app-tag *ngIf="item.copy" (click)="copyClipboard(item.copy, i)">
@@ -12,7 +12,7 @@
         <div *ngIf="item.copy && item.url" style="width: 5px;"></div>
         <a *ngIf="item.url" (click)="exploreEvent(i)" class="tag-container outline" [href]="item.url" target="_blank">
             <div class="tag-field">
-                <span>Explore</span>
+                <span>{{ 'common.explore' | translate }}</span>
             </div>
         </a>
         <div *ngIf="item.copy && item.thorUrl" style="width: 5px;"></div>

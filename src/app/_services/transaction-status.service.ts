@@ -152,10 +152,12 @@ export class TransactionStatusService {
           this.pollBnbTx(pendingTx);
         } else if (pendingTx.chain === 'ETH') {
           this.pollEthTx(pendingTx);
-        } else if (pendingTx.chain === 'BTC' || pendingTx.chain === 'LTC') {
+        } else if (pendingTx.chain === 'BTC' || pendingTx.chain === 'LTC' || pendingTx.chain === 'DOGE') {
           this.pollSochainTx(pendingTx);
         } else if (pendingTx.chain === 'BCH') {
           this.pollBchTx(pendingTx);
+        } else if (pendingTx.chain === 'TERRA') {
+          this.pollTerraTx(pendingTx);
         }
       }
     }
@@ -428,6 +430,27 @@ export class TransactionStatusService {
       )
       .subscribe(async (res) => {
         if (+res.code === 0) {
+          this.updateTxStatus(tx.hash, TxStatus.COMPLETE);
+          this.userService.fetchBalances();
+          this.killTxPolling[tx.hash].next();
+        }
+      });
+  }
+
+  pollTerraTx(tx: Tx) {
+    timer(5000, 15000)
+      .pipe(
+        // This kills the request if the user closes the component
+        takeUntil(this.killTxPolling[tx.hash]),
+        // switchMap cancels the last request, if no response have been received since last tick
+        // switchMap(() => this.midgardService.getTransaction(tx.hash)),
+        switchMap(() => this.user.clients.terra.getTransactionData(tx.hash)),
+        // catchError handles http throws
+        retryWhen((errors) => errors.pipe(delay(10000), take(10)))
+      )
+      .subscribe(async (res) => {
+        console.log(res);
+        if (res) {
           this.updateTxStatus(tx.hash, TxStatus.COMPLETE);
           this.userService.fetchBalances();
           this.killTxPolling[tx.hash].next();

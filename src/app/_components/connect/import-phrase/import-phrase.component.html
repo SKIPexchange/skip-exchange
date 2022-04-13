@@ -2,12 +2,12 @@
   <div class="content-top">
     <app-breadcrumb
       [path]="[
-        { name: 'skip', call: 'swap' },
-        { name: 'Connect', call: 'connect' },
-        { name: 'Create wallet from phrase', disable: true }
+        { name: 'common.skip', call: 'swap' },
+        { name: 'common.connect', call: 'connect' },
+        { name: 'breadcrumb.phraseKeystore', disable: true }
       ]"
       [isError]="error || (password !== confirmPassword && confirmPassword)"
-      [message]="(confirmPassword !== password && confirmPassword) ? 'PASSWORDS DON\'T MATCH' : message"
+      [message]="(confirmPassword !== password && confirmPassword) ? ('breadcrumb.errorMatch' | translate) : (message | translate)"
       (funcCaller)="breadcrumbNav($event)"
     ></app-breadcrumb>
     <div class="top-right"></div>
@@ -15,7 +15,7 @@
 
   <div mat-dialog-content>
     <div class="uni-input">
-      <label>Phrase <span  style="color: var(--primary-grey-color)">(BIP39 words separated with a space)</span></label>
+      <label>{{ ('connect.phraseLabel' | translate)[0] }}<span  style="color: var(--primary-grey-color)">{{ ('connect.phraseLabel' | translate)[1] }}</span></label>
       <input
         autocomplete="off"
         class="password focus:ring-0"
@@ -32,13 +32,13 @@
 
     <app-text-field
       mode="Double"
-      label="Password"
+      [label]="'common.password' | translate"
       [(textOfField)]="password"
       selectedType="password"
       name="keystore-password"
       [(textOfFieldTwo)]="confirmPassword"
       typeTwo="password"
-      labelTwo="Confirm Password"
+      [labelTwo]="'connect.confirmPass' | translate"
       nameTwo="confirm-password"    
     >
     </app-text-field>
@@ -46,17 +46,14 @@
   </div>
 
   <div class="descriptive">
-    <span>
-      This will create and download a keystore to your computer. <br />
-      Please store this file offline in a safe place.
-    </span>
+    <span [innerHTML]="'connect.phraseHelp' | translate"></span>
   </div>
 </div>  
 
 <div class="bottom-actions two-btn">
   <div class="left-btn">
     <button class="close-btn" (click)="backNav()">
-      <span>cancel</span>
+      <span>{{ 'common.cancel' | translate }}</span>
     </button>
   </div>
   <div class="divider"></div>
@@ -66,7 +63,7 @@
       (click)="createKeystore()"
       [disabled]="!phrase || !password || loading || (password !== confirmPassword && confirmPassword)"
     >
-      <span>Create</span>
+      <span>{{ 'common.create' | translate }}</span>
     </button>
   </div>
 </div>

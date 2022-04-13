@@ -7,6 +7,8 @@ import { PoolDTO } from '../_classes/pool';
 import { PoolAddressDTO } from '../_classes/pool-address';
 import { MidgardService } from './midgard.service';
 import { TxType } from '../_const/tx-type';
+import { MockClientService } from './mock-client.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -49,7 +51,7 @@ export class TransactionUtilsService {
     asset: Asset,
     inboundAddresses: PoolAddressDTO[],
     direction: TxType,
-    assetPool?: PoolDTO
+    assetPool?: PoolDTO,
   ): number {
     const multiplier = direction === 'OUTBOUND' ? 3 : 1;
     const matchingInboundAddress = inboundAddresses.find(
@@ -61,6 +63,7 @@ export class TransactionUtilsService {
         case 'BTC':
         case 'LTC':
         case 'BCH':
+        case 'DOGE':
           // prettier-ignore
           return (250 * (+matchingInboundAddress.gas_rate) * multiplier) / (10 ** 8);
 
@@ -86,12 +89,19 @@ export class TransactionUtilsService {
           }
 
         case 'BNB':
+        case 'TERRA':
           // prettier-ignore
           return (multiplier * (+matchingInboundAddress.gas_rate) * 1) / (10 ** 8);
       }
     } else if (asset.chain === 'THOR') {
       return this._outboundTransactionFee ?? 0.2;
-    } else {
+    } else if (
+      environment.network === 'testnet' &&
+      (asset.chain === Chain.Doge || asset.chain === Chain.Terra)
+    ) {
+      return 0;
+    }
+    else {
       console.error('calculateNetworkFee no chain match');
     }
   }

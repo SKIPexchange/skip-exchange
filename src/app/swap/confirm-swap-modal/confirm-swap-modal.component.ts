@@ -53,6 +53,7 @@ import { MockClientService } from 'src/app/_services/mock-client.service';
 import { LayoutObserverService } from 'src/app/_services/layout-observer.service';
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
+import { TranslateService } from 'src/app/_services/translate.service';
 export interface SwapData {
   sourceAsset: AssetAndBalance;
   targetAsset: AssetAndBalance;
@@ -103,7 +104,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
   isDoubleSwap: boolean = false;
   metaMaskProvider: ethers.providers.Web3Provider;
   swapSuccessful: boolean;
-  successMessage: string = 'Processing';
+  successMessage: string;
 
   isMobile: boolean = false;
 
@@ -122,7 +123,8 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
     private mockClientService: MockClientService,
-    private layout: LayoutObserverService
+    private layout: LayoutObserverService,
+    public translate: TranslateService
   ) {
     this.txState = TransactionConfirmationState.PENDING_CONFIRMATION;
     this.insufficientChainBalance = false;
@@ -166,6 +168,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.estimateTime();
+    this.successMessage = this.translate.format('common.processing');
 
     this.isDoubleSwap = this.isRune(this.swapData.targetAsset.asset)
       ? false
@@ -714,6 +717,54 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
         const sourceAsset = this.swapData.sourceAsset.asset;
 
         const hash = await bchClient.transfer({
+          amount: baseAmount(amount),
+          recipient: matchingPool.address,
+          memo,
+          feeRate: +matchingPool.gas_rate,
+        });
+
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
+
+        this.hash = hash;
+        this.pushTxStatus(hash, sourceAsset);
+        this.txState = TransactionConfirmationState.SUCCESS;
+      } catch (error) {
+        console.error('error making transfer: ', error);
+        this.error = error;
+        this.txState = TransactionConfirmationState.ERROR;
+      }
+    } else if (this.swapData.sourceAsset.asset.chain === 'DOGE') {
+      try {
+        const dogeClient = this.swapData.user.clients.doge;
+
+        const balanceAmount = this.userService.findRawBalance(
+          this.balances,
+          this.swapData.sourceAsset.asset
+        );
+        const toBase = assetToBase(assetAmount(amountNumber));
+        const feeToBase = assetToBase(
+          assetAmount(this.swapData.networkFeeInSource)
+        );
+        const amount = balanceAmount
+          // subtract fee
+          .minus(feeToBase.amount())
+          // subtract amount
+          .minus(toBase.amount())
+          .isGreaterThan(0)
+          ? toBase.amount() // send full amount, fee can be deducted from remaining balance
+          : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
+
+        if (amount.isLessThan(0)) {
+          this.error = 'Insufficient funds. Try sending a smaller amount';
+          this.txState = TransactionConfirmationState.ERROR;
+          return;
+        }
+        // end TODO
+
+        const sourceAsset = this.swapData.sourceAsset.asset;
+
+        const hash = await dogeClient.transfer({
           amount: baseAmount(amount),
           recipient: matchingPool.address,
           memo,

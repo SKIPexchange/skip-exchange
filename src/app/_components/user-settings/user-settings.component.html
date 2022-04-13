@@ -19,23 +19,23 @@
       class="menu"
       (click)="openUserSettings()"
     >
-      <span>Wallet</span>
+      <span>{{ 'common.wallet' | translate }}</span>
     </div>
     <div *ngIf="showMenu" class="menu" (click)="openTransaction()">
-      <span *ngIf="pendingTxCount == 0">Transactions</span>
+      <span *ngIf="pendingTxCount == 0">{{ 'common.transactions' | translate }}</span>
       <span *ngIf="pendingTxCount > 0"
-        >{{ pendingTxCount | number: "1." }} PENDING</span
+        >{{ pendingTxCount | number: "1." }} {{'common.pending' | translate }}</span
       >
     </div>
     <div *ngIf="showMenu" class="menu" (click)="openAccountSetting()">
-      <span>Settings</span>
+      <span>{{ 'common.settings' | translate }}</span>
     </div>
     <div
       *ngIf="showMenu"
       class="menu red"
       (click)="disconnect()"
     >
-      <span>Disconnect</span>
+      <span>{{ 'common.disconnect' | translate }}</span>
     </div>
   </div>
 </div>

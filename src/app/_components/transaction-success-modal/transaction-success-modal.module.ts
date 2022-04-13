@@ -11,6 +11,7 @@ import { DoubleAssetFieldModule } from '../double-asset-field/double-asset-field
 import { MatSliderModule } from '@angular/material/slider';
 import { TagModule } from '../tag/tag.module';
 import { SuccessNoticeComponent } from '../success-notice/success-notice.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [TransactionSuccessModalComponent, SuccessNoticeComponent],
@@ -25,6 +26,7 @@ import { SuccessNoticeComponent } from '../success-notice/success-notice.compone
     TagModule,
     DoubleAssetFieldModule,
     MatSliderModule,
+    TranslateModule,
   ],
   exports: [TransactionSuccessModalComponent],
 })

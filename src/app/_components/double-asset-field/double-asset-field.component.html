@@ -51,7 +51,7 @@
           style="margin-right: 8px"
           *ngIf="isWallet"
         >
-          <app-tag (click)="gotoWallet(selectedAssets[0])">WALLET</app-tag>
+          <app-tag (click)="gotoWallet(selectedAssets[0])">{{ 'common.wallet' | translate }}</app-tag>
         </div>
         <button
           *ngIf="selectedAssets[0] && !isMobile"
@@ -87,7 +87,7 @@
           style="margin-right: 8px"
           *ngIf="isWallet"
         >
-          <app-tag (click)="gotoWallet(selectedAssets[1])">WALLET</app-tag>
+          <app-tag (click)="gotoWallet(selectedAssets[1])">{{ 'common.wallet' | translate }}</app-tag>
         </div>
         <button
           *ngIf="selectedAssets[1] && !isMobile"

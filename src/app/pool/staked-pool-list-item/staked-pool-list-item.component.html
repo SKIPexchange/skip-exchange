@@ -14,8 +14,8 @@
         [ticker]="asset.ticker"
       ></app-icon-ticker>
       <span class="extra-info" *ngIf="poolData && !activate">
-        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% APY<span *ngIf="!isMobile"> /
-        {{ assetDepth | shortNumber }} {{ currency.code }} DEPTH</span>)
+        ({{ +poolData.poolAPY * 100 | number: "0.0-2" }}% {{ 'pool.apy' | translate }}<span *ngIf="!isMobile"> /
+        {{ assetDepth | shortNumber }} {{ currency.code }} {{ 'pool.depth' | translate }}</span>)
       </span>
     </div>
 
@@ -25,7 +25,7 @@
           <a
             [href]="runeyieldAddress()"
             target="_blank"
-            >YIELD STATS</a
+            >{{ 'pool.yieldStats' | translate }}</a
           >
         </app-tag>
         <div *ngIf="(!isTestnet && !isMobile) || isPending" style="width: 5px"></div>
@@ -34,21 +34,21 @@
             [href]="getPoolUrl()"
             target="_blank"
             (click)="statEvent()"
-            >POOL STATS</a
+            >{{ 'pool.poolStats' | translate }}</a
           >
         </app-tag>
         <div style="width: 5px"></div>
         <app-tag *ngIf="!depositsDisabled && !isPending">
           <a [routerLink]="['/', 'deposit', asset.chain + '.' + asset.symbol]"
           (click)="depositEvent()"
-          >Deposit</a
+          >{{ 'common.deposit' | translate }}</a
           >
         </app-tag>
         <div *ngIf="!depositsDisabled && !isPending" style="width: 5px"></div>
         <app-tag *ngIf="!isPending">
           <a [routerLink]="['/', 'withdraw', asset.chain + '.' + asset.symbol]"
             (click)="withdrawEvent()"  
-          >Withdraw</a
+          >{{ 'common.withdraw' | translate }}</a
           >
         </app-tag>
       </ng-container>
@@ -62,7 +62,7 @@
           [color]="gainLoss < 0 ? '#FF4954' : '#28F4AE'"
         >
           <span style="color: inherit"
-            >Joined
+            >{{ 'pool.joined' | translate }}
             <span *ngIf="gainLoss && !isTestnet" style="color: inherit"
               >{{ gainLoss > 0 ? "+" : ""
               }}{{ gainLoss | number: "0.0-2" }}%</span

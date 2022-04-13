@@ -3,12 +3,12 @@
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'wallet', call: 'wallet' },
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.wallet', call: 'wallet' },
           { name: chain, call: 'chain' },
           { name: chain + '.' + ticker, disable: true }
         ]"
-        message="select"
+        [message]="translate.format('breadcrumb.select')"
         (funcCaller)="breadcrumbNav($event)"
       ></app-breadcrumb>
       <div class="top-right"></div>
@@ -24,8 +24,8 @@
           <ng-container tags>
             <app-tag>
               <div (click)="copyToClipboard()">
-                <span *ngIf="!copied">COPY</span>
-                <span *ngIf="copied">COPIED</span>
+                <span *ngIf="!copied">{{ 'common.copy' | translate }}</span>
+                <span *ngIf="copied">{{ 'common.copied' | translate }}</span>
               </div>
             </app-tag>
             <div style="width: 5px"></div>
@@ -36,8 +36,8 @@
                   style="text-decoration: none; color: inherit"
                   [href]="explorerPath"
                   (click)="eventClick()"
-                  >Explore</a
-                >
+                >{{ 'common.explore' | translate }}
+                </a>
               </div>
             </app-tag>
           </ng-container>
@@ -141,7 +141,7 @@
               "
             >
               <span style="color: var(--primary-grey-color); font-size: 18px"
-                >LOADING</span
+                >{{ 'breadcrumb.loading' | translate }}</span
               >
             </div>
             <div
@@ -154,7 +154,7 @@
               "
             >
               <span style="color: var(--primary-grey-color); font-size: 18px"
-                >NO TRANSACTIONS</span
+                >{{ 'common.noTxs' | translate }}</span
               >
             </div>
             <div
@@ -192,7 +192,7 @@
                       target="_blank"
                       [href]="getExplorerUrl(tx.hash)"
                       (click)="getExplorerEvent()"
-                      >Explore</a
+                      >{{ 'common.explore' | translate }}</a
                     >
                   </app-tag>
                 </div>
@@ -292,7 +292,7 @@
                 d="M5.74609 19.4531L10.8086 14.3906H6.61328V0.65625H4.87891V14.3906H0.683594L5.74609 19.4531Z"
               />
             </svg>
-            <span>ASSETS</span>
+            <span>{{ 'common.assets' | translate }}</span>
           </button>
         </div>
       </div>
@@ -303,7 +303,7 @@
             aria-label="Close Connect Wallet Dialog"
             (click)="sendNav()"
           >
-            <span>send</span>
+            <span>{{ 'common.send' | translate }}</span>
           </button>
         </div>
       </div>

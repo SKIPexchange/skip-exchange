@@ -22,6 +22,7 @@ import { RetryRuneDepositComponent } from './retry-rune-deposit/retry-rune-depos
 import { PoolTypeOptionsModule } from '../_components/pool-type-options/pool-type-options.module';
 import { ApproveEthContractModalModule } from '../_components/approve-eth-contract/approve-eth-contract-modal/approve-eth-contract-modal.module';
 import { ConnectModule } from '../_components/connect/connect.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { ConnectModule } from '../_components/connect/connect.module';
         redirectTo: '/pool',
       },
     ]),
+    TranslateModule,
   ],
 })
 export class DepositModule {}

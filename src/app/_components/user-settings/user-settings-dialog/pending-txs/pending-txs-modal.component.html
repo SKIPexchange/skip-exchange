@@ -6,10 +6,10 @@
       <div class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'swap' },
-            { name: 'transactions', disable: true }
+            { name: 'common.skip', call: 'swap' },
+            { name: 'common.transactions', disable: true }
           ]"
-          message="select"
+          [message]="translate.format('breadcrumb.select')"
           (funcCaller)="breadcrumbNav($event)"
         ></app-breadcrumb>
         <div class="top-right"></div>
@@ -70,7 +70,7 @@
                 class="addr"
                 style="min-width: initial; margin-left: 0; overflow: hidden"
               >
-                <span *ngIf="tx.status === 'PENDING'">PENDING</span>
+                <span *ngIf="tx.status === 'PENDING'">{{ 'common.pending' | translate }}</span>
                 <span *ngIf="tx.status !== 'PENDING' && tx.date">{{
                   tx.date | date: "dd/MM/yy"
                 }}</span>
@@ -132,7 +132,7 @@
           <span
             class="no-item"
             style="text-transform: uppercase; text-align: center"
-            >NO TRANSACTIONS <br />THIS SESSION</span
+            >{{ 'txs.noTx' | translate }}<br />{{ 'txs.session' | translate }}</span
           >
         </div>
   
@@ -140,7 +140,7 @@
           <span
             class="no-item"
             style="text-transform: uppercase; text-align: center"
-            >LOADING HISTORICAL TRANSACTIONS</span
+            >{{ 'txs.loading' | translate }}</span
           >
         </div>
       </div>
@@ -148,7 +148,7 @@
 
       <div class="bottom-actions" *ngIf="!isMobile">
         <button class="close-btn" (click)="close()">
-          <span>close</span>
+          <span>{{ 'common.close' | translate }}</span>
         </button>
       </div>
     </div>

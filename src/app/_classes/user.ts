@@ -10,6 +10,8 @@ import { Client as ThorchainClient } from '@xchainjs/xchain-thorchain';
 import { Client as EthereumClient } from '@xchainjs/xchain-ethereum/lib';
 import { Client as LitecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as BitcoinCashClient } from '@xchainjs/xchain-bitcoincash';
+import { Client as DogeClient } from '@xchainjs/xchain-doge';
+import { Client as TerraClient } from '@xchainjs/xchain-terra';
 import { Balance } from '@xchainjs/xchain-client';
 
 export interface AvailableClients {
@@ -19,6 +21,8 @@ export interface AvailableClients {
   thorchain?: ThorchainClient;
   ethereum?: EthereumClient;
   litecoin?: LitecoinClient;
+  doge?: DogeClient;
+  terra?: TerraClient;
 }
 
 export class User {

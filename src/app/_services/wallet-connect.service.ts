@@ -2,20 +2,17 @@ import { Injectable } from '@angular/core';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
 import { IConnector, IWalletConnectOptions } from '@walletconnect/types';
-import { AssetETH, assetToString, Chain } from '@xchainjs/xchain-util';
+import { AssetETH, AssetRuneNative, assetToString, Chain } from '@xchainjs/xchain-util';
 import { MockClientService } from './mock-client.service';
 import { SignedSend } from '@binance-chain/javascript-sdk/lib/types';
 import * as base64js from 'base64-js';
 import { User } from '../_classes/user';
 import { UserService } from './user.service';
-import { auth, BaseAccount, StdTx } from 'cosmos-client/x/auth';
 import { CosmosSDKClient } from '@xchainjs/xchain-cosmos';
-import { AccAddress } from 'cosmos-client';
+import { cosmosclient, proto, rest } from '@cosmos-client/core';
 import {
-  getDenomWithChain,
-  MsgNativeTx,
+  getDenom,
   msgNativeTxFromJson,
-  ThorchainDepositResponse,
 } from '@xchainjs/xchain-thorchain';
 import { MidgardService } from './midgard.service';
 import {
@@ -37,6 +34,8 @@ import {
   DEPOSIT_GAS_VALUE,
   DEFAULT_GAS_VALUE,
 } from '@xchainjs/xchain-thorchain';
+import Long from 'long';
+import { HttpClient } from '@angular/common/http';
 
 const qrcodeModalOptions = {
   mobileLinks: ['trust'],
@@ -86,7 +85,7 @@ type SignRequestParam = {
 export const THORCHAIN_NETWORK = CoinType.thorchain;
 
 export const BINANCE_CHAIN_ID = 'Binance-Chain-Tigris';
-export const THORCHAIN_ID = 'thorchain';
+export const THORCHAIN_ID = 'thorchain-mainnet-v1'; // should be taken from block_info RPC
 const THORCHAIN_DEPOSIT_GAS_FEE = DEPOSIT_GAS_VALUE;
 const THORCHAIN_SEND_GAS_FEE = DEFAULT_GAS_VALUE;
 
@@ -142,7 +141,8 @@ export class WalletConnectService {
   constructor(
     private mockClientService: MockClientService,
     private userService: UserService,
-    private midgardService: MidgardService
+    private midgardService: MidgardService,
+    private http: HttpClient
   ) {}
 
   connector: IConnector | null;
@@ -172,7 +172,6 @@ export class WalletConnectService {
     };
 
     const connector = new WalletConnect(options);
-
     // Check if connection is already established
     if (!connector.connected) {
       // create new session
@@ -263,7 +262,7 @@ export class WalletConnectService {
       throw new Error(errorCodes.ERROR_SESSION_DISCONNECTED);
     }
 
-    // see if all walletconnects support get_accounts extension
+    // see if all walletconnects support get_accounts extension (TRUST WALLET)
     if (accounts && !this.supportWC(name)) {
       const isEth = this.mockClientService
         .getMockClientByChain(Chain.Ethereum)
@@ -282,9 +281,21 @@ export class WalletConnectService {
       return this.accounts;
     } else {
       try {
-        const accounts = await this.connector.sendCustomRequest({
+        const accountsReq = this.connector.sendCustomRequest({
           jsonrpc: '2.0',
           method: 'get_accounts',
+        })
+
+        const accounts = await Promise.race([
+          accountsReq,
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(new Error('timeout'));
+            }, 2000)
+          })
+        ]).catch(err => {
+          console.log(err);
+          this.killSession();
         });
 
         const supportedAccounts = accounts.filter((account) =>
@@ -572,7 +583,7 @@ export class WalletConnectService {
       );
       if (!account) throw Error('invalid account');
 
-      const { account_number: accountNumber, sequence = '0' } = account.value;
+      const { account_number, sequence } = account;
 
       const sendCoinsMessage: SendCoinsMessage = {
         fromAddress: address,
@@ -596,11 +607,11 @@ export class WalletConnectService {
 
       // get tx signing msg
       const signRequestMsg: THORChainSendTx = {
-        accountNumber,
+        accountNumber: account_number,
         chainId: THORCHAIN_ID,
         fee,
         memo,
-        sequence,
+        sequence: sequence.toString(),
         messages: [message],
       };
 
@@ -611,20 +622,62 @@ export class WalletConnectService {
       });
 
       // broadcast raw tx
-      const cosmosSDKClient: CosmosSDKClient =
-        userThorchainClient.getCosmosClient();
+      const cosmosSDKClient: CosmosSDKClient = userThorchainClient.getCosmosClient();
 
       const signedTxObj = JSON.parse(signedTx);
+      
+      /*
+      //Add these to tx build
+      const authInfo = new proto.cosmos.tx.v1beta1.AuthInfo({
+        signer_infos: [
+          {
+            public_key: cosmosclient.codec.packAnyFromCosmosJSON(signedTxObj.tx.signatures[0].pub_key),
+            mode_info: {
+              single: {
+                mode: proto.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+              },
+            },
+            sequence: sequence,
+          },
+        ],
+        fee: {
+          amount: null,
+          gas_limit: cosmosclient.Long.fromString(DEFAULT_GAS_VALUE)
+        },
+      });
 
+      const txBody = new proto.cosmos.tx.v1beta1.TxBody({
+        messages: [cosmosclient.codec.packAnyFromCosmosJSON([message])],
+        memo,
+      });
+
+      const txBuilder = new cosmosclient.TxBuilder(cosmosSDKClient.sdk, txBody, authInfo);
+
+      //sign
+      const signDocBytes = txBuilder.signDocBytes(account_number)
+
+      await this.http.post(`${this.server}/cosmos/tx/v1beta1/txs`, {
+       tx_bytes: txBuilder.txBytes(),
+       mode: rest.cosmos.tx.BroadcastTxMode.Block,
+      })
+      */
+      
       if (!signedTxObj?.tx) throw Error('tx signing failed');
 
-      const stdTx = StdTx.fromJSON(signedTxObj.tx);
+      //patch sequence
+      signedTxObj.tx.signatures[0].sequence = "1";
 
-      const { data }: any = await auth.txsPost(
-        cosmosSDKClient.sdk,
-        stdTx,
-        'block'
-      );
+      const thornodeBasePath =
+        environment.network === 'testnet'
+        ? 'https://testnet.thornode.thorchain.info'
+        : 'https://thornode.ninerealms.com';
+
+      const data = await this.http
+      .post<any>(
+        `${thornodeBasePath}/txs`,
+        signedTxObj
+      )
+      .toPromise();
 
       if (!data.logs) throw Error('Transaction Failed');
 
@@ -633,15 +686,13 @@ export class WalletConnectService {
     };
 
     userThorchainClient.deposit = async (txParams) => {
-      const { asset = new Asset('THOR.RUNE'), amount, memo } = txParams;
-
-      if (!asset) throw Error('invalid asset to deposit');
+      const { amount, memo } = txParams;
 
       const signer = userThorchainClient.getAddress();
       const msgNativeTx = msgNativeTxFromJson({
         coins: [
           {
-            asset: getDenomWithChain(asset),
+            asset: AssetRuneNative,
             amount: amount.amount().toString(),
           },
         ],
@@ -649,9 +700,8 @@ export class WalletConnectService {
         signer,
       });
 
-      const unsignedStdTx = await this.midgardService.buildDepositTx(
-        msgNativeTx
-      );
+      const unsignedStdTx = await this.midgardService.buildDepositTx(msgNativeTx);
+
       unsignedStdTx.fee.gas = THORCHAIN_DEPOSIT_GAS_FEE;
 
       const account: any = await this.getAccount(
@@ -660,7 +710,7 @@ export class WalletConnectService {
       );
       if (!account) throw Error('invalid account');
 
-      const { account_number: accountNumber, sequence = '0' } = account.value;
+      const { account_number, sequence } = account;
 
       const fee: Fee = {
         amounts: [],
@@ -673,11 +723,11 @@ export class WalletConnectService {
 
       // get tx signing msg
       const signRequestMsg: THORChainDepositTx = {
-        accountNumber,
+        accountNumber: account_number,
         chainId: THORCHAIN_ID,
         fee,
         memo: '',
-        sequence,
+        sequence: sequence.toString(),
         messages: [
           {
             rawJsonMessage: {
@@ -688,16 +738,15 @@ export class WalletConnectService {
         ],
       };
 
-      console.log('unsignedStdTx', unsignedStdTx);
-
-      console.log('sign request', signRequestMsg);
-
       // request tx signing to walletconnect
       const signedTx = await this.signCustomTransaction({
         network: THORCHAIN_NETWORK,
         tx: signRequestMsg,
       });
 
+      console.log(signedTx)
+
+      
       // broadcast raw tx
       const cosmosSDKClient: CosmosSDKClient =
         userThorchainClient.getCosmosClient();
@@ -705,16 +754,25 @@ export class WalletConnectService {
       const signedTxObj = JSON.parse(signedTx);
       console.log('signedTxObj', signedTxObj);
 
+      
       if (!signedTxObj?.tx) throw Error('tx signing failed');
 
-      const stdTx = StdTx.fromJSON(signedTxObj.tx);
-      console.log('stdTx', stdTx);
+      //patch sequence
+      signedTxObj.tx.signatures[0].sequence = sequence.toString();
 
-      const { data }: any = await auth.txsPost(
-        cosmosSDKClient.sdk,
-        stdTx,
-        'block'
-      );
+      console.log(signedTxObj)
+      
+      const thornodeBasePath =
+        environment.network === 'testnet'
+        ? 'https://testnet.thornode.thorchain.info'
+        : 'https://thornode.ninerealms.com';
+
+      const data = await this.http
+      .post<any>(
+        `${thornodeBasePath}/txs`,
+        signedTxObj
+      )
+      .toPromise();
 
       if (!data.logs) throw Error('Transaction Failed');
 
@@ -728,11 +786,22 @@ export class WalletConnectService {
   getAccount = async (
     address: string,
     cosmosSDKClient: CosmosSDKClient
-  ): Promise<BaseAccount> => {
-    const signer = AccAddress.fromBech32(address);
-    const { data } = await auth.accountsAddressGet(cosmosSDKClient.sdk, signer);
+  ): Promise<proto.cosmos.auth.v1beta1.BaseAccount> => {
 
-    return data.result;
+    /* Old Version
+    / const signer = AccAddress.fromBech32(address);
+    / const { data } = await auth.accountsAddressGet(cosmosSDKClient.sdk, signer); 
+    */
+   
+    const signer = cosmosclient.AccAddress.fromString(address);
+    const { data } = await rest.auth.account(cosmosSDKClient.sdk, signer).catch((_) => undefined);
+    const baseAcc = data.account && cosmosclient.codec.unpackCosmosAny(data.account);
+
+    if ((baseAcc instanceof proto.cosmos.auth.v1beta1.BaseAccount)) {
+      return baseAcc;
+    }
+
+    return undefined;
   };
 
   //binance

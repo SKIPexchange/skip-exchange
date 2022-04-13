@@ -1,16 +1,12 @@
 <div class="container-wrapper">
   <div class="container">
-    <!-- <app-modal-section-header
-      sectionTitle="XDEFI Found"
-    ></app-modal-section-header> -->
-
     <div class="dialog-content">
       <div class="content-top">
         <app-breadcrumb
           [path]="[
-            { name: 'skip', call: 'skip' },
-            { name: 'connect', call: 'connect' },
-            { name: 'xdefi found', disable: true }
+            { name: 'common.skip', call: 'skip' },
+            { name: 'common.connect', call: 'connect' },
+            { name: 'common.xdefi', disable: true }
           ]"
           [message]="getBreadcrumbText()"
           (funcCaller)="breadcrumbNav($event)"
@@ -23,7 +19,7 @@
           [isTag]="false"
           [isCenter]="true"
         >
-          <div text>Reconnect from previous session?</div>
+          <div text [innerHTML]="'connect.reconnectKeystore' | translate"></div>
         </app-notice>
 
         <div>
@@ -59,11 +55,12 @@
         </div>
 
         <div class="swap-details" style="color: #fff">
-          <div style="margin-bottom: 5px; font-size: 14px">
-            In XDEFI, go to:
-            <span style="color: var(--primary-default)">Settings > dApps</span>
-            to verify if the above dApps injection Providers are enabled before
-            connecting below.
+          <div 
+            style="margin-bottom: 5px; font-size: 14px" 
+          >
+            {{ ('connect.xdefiHelp' | translate)[0] }}
+            <span style="color: var(--primary-default)">{{ ('connect.xdefiHelp' | translate)[1] }}</span>
+            {{ ('connect.xdefiHelp' | translate)[2] }}
           </div>
           <div
             style="
@@ -72,8 +69,7 @@
               color: var(--primary-red);
             "
           >
-            If you enabled them all now, reload this page in your browser before
-            checking connect.
+            {{ ('connect.xdefiHelp' | translate)[3] }}
           </div>
           <div
             style="
@@ -82,8 +78,7 @@
               color: var(--primary-default);
             "
           >
-            If they were already enabled, you may click the connect button
-            below.
+            {{ ('connect.xdefiHelp' | translate)[4] }}
           </div>
         </div>
       </div>
@@ -91,7 +86,7 @@
       <div class="bottom-actions two-btn">
         <div class="left-btn">
           <button class="close-btn" (click)="forget()">
-            <span>Forget</span>
+            <span>{{ 'common.forget' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -102,56 +97,11 @@
               (click)="initUnlock()"
               [disabled]="connecting || !isValidNetwork || providersDisabled()"
             >
-              <span>Connect</span>
+              <span>{{ 'common.connect' | translate }}</span>
             </button>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- <div class="dialog-content">
-      <div mat-dialog-content>
-        <ul>
-          <li *ngFor="let providerInfo of listProviders" class="flex align-item">
-            <span>- {{ providerInfo.title }}</span>
-            <mat-icon
-              [ngStyle]="{ color: providerInfo.enabled ? 'green' : 'red' }"
-            >
-              {{ providerInfo.enabled ? "check" : "close" }}
-            </mat-icon>
-          </li>
-        </ul>
-        <button
-          style="cursor: auto; font-size: 12px"
-          class="uni-input uni-input--file"
-          [disabled]="true"
-        >
-          <span>Reconnect XDEFI from previous session</span>
-          <mat-icon [ngStyle]="{ color: 'green' }">check</mat-icon>
-        </button>
-      </div>
-      <div *ngIf="!isValidNetwork" class="uni-input uni-input--file">
-        <span style="font-size: 0.8rem; color: red">Incorrect network!</span>
-      </div>
-      <div class="flex justify-between items-center" style="height: 38px">
-        <button class="mb-2" mat-flat-button (click)="forget()">
-          <span>Forget XDEFI</span>
-        </button>
-        <button
-          class="flex flex-row"
-          mat-flat-button
-          color="accent"
-          (click)="initUnlock()"
-          [disabled]="!isValidNetwork"
-        >
-          <span>Re-connect to XDEFI</span>
-          <mat-progress-spinner
-            mode="indeterminate"
-            diameter="30"
-            *ngIf="connecting"
-          ></mat-progress-spinner>
-        </button>
-      </div>
-    </div> -->
   </div>
 </div>

@@ -8,6 +8,8 @@ import { Client as thorchainClient } from '@xchainjs/xchain-thorchain';
 import { Client as ethereumClient } from '@xchainjs/xchain-ethereum/lib';
 import { Client as litecoinClient } from '@xchainjs/xchain-litecoin';
 import { Client as bitcoinCashClient } from '@xchainjs/xchain-bitcoincash';
+import { Client as dogeClient } from '@xchainjs/xchain-doge';
+import { Client as terraClient } from '@xchainjs/xchain-terra';
 import { Network } from '@xchainjs/xchain-client';
 
 @Injectable({
@@ -20,14 +22,15 @@ export class KeystoreService {
     const phrase = await decryptFromKeystore(keystore, password);
     const network =
       environment.network === 'testnet' ? Network.Testnet : Network.Mainnet;
+    const chainIds = {[Network.Mainnet]: 'thorchain-mainnet-v1', [Network.Stagenet]: 'thorchain-stagenet-v1', [Network.Testnet]: 'thorchain-testnet-v2'}
+
     const userBinanceClient = new binanceClient({ network, phrase });
     const userBtcClient = new bitcoinClient({
       network,
       phrase,
       sochainUrl: 'https://sochain.com/api/v2',
-      blockstreamUrl: 'https://blockstream.info',
     });
-    const userThorchainClient = new thorchainClient({ network, phrase });
+    const userThorchainClient = new thorchainClient({ network, phrase, chainIds });
     const thorAddress = await userThorchainClient.getAddress();
     const userEthereumClient = new ethereumClient({
       network,
@@ -36,7 +39,17 @@ export class KeystoreService {
       infuraCreds: { projectId: environment.infuraProjectId },
     });
     const userLtcClient = new litecoinClient({ network, phrase });
-    const userbchClient = new bitcoinCashClient({ network, phrase });
+    const userbchClient = new bitcoinCashClient({ 
+      network, 
+      phrase,
+      haskoinUrl: {
+        [Network.Testnet]: 'https://api.haskoin.com/bchtest',
+        [Network.Mainnet]: 'https://haskoin.ninerealms.com/bch',
+        [Network.Stagenet]: 'https://haskoin.ninerealms.com/bch',
+      }
+    });
+    const userDogeClient = new dogeClient({network, phrase});
+    const userTerraClient = new terraClient({network, phrase});
 
     return new User({
       type: 'keystore',
@@ -49,6 +62,8 @@ export class KeystoreService {
         thorchain: userThorchainClient,
         ethereum: userEthereumClient,
         litecoin: userLtcClient,
+        doge: userDogeClient,
+        terra: userTerraClient,
       },
     });
   }

@@ -8,6 +8,7 @@ import { ArrowModule } from '../arrow/arrow.module';
 import { TextFieldModule } from '../text-field/text-field.module';
 import { DoubleAssetFieldModule } from '../double-asset-field/double-asset-field.module';
 import { MatSliderModule } from '@angular/material/slider';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [TransactionProcessingModalComponent],
@@ -20,6 +21,7 @@ import { MatSliderModule } from '@angular/material/slider';
     TextFieldModule,
     DoubleAssetFieldModule,
     MatSliderModule,
+    TranslateModule,
   ],
   exports: [TransactionProcessingModalComponent],
 })

@@ -19,7 +19,9 @@ import {
   MsgNativeTx,
   ThorchainDepositResponse,
 } from '@xchainjs/xchain-thorchain';
-import { StdTx } from 'cosmos-client/x/auth';
+import { StdTx } from '@cosmos-client/core/dist/cjs/openapi/api';
+import { assetToString } from '@xchainjs/xchain-util';
+// import { StdTx } from 'cosmos-client/x/auth';
 
 export interface MimirResponse {
   [key: string]: number;
@@ -36,6 +38,11 @@ export interface ThorchainQueue {
   outbound: number;
   internal: number;
 }
+
+declare type Coin = {
+  asset: String;
+  amount: string;
+};
 
 @Injectable({
   providedIn: 'root',
@@ -65,7 +72,7 @@ export class MidgardService {
     this._thornodeBasePath =
       environment.network === 'testnet'
         ? 'https://testnet.thornode.thorchain.info'
-        : 'https://thornode.thorchain.info';
+        : 'https://thornode.ninerealms.com';
 
     // cached since constants are constant
     this._constants$ = this.http
@@ -166,13 +173,24 @@ export class MidgardService {
     );
   }
 
+  //TODO: change the result type
   buildDepositTx = async (msgNativeTx: MsgNativeTx): Promise<StdTx> => {
     try {
+      //patch the coins
+      let coins: Coin[] = [];
+      msgNativeTx.coins.forEach(c => {
+        coins.push({
+          asset: assetToString(c.asset),
+          amount: c.amount
+        });
+      });
+      console.log(coins)
+
       const response = await this.http
-        .post<ThorchainDepositResponse>(
+        .post<any>(
           `${this._thornodeBasePath}/thorchain/deposit`,
           {
-            coins: msgNativeTx.coins,
+            coins: coins,
             memo: msgNativeTx.memo,
             base_req: { chain_id: 'thorchain', from: msgNativeTx.signer },
           }
@@ -180,16 +198,17 @@ export class MidgardService {
         .toPromise();
 
       console.log(msgNativeTx, response);
+
       if (!response || !response.value) {
         throw new Error('Invalid client url');
       }
 
-      const unsignedStdTx = StdTx.fromJSON({
+      const unsignedStdTx = {
         msg: response.value.msg,
         fee: response.value.fee,
         signatures: [],
         memo: '',
-      });
+      };
 
       return unsignedStdTx;
     } catch (error) {

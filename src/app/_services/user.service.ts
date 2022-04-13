@@ -201,6 +201,10 @@ export class UserService {
       case 'THOR':
         key = 'thorchain';
         break;
+      case 'DOGE':
+        key = 'doge';
+      case 'TERRA':
+        key = 'terra'
     }
     return key;
   }
@@ -252,8 +256,7 @@ export class UserService {
       let _balance = balances[i];
       const index = this._balances.findIndex(
         (balance) =>
-          balance.asset.ticker === _balance.asset.ticker &&
-          balance.asset.chain === _balance.asset.chain
+          assetToString(balance.asset) === assetToString(_balance.asset)
       );
 
       if (index === -1) {
@@ -332,7 +335,8 @@ export class UserService {
         },
       ]);
 
-      const assetsToQuery: { chain: Chain; ticker: string; symbol: string }[] =
+      // fix the type asset
+      const assetsToQuery: { chain: Chain; ticker: string; symbol: string; synth: boolean }[] =
         [];
 
       /**
@@ -432,6 +436,7 @@ export class UserService {
       case 'LTC.LTC':
       case 'BCH.BCH':
       case 'BNB.BNB':
+      case 'DOGE.DOGE':
         fee = this.txUtilsService.calculateNetworkFee(
           asset,
           inboundAddresses,
@@ -607,6 +612,14 @@ export class UserService {
         case 'THOR':
           const thorClient = clients.thorchain;
           return thorClient.getAddress();
+        
+        case 'DOGE':
+          const dogeClient = clients.doge;
+          return dogeClient.getAddress();
+
+        case 'TERRA':
+          const terraClient = clients.terra;
+          return terraClient.getAddress();
 
         default:
           console.error(`${chain} does not match getting token address`);
@@ -634,6 +647,12 @@ export class UserService {
 
       case 'THOR':
         return user.clients.thorchain;
+      
+      case 'DOGE':
+        return user.clients.doge;
+
+      case 'TERRA':
+        return user.clients.terra;
     }
 
     throw new Error(`no matching client for chain: ${chain}`);
@@ -665,6 +684,10 @@ export class UserService {
         availableChains.push(Chain.BitcoinCash);
       } else if (key === 'litecoin' && _value) {
         availableChains.push(Chain.Litecoin);
+      } else if (key === 'doge' && _value) {
+        availableChains.push(Chain.Doge);
+      } else if (key === 'terra' && _value) {
+        availableChains.push(Chain.Terra);
       }
     }
     return availableChains;
@@ -694,7 +717,10 @@ export class UserService {
             pool.asset.chain === 'BTC' ||
             pool.asset.chain === 'ETH' ||
             pool.asset.chain === 'LTC' ||
-            pool.asset.chain === 'BCH'
+            pool.asset.chain === 'BCH' ||
+            pool.asset.chain === 'DOGE' 
+            // disabled for now
+            // || pool.asset.chain === 'TERRA'
         );
     }
   }

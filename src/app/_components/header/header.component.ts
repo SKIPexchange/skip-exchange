@@ -22,6 +22,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AnalyticsService } from 'src/app/_services/analytics.service';
 import { Router } from '@angular/router';
 import { Chain } from '@xchainjs/xchain-util';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 @Component({
   selector: 'app-header',
@@ -38,6 +39,7 @@ export class HeaderComponent implements OnDestroy {
   isUnderstood: boolean;
   topbar: string;
   totalPooledRune: number;
+  totalActiveBond: number;
   maxLiquidityRune: number;
   depositsDisabled: boolean;
   error: boolean;
@@ -60,7 +62,8 @@ export class HeaderComponent implements OnDestroy {
     private midgardService: MidgardService,
     private _decimalPipe: DecimalPipe,
     private analytics: AnalyticsService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.appLocked = environment.appLocked;
     this.isTestnet = environment.network === 'testnet' ? true : false;
@@ -103,45 +106,50 @@ export class HeaderComponent implements OnDestroy {
     const combined = combineLatest([mimir$, network$]);
 
     if (this.appLocked) {
-      this.topbar = 'Thorchain is under maintenance';
+      this.topbar = this.translate.format('header.maintenance');
       return;
     }
 
-    this.topbar = 'LOADING CAPS';
+    this.topbar = this.translate.format('header.loading');
     const sub = combined.subscribe(([mimir, network]) => {
       if (
         network instanceof HttpErrorResponse ||
         mimir instanceof HttpErrorResponse
       ) {
-        this.topbar = 'THE MIDGARD DATABASE IS HAVING ISSUES. PLEASE TRY LATER';
+        this.topbar = this.translate.format('header.midgardError');
         this.depositsDisabled = false;
         this.error = true;
         return;
       }
 
       this.error = false;
-      this.totalPooledRune = +network?.totalPooledRune / 10 ** 8;
-
+      this.totalActiveBond = +network?.bondMetrics?.totalActiveBond;
+      this.totalPooledRune = +network?.totalPooledRune;
       if (
-        mimir &&
-        mimir['mimir//MAXIMUMLIQUIDITYRUNE'] &&
+        this.totalActiveBond &&
         this.totalPooledRune != null &&
         this.totalPooledRune != NaN
       ) {
-        this.maxLiquidityRune = mimir['mimir//MAXIMUMLIQUIDITYRUNE'] / 10 ** 8;
-        this.depositsDisabled =
-          this.totalPooledRune / this.maxLiquidityRune >= 0.99;
+        const incentivePendulum = (this.totalPooledRune * 2) / this.totalActiveBond;
+        this.depositsDisabled = this.totalPooledRune >= this.totalActiveBond;
+        let incentivePendulumText = '';
+        if (incentivePendulum === 1) {
+          incentivePendulumText = 'Ideal'
+        }
+        else if (incentivePendulum <= 1) {
+          incentivePendulumText = 'Under Bonded'
+        }
+        else if (incentivePendulum >= 1) {
+          incentivePendulumText = 'Over Bonded'
+        }
 
-        this.topbar = `${this._decimalPipe.transform(
-          this.totalPooledRune,
-          '0.0-0'
-        )} / ${this._decimalPipe.transform(
-          this.maxLiquidityRune,
-          '0.0-0'
-        )} RUNE POOLED (${this._decimalPipe.transform(
-          (this.totalPooledRune / this.maxLiquidityRune) * 100,
-          '0.2-2'
-        )} % FILLED${this.depositsDisabled ? ' • CAPS REACHED' : ''})`;
+        this.topbar = this.translate.format('header.incentivePendulum', {
+          status: incentivePendulumText,
+        });
+
+        if (this.depositsDisabled) {
+          this.topbar += this.translate.format('header.depositDisabled');
+        }
       }
     });
 

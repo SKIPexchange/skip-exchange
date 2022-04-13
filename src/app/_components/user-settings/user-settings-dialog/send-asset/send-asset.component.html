@@ -3,11 +3,11 @@
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', call: 'swap' },
-          { name: 'wallet', call: 'wallet' },
+          { name: 'common.skip', call: 'swap' },
+          { name: 'common.wallet', call: 'wallet' },
           { name: asset.asset.chain, call: 'chain' },
           { name: asset.asset.chain + '.' + asset.asset.ticker, call: 'asset' },
-          { name: 'send', disable: true }
+          { name: 'common.send', disable: true }
         ]"
         [message]="mainButtonText()"
         (funcCaller)="breadcrumbNav($event)"
@@ -18,7 +18,7 @@
       <div>
         <div>
           <app-asset-input
-            label="Send"
+            [label]="translate.format('common.send')"
             type="send"
             [(selectedAsset)]="asset.asset"
             [(assetUnit)]="amount"
@@ -42,7 +42,7 @@
           *ngIf="asset.asset.chain !== 'BNB'"
           selectedType="Text"
           mode="Single"
-          label="Recipient Address"
+          [label]="translate.format('wallet.recipient')"
           [(textOfField)]="recipientAddress"
         ></app-text-field>
         <app-text-field
@@ -50,8 +50,8 @@
           selectedType="Text"
           mode="Double"
           typeTwo="Text"
-          label="Recipient Address"
-          labelTwo="Memo"
+          [label]="translate.format('wallet.recipient')"
+          [labelTwo]="translate.format('wallet.memo')"
           [(textOfField)]="recipientAddress"
           [(textOfFieldTwo)]="memo"
         ></app-text-field>
@@ -62,7 +62,7 @@
       <div style="width: 50%">
         <div style="margin-right: 6px">
           <button class="close-btn" (click)="backNav()">
-            <span>CANCEL</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
       </div>
@@ -73,7 +73,7 @@
             (click)="sendNav()"
             [disabled]="nextDisabled()"
           >
-            <span>Send</span>
+            <span>{{ 'common.send' | translate }}</span>
           </button>
         </div>
       </div>

@@ -6,7 +6,6 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { address } from 'bitcoinjs-lib';
 import { Subscription } from 'rxjs';
 import { getChainAsset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
@@ -24,6 +23,9 @@ import {
   AnalyticsService,
   assetString,
 } from 'src/app/_services/analytics.service';
+import { TranslateService } from 'src/app/_services/translate.service';
+import { environment } from 'src/environments/environment';
+import { Chain } from '@xchainjs/xchain-util';
 
 @Component({
   selector: 'app-send-asset',
@@ -75,7 +77,8 @@ export class SendAssetComponent implements OnInit, OnDestroy {
     private overlaysService: OverlaysService,
     private midgardService: MidgardService,
     private txUtilsService: TransactionUtilsService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    public translate: TranslateService
   ) {
     this.recipientAddress = '';
     this.memo = '';
@@ -86,7 +89,7 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       memo: string;
     }>();
     this.amountSpendable = false;
-    this.message = 'prepare';
+    this.message = this.translate.format('breadcrumb.prepare');
   }
 
   ngOnInit(): void {
@@ -143,6 +146,7 @@ export class SendAssetComponent implements OnInit, OnDestroy {
     }
 
     if (
+      environment.network !== 'testnet' &&
       this.chainBalance <
       this.txUtilsService.calculateNetworkFee(
         getChainAsset(this.asset.asset.chain),
@@ -151,6 +155,10 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       )
     ) {
       return true;
+    }
+
+    if (this.asset.asset.chain === Chain.Terra) {
+      return true
     }
 
     return (
@@ -162,26 +170,48 @@ export class SendAssetComponent implements OnInit, OnDestroy {
 
   mainButtonText() {
     if (!this.user) {
-      return { text: 'Connect Wallet', isError: false };
+      return {
+        text: this.translate.format('breadcrumb.connect'),
+        isError: false,
+      };
     }
 
     if (!this.asset) {
-      return { text: 'Prepare', isError: false };
+      return {
+        text: this.translate.format('breadcrumb.prepare'),
+        isError: false,
+      };
     }
 
     if (!this.inboundAddresses || this.chainBalance == undefined) {
-      return { text: 'Loading', isError: false };
+      return {
+        text: this.translate.format('breadcrumb.loading'),
+        isError: false,
+      };
     }
 
     if (!this.client) {
       return {
-        text: `No ${this.asset.asset.chain} Client Found`,
+        text: this.translate.format(
+          'breadcrumb.noClient',
+          this.asset.asset.chain
+        ),
         isError: true,
       };
     }
 
+    if (this.asset.asset.chain === Chain.Terra) {
+      return {
+        text: this.translate.format('breadcrumb.terraDisable'),
+        isError: true,
+      }
+    }
+
     if (this.isMaxError) {
-      return { text: 'Input Amount Less Than Fees', isError: true };
+      return {
+        text: this.translate.format('breadcrumb.inputFee'),
+        isError: true,
+      };
     }
 
     if (
@@ -190,18 +220,22 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       !this.recipientAddress ||
       (this.recipientAddress && this.recipientAddress.length <= 10)
     ) {
-      return { text: 'Prepare', isError: false };
+      return {
+        text: this.translate.format('breadcrumb.prepare'),
+        isError: false,
+      };
     }
 
     if (!this.client.validateAddress(this.recipientAddress)) {
       return {
-        text: `Invalid ${this.asset.asset.chain} Address`,
+        text: this.translate.format('breadcrumb.validAddress'),
         isError: true,
       };
     }
 
     /** Insufficient Chain balance */
     if (
+      environment.network !== 'testnet' &&
       this.chainBalance <
       this.txUtilsService.calculateNetworkFee(
         getChainAsset(this.asset.asset.chain),
@@ -211,16 +245,24 @@ export class SendAssetComponent implements OnInit, OnDestroy {
     ) {
       const chainAsset = getChainAsset(this.asset.asset.chain);
       return {
-        text: `Insufficient ${chainAsset.chain}.${chainAsset.ticker} for fees`,
+        text: this.translate.format(
+          'breadcrumb.insufficient',
+          {
+            asset: assetString(chainAsset)
+          }
+        ),
         isError: true,
       };
     }
 
     if (!this.amountSpendable) {
-      return { text: `INSUFFICIENT ${this.asset.asset.ticker}`, isError: true };
+      return {
+        text: this.translate.format('breadcrumb.insufficientBalance'),
+        isError: true,
+      };
     }
 
-    return { text: 'Ready', isError: false };
+    return { text: this.translate.format('breadcrumb.ready'), isError: false };
   }
 
   setMaxError(val) {
@@ -239,14 +281,12 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       'EXTERNAL'
     );
     this.amountSpendable = this.amount <= maximumSpendableBalance;
-    console.log('amount', this.amount);
-    console.log('max spend', maximumSpendableBalance);
     this.message =
       this.amount > 0 &&
       this.amountSpendable &&
       this.recipientAddress.length > 12
-        ? 'ready'
-        : 'prepare';
+        ? this.translate.format('breadcurmb.ready')
+        : this.translate.format('breadcurmb.prepare');
   }
 
   async breadcrumbNav(nav) {

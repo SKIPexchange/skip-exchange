@@ -43,6 +43,7 @@ import { Currency } from 'src/app/_components/account-settings/currency-converte
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { MockClientService } from 'src/app/_services/mock-client.service';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
+import { TranslateService } from 'src/app/_services/translate.service';
 
 // TODO: this is the same as ConfirmStakeData in confirm stake modal
 export interface ConfirmWithdrawData {
@@ -82,7 +83,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   @Input() data: ConfirmWithdrawData;
   @Output() closeEvent: EventEmitter<boolean>;
 
-  message: string = 'confirm';
+  message: string = this.translate.format('breadcurmb.confirm');
   hashSuccess: boolean;
   outboundHash: string;
   currency: Currency;
@@ -99,7 +100,8 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private metaMaskService: MetamaskService,
     private currencyService: CurrencyService,
-    private mockClientService: MockClientService
+    private mockClientService: MockClientService,
+    public translate: TranslateService
   ) {
     this.hashSuccess = false;
     this.closeEvent = new EventEmitter<boolean>();
@@ -236,6 +238,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
         chain: this.data.rune.chain,
         symbol: this.data.rune.symbol,
         ticker: this.data.rune.ticker,
+        synth: false,
       };
 
       const hash = await thorClient.deposit({
@@ -358,6 +361,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
         case 'BCH':
         case 'LTC':
         case 'BNB':
+        case 'DOGE':
           const client = this.userService.getChainClient(
             this.data.user,
             asset.chain
@@ -374,6 +378,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
               chain: asset.chain,
               symbol: asset.symbol,
               ticker: asset.ticker,
+              synth: false
             },
             amount: minAmount,
             recipient: matchingInboundAddress.address,
@@ -511,7 +516,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
     return {
       modalType: 'WITHDRAW',
       asset: [{ asset: this.data.asset, balance: assetAmount(0), assetPriceUSD: 0 }, { asset: this.data.rune, balance: assetAmount(0), assetPriceUSD: 0 }], 
-      label: this.hashSuccess ? ['Withdrawn', this.data.poolShareMessage] : ['Withdrawing', this.data.poolShareMessage],
+      label: this.hashSuccess ? [this.translate.format('withdraw.withdrawn'), this.data.poolShareMessage] : [this.translate.format('withdraw.withdrawing'), this.data.poolShareMessage],
       isPending: [!this.hashSuccess],
       amount: [this.data.assetAmount, this.data.runeAmount], 
       hashes: this.hashes,

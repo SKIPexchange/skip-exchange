@@ -9,10 +9,10 @@
     <div class="content-top">
       <app-breadcrumb
         [path]="[
-          { name: 'skip', swapView: 'Swap', mainView: 'Swap' },
-          { name: 'wallet', call: 'wallet' },
+          { name: 'common.skip', swapView: 'Swap', mainView: 'Swap' },
+          { name: 'common.wallet', call: 'wallet' },
           { name: chain, call: 'chain' },
-          { name: 'Add token', disable: true }
+          { name: 'common.addToken', disable: true }
         ]"
         [isError]="error"
         [message]="message"
@@ -34,10 +34,9 @@
 
         <div class="swap-details">
           <div class="flex justify-between">
-            <span class="tx-detail-label"
-              >This will add the {{ chain }} contract address to your
-              wallet.</span
-            >
+            <span class="tx-detail-label">
+              {{ 'wallet.contract' | translate: {chain: chain} }}
+            </span>
           </div>
         </div>
       </div>
@@ -45,7 +44,7 @@
       <div class="bottom-actions two-btn">
         <div class="right-btn">
           <button class="close-btn" (click)="back.emit()">
-            <span>Cancel</span>
+            <span>{{ 'common.cancel' | translate }}</span>
           </button>
         </div>
         <div class="divider"></div>
@@ -62,14 +61,10 @@
             "
             (click)="addToken()"
           >
-            <span>Add Token</span>
+            <span>{{ 'common.addToken' | translate }}</span>
           </button>
         </div>
       </div>
-      <!-- <div *ngIf="error">
-        An error occurred <br />
-        {{error}}
-      </div> -->
     </div>
   </div>
 </div>

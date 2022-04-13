@@ -27,8 +27,8 @@ export class SlippageToleranceComponent implements OnInit, OnDestroy {
   set customTolerance(num: number) {
     this.message =
       this.tolerance == this.customTolerance || !this.customTolerance
-        ? 'adjust'
-        : 'ready';
+        ? 'breadcrumb.adjust'
+        : 'breadcrumb.ready';
     this._customTolerance = num;
   }
   get customTolerance() {
@@ -51,7 +51,7 @@ export class SlippageToleranceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.message = 'adjust';
+    this.message = 'breadcrumb.adjust';
   }
 
   breadcrumbNav(val: string) {
@@ -72,7 +72,7 @@ export class SlippageToleranceComponent implements OnInit, OnDestroy {
       this.customTolerance.toString()
     );
     this.slippageToleranceService.setSlippageTolerance(this.customTolerance);
-    this.message = 'saved';
+    this.message = 'breadcrumb.saved';
     this.closeDialog();
   }
 
