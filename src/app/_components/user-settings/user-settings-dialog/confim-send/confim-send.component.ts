@@ -14,7 +14,6 @@ import {
   Asset,
   assetToString,
   Chain,
-  AssetLUNA,
 } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { erc20ABI } from 'src/app/_abi/erc20.abi';
@@ -47,7 +46,7 @@ import { MockClientService } from 'src/app/_services/mock-client.service';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 import { TranslateService } from 'src/app/_services/translate.service';
 import { environment } from 'src/environments/environment';
-import { TERRA_DECIMAL } from '@xchainjs/xchain-terra';
+import { getTerraNativeDenom, TERRA_DECIMAL } from '@xchainjs/xchain-terra';
 
 @Component({
   selector: 'app-confim-send',
@@ -575,13 +574,21 @@ export class ConfimSendComponent implements OnInit, OnDestroy {
       } else if (this.asset.asset.chain === 'TERRA') {
         //TODO: doesn't work atm. will need to update the xchainjs-terra
         const terraClient = this.user.clients.terra;
-
         try {
-          console.log(this.asset.asset);
+          const estFee = await terraClient.getEstimatedFee({
+            asset: this.asset.asset,
+            feeAsset: this.asset.asset,
+            memo: this.memo,
+            sender: terraClient.getAddress(),
+            recipient: this.recipientAddress,
+            amount: assetToBase(assetAmount(this.amount, TERRA_DECIMAL)),
+          })
+
           const hash = await terraClient.transfer({
-            asset: AssetLUNA,
+            asset: this.asset.asset,
             amount: assetToBase(assetAmount(this.amount, TERRA_DECIMAL)),
             recipient: this.recipientAddress,
+            estimatedFee: estFee
           });
           this.hash = hash;
           this.pushTxStatus(hash, this.asset.asset, false);

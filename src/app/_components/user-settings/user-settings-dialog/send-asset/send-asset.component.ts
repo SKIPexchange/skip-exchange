@@ -157,10 +157,6 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    if (this.asset.asset.chain === Chain.Terra) {
-      return true
-    }
-
     return (
       !this.amountSpendable ||
       !client.validateAddress(this.recipientAddress) ||
@@ -198,13 +194,6 @@ export class SendAssetComponent implements OnInit, OnDestroy {
         ),
         isError: true,
       };
-    }
-
-    if (this.asset.asset.chain === Chain.Terra) {
-      return {
-        text: this.translate.format('breadcrumb.terraDisable'),
-        isError: true,
-      }
     }
 
     if (this.isMaxError) {
