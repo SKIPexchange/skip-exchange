@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Tx, TxsPage } from '@xchainjs/xchain-client';
-import { AssetLUNA, Chain } from '@xchainjs/xchain-util';
+import { Chain } from '@xchainjs/xchain-util';
 import { Subscription } from 'rxjs';
 import { Asset } from 'src/app/_classes/asset';
 import { AssetAndBalance } from 'src/app/_classes/asset-and-balance';
@@ -108,7 +108,7 @@ export class UserAssetComponent {
     });
     this.txs = txsPage.txs.filter((el) => {
       //hotfix for luna transactions
-      if (this.asset.asset.chain === AssetLUNA.chain)
+      if (this.asset.asset.chain === Chain.Terra)
         return true
       return (
         el.asset.chain === this.asset.asset.chain &&
@@ -159,29 +159,11 @@ export class UserAssetComponent {
   setExplorerPath() {
     switch (this.asset.asset.chain) {
       case 'BTC':
-        this.explorerPath = `${this.explorerPathsService.bitcoinExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'BNB':
-        this.explorerPath = `${this.explorerPathsService.binanceExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'THOR':
-        this.explorerPath = `${this.explorerPathsService.thorchainExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'ETH':
-        this.explorerPath = `${this.explorerPathsService.ethereumExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'LTC':
-        this.explorerPath = `${this.explorerPathsService.litecoinExplorerUrl}/${this.address}`;
-        break;
-
       case 'BCH':
-        this.explorerPath = `${this.explorerPathsService.bchExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'DOGE':
       case 'TERRA':
         this.explorerPath = this.userService.getChainClient(this.user, this.asset.asset.chain).getExplorerAddressUrl(this.address);

@@ -1,31 +1,31 @@
 <div class="background-container" [ngClass]="{isMobile: isMobile}">
   <app-header *ngIf="!isMobile"></app-header>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.Swap">
+  <main *ngIf="currentView == currentViewType.Swap">
     <router-outlet></router-outlet>
   </main>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.UserSetting && !appLocked">
+  <main *ngIf="currentView == currentViewType.UserSetting && !appLocked">
     <app-user-settings-dialog></app-user-settings-dialog>
   </main>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.Reconnect && !appLocked">
+  <main *ngIf="currentView == currentViewType.Reconnect && !appLocked">
     <app-reconnect-dialog [keystore]="keystore"></app-reconnect-dialog>
   </main>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.ReconnectXDEFI && !appLocked">
+  <main *ngIf="currentView == currentViewType.ReconnectXDEFI && !appLocked">
     <app-reconnect-xdefi-dialog></app-reconnect-xdefi-dialog>
   </main>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.AccountSetting && !appLocked">
+  <main *ngIf="currentView == currentViewType.AccountSetting && !appLocked">
     <app-account-settings></app-account-settings>
   </main>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.Upgrade && !appLocked">
+  <main *ngIf="currentView == currentViewType.Upgrade && !appLocked">
     <app-native-rune-prompt-modal></app-native-rune-prompt-modal>
   </main>
 
-  <main [ngStyle]="{'min-height': screenHeight}" *ngIf="currentView == currentViewType.Transaction && !appLocked">
+  <main *ngIf="currentView == currentViewType.Transaction && !appLocked">
     <app-pending-txs-modal></app-pending-txs-modal>
   </main>
  
