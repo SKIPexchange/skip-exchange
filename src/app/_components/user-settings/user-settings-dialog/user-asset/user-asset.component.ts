@@ -159,29 +159,11 @@ export class UserAssetComponent {
   setExplorerPath() {
     switch (this.asset.asset.chain) {
       case 'BTC':
-        this.explorerPath = `${this.explorerPathsService.bitcoinExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'BNB':
-        this.explorerPath = `${this.explorerPathsService.binanceExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'THOR':
-        this.explorerPath = `${this.explorerPathsService.thorchainExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'ETH':
-        this.explorerPath = `${this.explorerPathsService.ethereumExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'LTC':
-        this.explorerPath = `${this.explorerPathsService.litecoinExplorerUrl}/${this.address}`;
-        break;
-
       case 'BCH':
-        this.explorerPath = `${this.explorerPathsService.bchExplorerUrl}/address/${this.address}`;
-        break;
-
       case 'DOGE':
       case 'TERRA':
         this.explorerPath = this.userService.getChainClient(this.user, this.asset.asset.chain).getExplorerAddressUrl(this.address);
