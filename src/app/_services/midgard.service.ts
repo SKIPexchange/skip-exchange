@@ -184,7 +184,6 @@ export class MidgardService {
           amount: c.amount
         });
       });
-      console.log(coins)
 
       const response = await this.http
         .post<any>(
@@ -196,8 +195,6 @@ export class MidgardService {
           }
         )
         .toPromise();
-
-      console.log(msgNativeTx, response);
 
       if (!response || !response.value) {
         throw new Error('Invalid client url');

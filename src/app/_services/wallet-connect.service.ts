@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
 import { IConnector, IWalletConnectOptions } from '@walletconnect/types';
-import { AssetETH, AssetRuneNative, assetToString, Chain } from '@xchainjs/xchain-util';
+import { AssetETH, AssetRuneNative, assetToString, BaseAmount, baseAmount, Chain } from '@xchainjs/xchain-util';
 import { MockClientService } from './mock-client.service';
 import { SignedSend } from '@binance-chain/javascript-sdk/lib/types';
 import * as base64js from 'base64-js';
@@ -11,7 +11,9 @@ import { UserService } from './user.service';
 import { CosmosSDKClient } from '@xchainjs/xchain-cosmos';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
 import {
+  DECIMAL,
   getDenom,
+  isAssetRuneNative,
   msgNativeTxFromJson,
 } from '@xchainjs/xchain-thorchain';
 import { MidgardService } from './midgard.service';
@@ -607,7 +609,7 @@ export class WalletConnectService {
 
       // get tx signing msg
       const signRequestMsg: THORChainSendTx = {
-        accountNumber: account_number,
+        accountNumber: account_number.toString(),
         chainId: THORCHAIN_ID,
         fee,
         memo,
@@ -723,7 +725,7 @@ export class WalletConnectService {
 
       // get tx signing msg
       const signRequestMsg: THORChainDepositTx = {
-        accountNumber: account_number,
+        accountNumber: account_number.toString(),
         chainId: THORCHAIN_ID,
         fee,
         memo: '',
@@ -738,22 +740,25 @@ export class WalletConnectService {
         ],
       };
 
+      const { average: THORfee } = await userThorchainClient.getFees()
+      const balances = await userThorchainClient.getBalance(userThorchainClient.getAddress())
+      const runeBalance: BaseAmount =
+        balances.filter(({ asset }) => isAssetRuneNative(asset))[0]?.amount ?? baseAmount(0, DECIMAL)
+
+      if (isAssetRuneNative(AssetRuneNative)) {
+        // amount + fee < runeBalance
+        if (runeBalance.lt(amount.plus(THORfee))) {
+          throw new Error('Insufficient funds')
+        }
+      }
+
       // request tx signing to walletconnect
       const signedTx = await this.signCustomTransaction({
         network: THORCHAIN_NETWORK,
         tx: signRequestMsg,
       });
 
-      console.log(signedTx)
-
-      
-      // broadcast raw tx
-      const cosmosSDKClient: CosmosSDKClient =
-        userThorchainClient.getCosmosClient();
-
       const signedTxObj = JSON.parse(signedTx);
-      console.log('signedTxObj', signedTxObj);
-
       
       if (!signedTxObj?.tx) throw Error('tx signing failed');
 
