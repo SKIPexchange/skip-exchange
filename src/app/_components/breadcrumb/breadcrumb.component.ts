@@ -84,7 +84,6 @@ export class BreadcrumbComponent implements OnInit, AfterViewInit {
     Array.prototype.forEach.call(scrolls, (scroll) => {
       scroll.scrollLeft = scroll.scrollWidth;
     });
-    console.log('scroll left called');
   }
 
   changePath(path: Path) {
