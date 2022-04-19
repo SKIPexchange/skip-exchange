@@ -61,6 +61,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NetworkSummary } from '../_classes/network';
 import { LayoutObserverService } from '../_services/layout-observer.service';
 import { TranslateService } from '../_services/translate.service';
+import { DECIMAL } from '@xchainjs/xchain-thorchain';
+import { TERRA_DECIMAL } from '@xchainjs/xchain-terra';
 
 @Component({
   selector: 'app-deposit',
@@ -844,7 +846,9 @@ export class DepositComponent implements OnInit, OnDestroy {
               pool.asset.chain === 'BTC' ||
               pool.asset.chain === 'ETH' ||
               pool.asset.chain === 'LTC' ||
-              pool.asset.chain === 'BCH'
+              pool.asset.chain === 'BCH' ||
+              pool.asset.chain === 'DOGE' ||
+              pool.asset.chain === 'TERRA'
           )
 
           // filter out avaiable chains
@@ -1001,7 +1005,7 @@ export class DepositComponent implements OnInit, OnDestroy {
     if (this.runeBalance <= this.runeFee && this.poolType !== 'ASYM_ASSET') {
       this.formValidation = {
         message: this.translate.format('breadcrumb.insufficient', {
-          asset: this.asset.chain,
+          asset: this.rune.chain,
         }),
         isValid: false,
         isError: true,
@@ -1103,18 +1107,26 @@ export class DepositComponent implements OnInit, OnDestroy {
     return this.poolType === 'SYM' || this.poolType === 'ASYM_ASSET';
   }
 
+  getDecimal(asset) {
+    let decimal = DECIMAL;
+    if (asset.chain === 'TERRA')
+      decimal = TERRA_DECIMAL
+    return decimal
+  }
+
   openConfirmationDialog() {
     const assetPrice = this.selectableMarkets.find(
       (asset) => this.asset.symbol === asset.asset.symbol
     ).assetPriceUSD;
+
     const assetData: AssetAndBalance = {
       asset: this.asset,
-      balance: assetAmount(this.assetBalance, 8),
+      balance: assetAmount(this.assetBalance, this.getDecimal(this.asset)),
       assetPriceUSD: assetPrice,
     };
     const runeData: AssetAndBalance = {
       asset: this.rune,
-      balance: assetAmount(this.runeBalance, 8),
+      balance: assetAmount(this.runeBalance, DECIMAL),
       assetPriceUSD: this.runePrice,
     };
     const depositValue = this.totalDeposit();
