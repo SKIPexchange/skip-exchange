@@ -54,6 +54,7 @@ import { LayoutObserverService } from 'src/app/_services/layout-observer.service
 import { noticeData } from 'src/app/_components/success-notice/success-notice.component';
 import { SuccessModal } from 'src/app/_components/transaction-success-modal/transaction-success-modal.component';
 import { TranslateService } from 'src/app/_services/translate.service';
+import { TERRA_DECIMAL } from '@xchainjs/xchain-terra';
 export interface SwapData {
   sourceAsset: AssetAndBalance;
   targetAsset: AssetAndBalance;
@@ -357,7 +358,9 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
       this.swapData.sourceAsset.asset.chain === 'BTC' ||
       this.swapData.sourceAsset.asset.chain === 'ETH' ||
       this.swapData.sourceAsset.asset.chain === 'LTC' ||
-      this.swapData.sourceAsset.asset.chain === 'BCH'
+      this.swapData.sourceAsset.asset.chain === 'BCH' ||
+      this.swapData.sourceAsset.asset.chain === 'DOGE' ||
+      this.swapData.sourceAsset.asset.chain === 'TERRA'
     ) {
       this.midgardService.getInboundAddresses().subscribe(async (res) => {
         const currentPools = res;
@@ -769,6 +772,64 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
           recipient: matchingPool.address,
           memo,
           feeRate: +matchingPool.gas_rate,
+        });
+
+        this.makeHash(hash, sourceAsset);
+        this.makeHash(hash, sourceAsset, true);
+
+        this.hash = hash;
+        this.pushTxStatus(hash, sourceAsset);
+        this.txState = TransactionConfirmationState.SUCCESS;
+      } catch (error) {
+        console.error('error making transfer: ', error);
+        this.error = error;
+        this.txState = TransactionConfirmationState.ERROR;
+      }
+    } else if (this.swapData.sourceAsset.asset.chain === 'TERRA') {
+      try {
+        const terraClient = this.swapData.user.clients.terra;
+        const sourceAsset = this.swapData.sourceAsset.asset;
+
+        const estFee = await terraClient.getEstimatedFee({
+          asset: sourceAsset,
+          feeAsset: sourceAsset,
+          memo: memo,
+          sender: terraClient.getAddress(),
+          recipient: matchingPool.address,
+          amount: assetToBase(assetAmount(amountNumber, TERRA_DECIMAL)),
+        })
+
+        const balanceAmount = this.userService.findRawBalance(
+          this.balances,
+          sourceAsset
+        );
+
+        const toBase = assetToBase(assetAmount(amountNumber, TERRA_DECIMAL));
+        const feeToBase = assetToBase(
+          assetAmount(this.swapData.networkFeeInSource, TERRA_DECIMAL)
+        );
+        
+        const amount = balanceAmount
+          // subtract fee
+          .minus(feeToBase.amount())
+          // subtract amount
+          .minus(toBase.amount())
+          .isGreaterThan(0)
+          ? toBase.amount() // send full amount, fee can be deducted from remaining balance
+          : toBase.amount().minus(feeToBase.amount()); // after deductions, not enough to process, subtract fee from amount
+
+        if (amount.isLessThan(0)) {
+          this.error = 'Insufficient funds. Try sending a smaller amount';
+          this.txState = TransactionConfirmationState.ERROR;
+          return;
+        }
+        
+        const hash = await terraClient.transfer({
+          asset: sourceAsset,
+          estimatedFee: estFee,
+          amount: baseAmount(amount, TERRA_DECIMAL),
+          recipient: matchingPool.address,
+          memo,
         });
 
         this.makeHash(hash, sourceAsset);

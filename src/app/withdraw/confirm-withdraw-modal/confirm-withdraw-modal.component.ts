@@ -387,6 +387,34 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
           });
           this.makeHash(hash, this.data.asset, true);
           break;
+        
+        case 'TERRA':
+          const terraClient = this.data.user.clients.terra;
+
+          const estFee = await terraClient.getEstimatedFee({
+            asset: asset,
+            feeAsset: asset,
+            memo: memo,
+            sender: terraClient.getAddress(),
+            recipient: matchingInboundAddress.address,
+            amount: minAmount,
+          })
+
+          hash = await client.transfer({
+            asset: {
+              chain: asset.chain,
+              symbol: asset.symbol,
+              ticker: asset.ticker,
+              synth: false
+            },
+            estimatedFee: estFee,
+            amount: minAmount,
+            recipient: matchingInboundAddress.address,
+            memo,
+            feeRate: +matchingInboundAddress.gas_rate,
+          });
+          this.makeHash(hash, this.data.asset, true);
+          break;
       }
 
       if (hash.length > 0) {
