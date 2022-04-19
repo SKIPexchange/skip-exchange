@@ -14,6 +14,8 @@ import { Client as ThorClient } from '@xchainjs/xchain-thorchain';
 import { Client as DogeClient } from '@xchainjs/xchain-doge';
 import { Client as TerraClient } from '@xchainjs/xchain-terra';
 import { PoolTypeOption } from '../_const/pool-type-options';
+import { TERRA_DECIMAL } from '@xchainjs/xchain-terra';
+
 
 export interface EthDepositParams {
   asset: Asset;
@@ -388,10 +390,10 @@ export class KeystoreDepositService {
           ? this._buildDepositMemo(asset, thorchainAddress)
           : this._buildDepositMemo(asset);
 
-      // TODO -> consolidate this with BTC, BCH, LTC
+
       const balanceAmount = this.userService.findRawBalance(balances, asset);
-      const toBase = assetToBase(assetAmount(inputAmount));
-      const feeToBase = assetToBase(assetAmount(estimatedFee));
+      const toBase = assetToBase(assetAmount(inputAmount, TERRA_DECIMAL));
+      const feeToBase = assetToBase(assetAmount(estimatedFee, TERRA_DECIMAL));
       const amount = balanceAmount
         // subtract fee
         .minus(feeToBase.amount())
@@ -405,14 +407,19 @@ export class KeystoreDepositService {
         throw new Error('Insufficient funds. Try sending a smaller amount');
       }
 
+      const estFee = await client.getEstimatedFee({
+        asset: asset,
+        feeAsset: asset,
+        memo: memo,
+        sender: client.getAddress(),
+        recipient: recipientPool.address,
+        amount: baseAmount(amount, TERRA_DECIMAL),
+      })
+
       const hash = await client.transfer({
-        asset: {
-          chain: asset.chain,
-          symbol: asset.symbol,
-          ticker: asset.ticker,
-          synth: false
-        },
-        amount: baseAmount(amount),
+        asset: asset,
+        estimatedFee: estFee,
+        amount: baseAmount(amount, TERRA_DECIMAL),
         recipient: recipientPool.address,
         memo,
       });

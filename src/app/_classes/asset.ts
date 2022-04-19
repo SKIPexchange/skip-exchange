@@ -54,6 +54,9 @@ export class Asset {
           if (ticker === 'BNB') {
             this.iconPath =
               'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png';
+          } else {
+            this.iconPath =
+              `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/${symbol}/logo.png`;
           }
           break;
 
@@ -73,8 +76,9 @@ export class Asset {
             if (this.ticker === 'ALCX') {
               this.iconPath =
                 'https://etherscan.io/token/images/Alchemix_32.png';
-            } else if (this.ticker === 'XRUNE') {
-              this.iconPath = '/assets/icons/xrune-icon.png';
+            } else if (this.ticker === 'TGT') {
+              this.iconPath =
+                '/assets/icons/tgt.png'
             }
           }
           break;
@@ -96,7 +100,10 @@ export class Asset {
         case 'TERRA':
           if (this.ticker.toUpperCase() === 'LUNA')
             this.iconPath =
-              'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png';
+              '/assets/icons/luna.png';
+          else if (this.ticker.toUpperCase() === 'UST')
+            this.iconPath =
+              '/assets/icons/ust.png';
           break;
 
         default:

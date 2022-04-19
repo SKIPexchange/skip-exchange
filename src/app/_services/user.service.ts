@@ -296,6 +296,12 @@ export class UserService {
         case 'thorchain':
           this.pushChainBalanceErrors(Chain.THORChain);
           break;
+        case 'doge':
+          this.pushChainBalanceErrors(Chain.Doge);
+          break;
+        case 'terra':
+          this.pushChainBalanceErrors(Chain.Terra);
+          break;
       }
     }
   }
@@ -718,9 +724,8 @@ export class UserService {
             pool.asset.chain === 'ETH' ||
             pool.asset.chain === 'LTC' ||
             pool.asset.chain === 'BCH' ||
-            pool.asset.chain === 'DOGE' 
-            // disabled for now
-            // || pool.asset.chain === 'TERRA'
+            pool.asset.chain === 'DOGE' ||
+            pool.asset.chain === 'TERRA'
         );
     }
   }

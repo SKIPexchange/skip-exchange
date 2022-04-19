@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, OnChanges } from '@angular/core';
-import { Asset, getChainAsset } from '../_classes/asset';
+import { Asset, assetIsChainAsset, getChainAsset } from '../_classes/asset';
 import { UserService } from '../_services/user.service';
 import { combineLatest, Subscription, timer } from 'rxjs';
 import {
@@ -1350,12 +1350,13 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
       /**
        * Total output amount in target units minus RUNE Fee
        */
+      let sourceValue = this._sourceAssetTokenValue.amount();
+      if (assetIsChainAsset(this.selectedSourceAsset)) {
+        sourceValue.minus(assetToBase(assetAmount(inboundFee)).amount())
+      }
+
       const swapOutput = getSwapOutput(
-        baseAmount(
-          this._sourceAssetTokenValue
-            .amount()
-            .minus(assetToBase(assetAmount(inboundFee)).amount())
-        ),
+        baseAmount(sourceValue),
         pool,
         toRune
       );
