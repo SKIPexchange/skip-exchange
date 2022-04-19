@@ -622,7 +622,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
         this.makeHash(hash, sourceAsset);
         this.makeHash('', this.swapData.targetAsset.asset);
 
-        this.hash = hash.substr(2);
+        this.hash = hash.slice(2);
         this.pushTxStatus(hash, this.swapData.sourceAsset.asset);
         this.txState = TransactionConfirmationState.SUCCESS;
       } catch (error) {
@@ -845,7 +845,7 @@ export class ConfirmSwapModalComponent implements OnInit, OnDestroy {
 
     //get outbound hash for the view
     this.getOutboundHash(
-      this.swapData.sourceAsset.asset.chain === 'ETH' ? hash.substr(2) : hash
+      this.swapData.sourceAsset.asset.chain === 'ETH' ? hash.slice(2) : hash
     );
   }
 

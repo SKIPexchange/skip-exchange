@@ -245,6 +245,6 @@ export class EthUtilsService {
   }
 
   strip0x(hash: string): string {
-    return hash.toUpperCase().indexOf('0X') === 0 ? hash.substr(2) : hash;
+    return hash.toUpperCase().indexOf('0X') === 0 ? hash.slice(2) : hash;
   }
 }

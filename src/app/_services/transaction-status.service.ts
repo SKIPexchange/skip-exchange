@@ -234,7 +234,7 @@ export class TransactionStatusService {
         // switchMap cancels the last request, if no response have been received since last tick
         switchMap(() => this.midgardService.getTransaction(hash)),
         // retry in case CORS error or something fails
-        retry()
+        retryWhen((errors) => errors.pipe(delay(15000), take(10)))
       )
       .subscribe(async (res: TransactionDTO) => {
         if (res.count > 0) {
@@ -265,8 +265,8 @@ export class TransactionStatusService {
           takeUntil(this.killTxPolling[hash]),
           // switchMap cancels the last request, if no response have been received since last tick
           switchMap(() => this.midgardService.getTransaction(hash)),
-          // catchError handles http throws
-          catchError((error) => of(error))
+          // retry when it gets error for 5 times
+          retryWhen((errors) => errors.pipe(delay(20000), take(10)))
         )
         .subscribe(async (res: TransactionDTO) => {
           if (res.count > 0) {
@@ -310,8 +310,7 @@ export class TransactionStatusService {
         takeUntil(this.killTxPolling[hash]),
         // switchMap cancels the last request, if no response have been received since last tick
         switchMap(() => this.midgardService.getThornodeTransaction(hash)),
-        // catchError handles http throws
-        catchError((error) => of(error))
+        retryWhen((errors) => errors.pipe(delay(10000), take(10)))
       )
       .subscribe(async (res: ThornodeTx) => {
         if (
