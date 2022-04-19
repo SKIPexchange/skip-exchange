@@ -9,6 +9,7 @@ import { MidgardService } from './midgard.service';
 import { TxType } from '../_const/tx-type';
 import { MockClientService } from './mock-client.service';
 import { environment } from 'src/environments/environment';
+import { TERRA_DECIMAL } from '@xchainjs/xchain-terra';
 
 @Injectable({
   providedIn: 'root',
@@ -89,8 +90,10 @@ export class TransactionUtilsService {
           }
 
         case 'BNB':
-        case 'TERRA':
           // prettier-ignore
+          return (multiplier * (+matchingInboundAddress.gas_rate) * 1) / (10 ** 8);
+        case 'TERRA':
+          //TERRA gas estimation might need to get fixed
           return (multiplier * (+matchingInboundAddress.gas_rate) * 1) / (10 ** 8);
       }
     } else if (asset.chain === 'THOR') {
@@ -136,6 +139,11 @@ export class TransactionUtilsService {
     // 1000 satoshi
     if (chain === 'BCH') {
       return baseAmount(10001);
+    }
+
+    // 0.000001 luna
+    if (chain === 'TERRA') {
+      return baseAmount(1, TERRA_DECIMAL);
     }
 
     return baseAmount(1);
