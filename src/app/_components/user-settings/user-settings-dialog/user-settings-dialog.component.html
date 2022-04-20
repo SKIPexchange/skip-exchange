@@ -141,7 +141,7 @@
                     />
                   </div>
                   <label>TERRA</label>
-                  <span class="chain-address">({{terraAddress.substring(0, 5) + '...' + terraAddress.substring(dogeAddress.length - 5, dogeAddress.length)}})</span>
+                  <span class="chain-address">({{terraAddress.substring(0, 5) + '...' + terraAddress.slice(-5)}})</span>
                 </div>
                 <div class="addr flex-grow" style="min-width: initial; margin-left: 0;">
                   <span class="chain-usd" *ngIf="chainUsdValue['TERRA'] && chainUsdValue['TERRA'].value !== 0">{{chainUsdValue['TERRA'].value * currecny.value | shortNumber: !isMobile}} {{currecny.code}}</span>
