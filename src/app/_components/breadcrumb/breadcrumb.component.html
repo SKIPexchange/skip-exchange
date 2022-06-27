@@ -23,7 +23,7 @@
       <div>></div>
     </ng-container>
     <div class="path path--active" [ngClass]="{wider: isMobile}">
-      {{ (message.text || message) | translate }}
+      {{ ((message && message.text) || message) | translate }}
     </div>
     <div class="cursor" #cursor></div>
   </div>

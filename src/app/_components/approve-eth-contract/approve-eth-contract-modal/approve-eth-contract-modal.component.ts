@@ -57,7 +57,7 @@ export class ApproveEthContractModalComponent implements OnInit, OnDestroy {
 
   @Input() eventCategory: string = 'swap_approve_contract';
 
-  //breadcurmb path
+  //breadcrumb path
   path: Path[];
   @Input() mode: 'deposit' | 'swap' | 'create pool' = 'swap';
   metaMaskProvider?: ethers.providers.Web3Provider;

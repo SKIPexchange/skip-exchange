@@ -305,8 +305,8 @@ export class WithdrawComponent implements OnInit, OnDestroy {
           this.user,
           this.asset.chain
         );
-        thorAddress = thorclient ? thorclient.getAddress() : undefined;
-        chainAddress = chainClient.getAddress().toLowerCase();
+        thorAddress = thorclient ? thorclient?.getAddress() : undefined;
+        chainAddress = chainClient? chainClient?.getAddress()?.toLowerCase() : undefined;
       }
 
       /**
@@ -721,7 +721,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     }
 
     /** THORChain is backed up */
-    if (this.queue && this.queue.outbound >= 12) {
+    if (this.queue && this.queue.outbound >= 40) {
       return true;
     }
 
@@ -809,9 +809,11 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     }
 
     /** THORChain is backed up */
-    if (this.queue && this.queue.outbound >= 12) {
+    if (this.queue && this.queue.outbound >= 20) {
       this.isError = true;
-      return this.translate.format('breadcrumb.txQueue');
+      return this.translate.format('breadcrumb.txQueue', {
+        queue: this.queue.outbound
+      });
     }
 
     /** When amount is only zero */

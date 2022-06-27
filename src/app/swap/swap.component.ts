@@ -848,9 +848,11 @@ export class SwapComponent implements OnInit, OnDestroy, OnChanges {
     /** THORChain is backed up */
     if (this.queue && this.queue.outbound >= 20) {
       this.formValidation = {
-        message: this.translate.format('breadcrumb.txQueue'),
+        message: this.translate.format('breadcrumb.txQueue', {
+          queue: this.queue.outbound
+        }),
         isValid: false,
-        isError: true,
+        isError: this.queue.outbound>40? true:false,
       };
       return;
     }

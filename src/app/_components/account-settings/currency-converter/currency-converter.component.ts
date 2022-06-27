@@ -87,7 +87,7 @@ export class CurrencyConverterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.message = 'breadcurmb.select';
+    this.message = 'breadcrumb.select';
 
     this.filterdCurrencies = this.currencies;
   }

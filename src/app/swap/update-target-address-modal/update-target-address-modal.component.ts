@@ -41,7 +41,7 @@ export class UpdateTargetAddressModalComponent implements OnInit {
       this.userService.getTokenAddress(this.user, Chain.THORChain) ?? undefined;
   }
 
-  breadcurmbNav(val: string) {
+  breadcrumbNav(val: string) {
     if (val === 'skip') {
       this.analytics.event(
         'swap_receive_container_target_address_select',

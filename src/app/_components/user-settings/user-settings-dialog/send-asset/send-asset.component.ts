@@ -274,8 +274,8 @@ export class SendAssetComponent implements OnInit, OnDestroy {
       this.amount > 0 &&
       this.amountSpendable &&
       this.recipientAddress.length > 12
-        ? this.translate.format('breadcurmb.ready')
-        : this.translate.format('breadcurmb.prepare');
+        ? this.translate.format('breadcrumb.ready')
+        : this.translate.format('breadcrumb.prepare');
   }
 
   async breadcrumbNav(nav) {
