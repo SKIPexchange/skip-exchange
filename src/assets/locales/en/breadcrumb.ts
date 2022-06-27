@@ -4,7 +4,7 @@ export default {
   loading: 'Loading',
   connecting: 'Connecting',
   loadingBalance: 'Loading Balance',
-  txQueue: 'TX Queue is filled',
+  txQueue: 'TX Queue Outbound is {{queue}}, your TX might take time',
   select: 'Select',
   approval: 'Approval Required',
   halted: '{{chain}} Chain is Halted',

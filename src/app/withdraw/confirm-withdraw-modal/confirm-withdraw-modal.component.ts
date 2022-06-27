@@ -83,7 +83,7 @@ export class ConfirmWithdrawModalComponent implements OnInit, OnDestroy {
   @Input() data: ConfirmWithdrawData;
   @Output() closeEvent: EventEmitter<boolean>;
 
-  message: string = this.translate.format('breadcurmb.confirm');
+  message: string = this.translate.format('breadcrumb.confirm');
   hashSuccess: boolean;
   outboundHash: string;
   currency: Currency;
