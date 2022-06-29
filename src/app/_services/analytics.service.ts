@@ -32,7 +32,7 @@ export class AnalyticsService {
     eventAddress?: string
   ) {
     (window as any).gtag('event', eventAction, {
-      send_to: "G-VCFQGFYYP0",
+      send_to: environment.googleMeasurement,
       event_category: eventCategory,
       event_label: eventLabel,
       value: eventValue,
