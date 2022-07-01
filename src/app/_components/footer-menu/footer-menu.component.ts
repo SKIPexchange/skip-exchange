@@ -218,7 +218,7 @@ export class FooterMenuComponent implements OnInit {
   }
 
   upgrade() {
-    if (this.hasRune && this.isTestnet) {
+    if (this.hasRune) {
       this.oveService.setCurrentView(MainViewsEnum.Upgrade);
     }
   }
